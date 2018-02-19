@@ -11,21 +11,33 @@ Client::~Client() {
 }
 
 void Client::connect() {
+	if (connected) {
+		Console::log("Already connected", Console::LogLevel::ERROR);
+		return;
+	}
 	connected = true;
 	receiveThread = std::thread(&Client::threadedReceive, this);
+	sendThread = std::thread(&Client::threadedSend, this);
 }
 
 void Client::disconnect() {
+	if (!connected) {
+		Console::log("Already disconnected", Console::LogLevel::ERROR);
+		return;
+	}
 	connected = false;
 	socket.disconnect();
 	receiveThread.join();
+	//Kind of a hack but the easiest way to interrupt the TSQueue
+	toSend.push(sf::Packet());
+	sendThread.join();
 }
 
 void Client::sendText(std::string msg) {
 	//TEMP USE TSQ WHEN IMPLEMENTED
 	sf::Packet packet;
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
-	socket.send(packet);
+	toSend.push(packet);
 }
 
 void Client::threadedReceive() {
@@ -53,6 +65,13 @@ void Client::threadedReceive() {
 	}
 	//Shutdown socket
 	socket.disconnect();
+}
+
+void Client::threadedSend() {
+	while (connected) {
+		sf::Packet p = toSend.poll();
+		socket.send(p);
+	}
 }
 
 

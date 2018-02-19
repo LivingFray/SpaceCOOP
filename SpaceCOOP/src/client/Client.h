@@ -2,6 +2,7 @@
 #include <string>
 #include <SFML\Network.hpp>
 #include <thread>
+#include "../shared/TSQueue.h"
 
 class Client {
 public:
@@ -15,8 +16,11 @@ public:
 private:
 	sf::TcpSocket socket;
 	std::thread receiveThread;
+	std::thread sendThread;
 	bool connected;
 	void threadedReceive();
+	void threadedSend();
 	void handlePacket(sf::Packet& packet);
+	TSQueue<sf::Packet> toSend;
 };
 

@@ -33,9 +33,6 @@
     <ClCompile Include="src\shared\PacketHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadSafeQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\server\Server.h">
@@ -53,7 +50,7 @@
     <ClInclude Include="src\shared\PacketHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadSafeQueue.h">
+    <ClInclude Include="src\shared\TSQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
