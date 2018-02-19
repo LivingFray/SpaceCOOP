@@ -2,8 +2,16 @@
 #include "../shared/Console.h"
 #include "Player.h"
 
+/*
 
-Server::Server() : incomingThread(&Server::handleConnections, this) {
+TODO
+TODO  Players DCing are still listed as active on server: FIX THIS
+TODO
+TODO
+
+*/
+
+Server::Server() {
 }
 
 
@@ -16,17 +24,19 @@ void Server::start() {
 		Console::log("Attempted to start server that was already running", Console::LogLevel::ERROR);
 	}
 	running = true;
-	incomingThread.launch();
+	incomingThread = std::thread(&Server::handleConnections, this);
 }
 
 
 void Server::stop() {
 	running = false;
 	listen.close();
-	incomingThread.wait();
+	incomingThread.join();
+	Console::log("No longer listening for new connections", Console::LogLevel::INFO);
 	for (std::shared_ptr<Player> t : players) {
 		t->disconnect();
 	}
+	Console::log("All players kicked", Console::LogLevel::INFO);
 }
 
 void Server::handleConnections() {
@@ -49,4 +59,5 @@ void Server::handleConnections() {
 			numPlayers++;
 		}
 	}
+	listen.close();
 }

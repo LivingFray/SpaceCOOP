@@ -3,7 +3,7 @@
 #include "../shared/PacketHandler.h"
 
 
-Player::Player() : receiveThread(&Player::receive, this){
+Player::Player(){
 }
 
 
@@ -17,14 +17,16 @@ void Player::start() {
 		return;
 	}
 	running = true;
-	receiveThread.launch();
+	//Start thread
+	receiveThread = std::thread(&Player::receive, this);
 }
 
 
 void Player::disconnect() {
 	running = false;
 	Console::log("Shutting down connection", Console::LogLevel::INFO);
-	receiveThread.wait();
+	socket->disconnect();
+	receiveThread.join();
 	Console::log("Client successfully disconnected", Console::LogLevel::INFO);
 }
 

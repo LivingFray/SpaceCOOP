@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\Network.hpp>
 #include <memory>
+#include <thread>
 
 class Server;
 
@@ -12,7 +13,7 @@ public:
 	void disconnect();
 private:
 	std::shared_ptr<sf::TcpSocket> socket;
-	sf::Thread receiveThread;
+	std::thread receiveThread;
 	void receive();
 	bool running = false;
 	void handlePacket(sf::Packet& packet);

@@ -22,7 +22,7 @@ public:
 	int numPlayers = 0;
 	int port;
 private:
-	sf::Thread incomingThread;
+	std::thread incomingThread;
 	sf::TcpListener listen;
 	void handleConnections();
 	bool running = false;

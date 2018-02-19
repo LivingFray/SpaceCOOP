@@ -3,7 +3,7 @@
 #include "../shared/PacketHandler.h"
 
 
-Client::Client() : receiveThread(&Client::threadedReceive, this) {
+Client::Client() {
 }
 
 
@@ -12,12 +12,13 @@ Client::~Client() {
 
 void Client::connect() {
 	connected = true;
-	receiveThread.launch();
+	receiveThread = std::thread(&Client::threadedReceive, this);
 }
 
 void Client::disconnect() {
 	connected = false;
 	socket.disconnect();
+	receiveThread.join();
 }
 
 void Client::sendText(std::string msg) {
