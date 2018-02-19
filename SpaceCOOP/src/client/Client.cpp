@@ -1,5 +1,6 @@
 #include "Client.h"
 #include "../shared/Console.h"
+#include "../shared/PacketHandler.h"
 
 
 Client::Client() : receiveThread(&Client::threadedReceive, this) {
@@ -19,6 +20,13 @@ void Client::disconnect() {
 	socket.disconnect();
 }
 
+void Client::sendText(std::string msg) {
+	//TEMP USE TSQ WHEN IMPLEMENTED
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
+	socket.send(packet);
+}
+
 void Client::threadedReceive() {
 	Console::log("Attempting to connect to server", Console::LogLevel::INFO);
 	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
@@ -36,7 +44,7 @@ void Client::threadedReceive() {
 			Console::log("Connection to server was terminated", Console::LogLevel::INFO);
 			break;
 		case sf::TcpSocket::Done:
-			//TODO: Handle packet received
+			handlePacket(packet);
 			break;
 		default:
 			Console::log("Error receiving packet", Console::LogLevel::ERROR);
@@ -44,4 +52,19 @@ void Client::threadedReceive() {
 	}
 	//Shutdown socket
 	socket.disconnect();
+}
+
+
+void Client::handlePacket(sf::Packet& packet) {
+	sf::Uint8 type;
+	if (!(packet >> type)) {
+		Console::log("Could not decode packet", Console::LogLevel::ERROR);
+	}
+	switch (type) {
+	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT):
+		std::string msg;
+		packet >> msg;
+		Console::log(msg, Console::LogLevel::INFO);
+		break;
+	}
 }

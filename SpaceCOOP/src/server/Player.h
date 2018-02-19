@@ -15,6 +15,7 @@ private:
 	sf::Thread receiveThread;
 	void receive();
 	bool running = false;
+	void handlePacket(sf::Packet& packet);
 	friend class Server;
 };
 

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../shared/Console.h"
+#include "../shared/PacketHandler.h"
 
 
 Player::Player() : receiveThread(&Player::receive, this){
@@ -38,7 +39,7 @@ void Player::receive() {
 			running = false;
 			break;
 		case sf::TcpSocket::Done:
-			//Handle packet here
+			handlePacket(packet);
 			break;
 		default:
 			Console::log("Error receiving packet", Console::LogLevel::ERROR);
@@ -48,4 +49,19 @@ void Player::receive() {
 	//Shutdown socket
 	socket->disconnect();
 	Console::log("Player disconnect complete", Console::LogLevel::INFO);
+}
+
+
+void Player::handlePacket(sf::Packet& packet) {
+	sf::Uint8 type;
+	if (!(packet >> type)) {
+		Console::log("Could not decode packet", Console::LogLevel::ERROR);
+	}
+	switch (type) {
+	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) :
+		std::string msg;
+		packet >> msg;
+		Console::log(msg, Console::LogLevel::INFO);
+		break;
+	}
 }

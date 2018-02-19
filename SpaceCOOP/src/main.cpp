@@ -24,6 +24,9 @@ int main() {
 					Console::log("Severing connection from client end", Console::LogLevel::INFO);
 					client.disconnect();
 				}
+				if (e.key.code == sf::Keyboard::Return) {
+					client.sendText("This is a test");
+				}
 			}
 		}
 

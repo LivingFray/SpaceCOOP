@@ -10,10 +10,12 @@ public:
 	void disconnect();
 	std::string ip;
 	int port;
+	void sendText(std::string msg);
 private:
 	sf::TcpSocket socket;
 	sf::Thread receiveThread;
 	bool connected;
 	void threadedReceive();
+	void handlePacket(sf::Packet& packet);
 };
 
