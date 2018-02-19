@@ -1,0 +1,28 @@
+SPACECOOP RoadMap
+
+Server generates starmap, client renders it
+
+Flyable warp ship
+
+Proper connect disconnect interface, wait for start etc
+
+Console command based IO
+
+.
+.
+.
+
+Personal ships for each player, dock with warp ship
+
+Limited resources (air, power, food)
+
+Enter star systems to search for resources
+
+
+
+
+.
+.
+.
+
+Itch login intergration
