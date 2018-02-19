@@ -21,7 +21,7 @@ int main() {
 			}
 			if (e.type == sf::Event::KeyPressed) {
 				if (e.key.code == sf::Keyboard::Space) {
-					Console::log("Space pressed, dcing client", Console::LogLevel::INFO);
+					Console::log("Severing connection from client end", Console::LogLevel::INFO);
 					client.disconnect();
 				}
 			}

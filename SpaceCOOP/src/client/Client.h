@@ -11,7 +11,7 @@ public:
 	std::string ip;
 	int port;
 private:
-	sf::TcpSocket server;
+	sf::TcpSocket socket;
 	sf::Thread receiveThread;
 	bool connected;
 	void threadedReceive();

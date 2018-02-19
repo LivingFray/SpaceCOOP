@@ -1,6 +1,16 @@
 #pragma once
 #include <SFML\Network.hpp>
-#include <list>
+#include <vector>
+#include <memory>
+#include "Player.h"
+
+/*
+Server is the main class for server side operations
+1 Thread handles incoming connections
+Each client has its own thread
+
+
+*/
 
 class Server {
 public:
@@ -12,8 +22,10 @@ public:
 	int numPlayers = 0;
 	int port;
 private:
-	sf::Thread receiveThread;
+	sf::Thread incomingThread;
+	sf::TcpListener listen;
+	void handleConnections();
 	bool running = false;
-	void threadedReceive();
+	std::vector<std::shared_ptr<Player>> players;
 };
 

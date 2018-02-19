@@ -16,12 +16,12 @@ void Client::connect() {
 
 void Client::disconnect() {
 	connected = false;
-	server.disconnect();
+	socket.disconnect();
 }
 
 void Client::threadedReceive() {
 	Console::log("Attempting to connect to server", Console::LogLevel::INFO);
-	connected = server.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
+	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
 	if (connected) {
 		Console::log("Connected to server at " + ip + ":" + std::to_string(port), Console::LogLevel::INFO);
 	} else {
@@ -29,7 +29,7 @@ void Client::threadedReceive() {
 	}
 	sf::Packet packet;
 	while (connected) {
-		sf::TcpSocket::Status st = server.receive(packet);
+		sf::TcpSocket::Status st = socket.receive(packet);
 		switch(st) {
 		case sf::TcpSocket::Disconnected:
 			connected = false;
@@ -43,5 +43,5 @@ void Client::threadedReceive() {
 		}
 	}
 	//Shutdown socket
-	server.disconnect();
+	socket.disconnect();
 }

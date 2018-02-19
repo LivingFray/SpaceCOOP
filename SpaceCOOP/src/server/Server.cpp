@@ -1,8 +1,9 @@
 #include "Server.h"
 #include "../shared/Console.h"
+#include "Player.h"
 
 
-Server::Server() : receiveThread(&Server::threadedReceive, this) {
+Server::Server() : incomingThread(&Server::handleConnections, this) {
 }
 
 
@@ -15,72 +16,37 @@ void Server::start() {
 		Console::log("Attempted to start server that was already running", Console::LogLevel::ERROR);
 	}
 	running = true;
-	receiveThread.launch();
+	incomingThread.launch();
 }
 
 
 void Server::stop() {
 	running = false;
-	receiveThread.wait();
+	listen.close();
+	incomingThread.wait();
+	for (std::shared_ptr<Player> t : players) {
+		t->disconnect();
+	}
 }
 
-
-void Server::threadedReceive() {
-	std::list<sf::TcpSocket*> clientTCPs;
-	sf::TcpListener listen;
-	sf::SocketSelector tcpSelector;
-	tcpSelector.add(listen);
+void Server::handleConnections() {
 	listen.listen(port);
 	Console::log("Started server", Console::LogLevel::INFO);
 	while (running) {
-		Console::log("Loop", Console::LogLevel::INFO);
-		if (tcpSelector.wait()) {
-			Console::log("Updating", Console::LogLevel::INFO);
-			//Check for new clients
-			if (tcpSelector.isReady(listen)) {
-				//Connect new client to server
-				sf::TcpSocket* newClient = new sf::TcpSocket();
-				if (listen.accept(*newClient)) {
-					//At max players, disconnect it
-					if (numPlayers >= MAX_PLAYERS) {
-						Console::log("Server full, disconnecting client", Console::LogLevel::WARNING);
-						//TODO: Nice disconnect messages and such
-						newClient->disconnect();
-					} else {
-						//Add player
-						Console::log("New client connected", Console::LogLevel::INFO);
-						clientTCPs.push_back(newClient);
-					}
-				}
-			}
-			//Go through clients and handle packets
-			for (auto iter = clientTCPs.begin(); iter != clientTCPs.end(); iter++) {
-				if (tcpSelector.isReady(**iter)) {
-					sf::Packet packet;
-					auto s = (*iter)->receive(packet);
-					switch (s) {
-					case sf::TcpSocket::Disconnected:
-					{
-						std::string msg = (*iter)->getRemoteAddress().toString() + ":" + \
-							std::to_string((*iter)->getRemotePort()) + " disconnected";
-						Console::log(msg, Console::LogLevel::INFO);
-						delete *iter;
-						iter = clientTCPs.erase(iter);
-						break;
-					}
-					case sf::TcpSocket::Done:
-						//TODO: Handle packet
-						break;
-					default:
-						break;
-					}
-				}
-			}
+		auto client = std::make_shared<sf::TcpSocket>();
+		if (listen.accept(*client) == sf::TcpListener::Done) {
+			//Handle max server capacity/nice logins and such here
+
+			//Add client
+			Console::log("New client connected", Console::LogLevel::INFO);
+			auto player = std::make_shared<Player>();
+			//Pass socket to player
+			player->socket = client;
+			//Start listening
+			player->start();
+			//Track player in server
+			players.push_back(player);
+			numPlayers++;
 		}
-	}
-	//Shutdown sockets
-	listen.close();
-	for (sf::TcpSocket* cl : clientTCPs) {
-		cl->disconnect();
 	}
 }

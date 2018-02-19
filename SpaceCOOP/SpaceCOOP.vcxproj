@@ -125,6 +125,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\client\Client.cpp" />
+    <ClCompile Include="src\server\Player.cpp" />
     <ClCompile Include="src\server\Server.cpp" />
     <ClCompile Include="src\main.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">include</AdditionalIncludeDirectories>
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\client\Client.h" />
+    <ClInclude Include="src\server\Player.h" />
     <ClInclude Include="src\server\Server.h" />
     <ClInclude Include="src\shared\Console.h" />
   </ItemGroup>
