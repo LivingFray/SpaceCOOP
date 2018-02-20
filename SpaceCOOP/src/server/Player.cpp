@@ -10,7 +10,9 @@ Player::Player(){
 
 Player::~Player() {
 	if (receiveThread.joinable()) {
+		running = false;
 		receiveThread.join();
+		Console::log("PL_Receive: joined", Console::LogLevel::INFO);
 	}
 }
 
@@ -23,6 +25,7 @@ void Player::start() {
 	running = true;
 	//Start thread
 	receiveThread = std::thread(&Player::receive, this);
+	Console::log("PL_Receive: started", Console::LogLevel::INFO);
 }
 
 
@@ -34,7 +37,9 @@ void Player::disconnect() {
 	Console::log("Shutting down connection", Console::LogLevel::INFO);
 	running = false;
 	socket->disconnect();
+	Console::log("PL_Socket: closed", Console::LogLevel::INFO);
 	receiveThread.join();
+	Console::log("PL_Receive: joined", Console::LogLevel::INFO);
 }
 
 
@@ -57,6 +62,7 @@ void Player::receive() {
 	}
 	Console::log("Client successfully disconnected", Console::LogLevel::INFO);
 	socket->disconnect();
+	Console::log("PL_Socket: closed", Console::LogLevel::INFO);
 	server->updateConnectedList();
 }
 

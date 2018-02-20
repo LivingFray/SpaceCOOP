@@ -37,6 +37,5 @@ int main() {
 	}
 	server.stop();
 	client.disconnect();
-	system("pause");
 	return 0;
 }

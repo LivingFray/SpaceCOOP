@@ -11,15 +11,18 @@ Console::~Console() {
 
 void Console::log(std::string msg, LogLevel level) {
 	//TEMP, Until proper console can be made
+	std::string pre;
 	switch (level) {
 	case LogLevel::INFO:
-		std::cout << "INFO: " << msg << "\n";
+		pre = "INFO: ";
 		break;
 	case LogLevel::WARNING:
-		std::cout << "WARNING: " << msg << "\n";
+		pre = "WARNING: ";
 		break;
 	case LogLevel::ERROR:
-		std::cerr << "ERROR: " << msg << "\n";
+		pre = "ERROR: ";
 		break;
 	}
+	msg = pre + msg + "\n";
+	std::cout << msg;
 }

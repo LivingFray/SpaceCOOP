@@ -10,9 +10,12 @@ Client::Client() {
 Client::~Client() {
 	if (receiveThread.joinable()) {
 		receiveThread.join();
+		Console::log("CL_Receive: joined", Console::LogLevel::INFO);
 	}
 	if (sendThread.joinable()) {
+		toSend.push(sf::Packet());
 		sendThread.join();
+		Console::log("CL_Send: joined", Console::LogLevel::INFO);
 	}
 }
 
@@ -23,7 +26,9 @@ void Client::connect() {
 	}
 	connected = true;
 	receiveThread = std::thread(&Client::threadedReceive, this);
+	Console::log("CL_Receive: started", Console::LogLevel::INFO);
 	sendThread = std::thread(&Client::threadedSend, this);
+	Console::log("CL_Send: started", Console::LogLevel::INFO);
 }
 
 void Client::disconnect() {
@@ -33,14 +38,16 @@ void Client::disconnect() {
 	}
 	connected = false;
 	socket.disconnect();
+	Console::log("CL_Socket: closed", Console::LogLevel::INFO);
 	receiveThread.join();
+	Console::log("CL_Receive: joined", Console::LogLevel::INFO);
 	//Kind of a hack but the easiest way to interrupt the TSQueue
 	toSend.push(sf::Packet());
 	sendThread.join();
+	Console::log("CL_Send: joined", Console::LogLevel::INFO);
 }
 
 void Client::sendText(std::string msg) {
-	//TEMP USE TSQ WHEN IMPLEMENTED
 	sf::Packet packet;
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
 	toSend.push(packet);
@@ -49,6 +56,7 @@ void Client::sendText(std::string msg) {
 void Client::threadedReceive() {
 	Console::log("Attempting to connect to server", Console::LogLevel::INFO);
 	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
+	Console::log("CL_Socket: opened", Console::LogLevel::INFO);
 	if (connected) {
 		Console::log("Connected to server at " + ip + ":" + std::to_string(port), Console::LogLevel::INFO);
 	} else {
@@ -71,6 +79,7 @@ void Client::threadedReceive() {
 	}
 	//Shutdown socket
 	socket.disconnect();
+	Console::log("CL_Socket: closed", Console::LogLevel::INFO);
 }
 
 void Client::threadedSend() {

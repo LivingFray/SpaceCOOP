@@ -19,7 +19,9 @@ Server::Server() {
 
 Server::~Server() {
 	if (incomingThread.joinable()) {
+		running = false;
 		incomingThread.join();
+		Console::log("SV_Incoming: joined", Console::LogLevel::INFO);
 	}
 }
 
@@ -30,6 +32,7 @@ void Server::start() {
 	}
 	running = true;
 	incomingThread = std::thread(&Server::handleConnections, this);
+	Console::log("SV_Incoming: started", Console::LogLevel::INFO);
 }
 
 
@@ -37,7 +40,9 @@ void Server::stop() {
 	Console::log(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
 	running = false;
 	listen.close();
+	Console::log("SV_Listen: closed", Console::LogLevel::INFO);
 	incomingThread.join();
+	Console::log("SV_Incoming: joined", Console::LogLevel::INFO);
 	Console::log("No longer listening for new connections", Console::LogLevel::INFO);
 	for (std::shared_ptr<Player> t : players) {
 		t->disconnect();
@@ -73,6 +78,7 @@ void Server::updateConnectedList() {
 
 void Server::handleConnections() {
 	listen.listen(port);
+	Console::log("SV_Listen: opened", Console::LogLevel::INFO);
 	Console::log("Started server", Console::LogLevel::INFO);
 	while (running) {
 		auto client = std::make_shared<sf::TcpSocket>();
@@ -84,6 +90,7 @@ void Server::handleConnections() {
 			auto player = std::make_shared<Player>();
 			//Pass socket to player
 			player->socket = client;
+			Console::log("PL_Socket: opened", Console::LogLevel::INFO);
 			player->server = this;
 			//Start listening
 			player->start();
@@ -94,4 +101,5 @@ void Server::handleConnections() {
 		}
 	}
 	listen.close();
+	Console::log("SV_Listen: closed", Console::LogLevel::INFO);
 }
