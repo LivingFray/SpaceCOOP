@@ -42,6 +42,7 @@ void Server::stop() {
 	for (std::shared_ptr<Player> t : players) {
 		t->disconnect();
 	}
+	players.clear();
 	Console::log("All players kicked", Console::LogLevel::INFO);
 }
 
@@ -53,11 +54,13 @@ void Server::update(double dt) {
 			while (it != players.end()) {
 				if (!(*it)->running) {
 					it = players.erase(it);
+					numPlayers--;
 				} else {
 					it++;
 				}
 			}
 			checkConnected = false;
+			Console::log(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 		}
 	}
 }
