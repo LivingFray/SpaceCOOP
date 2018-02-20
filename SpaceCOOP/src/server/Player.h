@@ -17,6 +17,7 @@ private:
 	void receive();
 	bool running = false;
 	void handlePacket(sf::Packet& packet);
+	Server* server;
 	friend class Server;
 };
 

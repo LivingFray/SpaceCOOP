@@ -28,6 +28,7 @@ int main() {
 					client.sendText("This is a test");
 				}
 			}
+			server.update(0);
 		}
 
 		//Draw window

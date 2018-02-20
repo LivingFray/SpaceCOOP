@@ -1,6 +1,8 @@
 #include "Server.h"
 #include "../shared/Console.h"
 #include "Player.h"
+#include <algorithm>
+#include <mutex>
 
 /*
 
@@ -16,6 +18,9 @@ Server::Server() {
 
 
 Server::~Server() {
+	if (incomingThread.joinable()) {
+		incomingThread.join();
+	}
 }
 
 
@@ -29,6 +34,7 @@ void Server::start() {
 
 
 void Server::stop() {
+	Console::log(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
 	running = false;
 	listen.close();
 	incomingThread.join();
@@ -38,6 +44,29 @@ void Server::stop() {
 	}
 	Console::log("All players kicked", Console::LogLevel::INFO);
 }
+
+void Server::update(double dt) {
+	{
+		std::unique_lock<std::mutex> lock(checkMutex);
+		if (checkConnected) {
+			auto it = players.begin();
+			while (it != players.end()) {
+				if (!(*it)->running) {
+					it = players.erase(it);
+				} else {
+					it++;
+				}
+			}
+			checkConnected = false;
+		}
+	}
+}
+
+void Server::updateConnectedList() {
+	std::unique_lock<std::mutex> lock(checkMutex);
+	checkConnected = true;
+}
+
 
 void Server::handleConnections() {
 	listen.listen(port);
@@ -52,11 +81,13 @@ void Server::handleConnections() {
 			auto player = std::make_shared<Player>();
 			//Pass socket to player
 			player->socket = client;
+			player->server = this;
 			//Start listening
 			player->start();
 			//Track player in server
 			players.push_back(player);
 			numPlayers++;
+			Console::log(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
 		}
 	}
 	listen.close();

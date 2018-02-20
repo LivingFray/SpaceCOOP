@@ -8,6 +8,12 @@ Client::Client() {
 
 
 Client::~Client() {
+	if (receiveThread.joinable()) {
+		receiveThread.join();
+	}
+	if (sendThread.joinable()) {
+		sendThread.join();
+	}
 }
 
 void Client::connect() {

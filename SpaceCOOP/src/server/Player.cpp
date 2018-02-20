@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
+#include "Server.h"
 
 
 Player::Player(){
@@ -8,6 +9,9 @@ Player::Player(){
 
 
 Player::~Player() {
+	if (receiveThread.joinable()) {
+		receiveThread.join();
+	}
 }
 
 
@@ -23,11 +27,14 @@ void Player::start() {
 
 
 void Player::disconnect() {
-	running = false;
+	if (!running) {
+		Console::log("Player is already disconnected", Console::LogLevel::ERROR);
+		return;
+	}
 	Console::log("Shutting down connection", Console::LogLevel::INFO);
+	running = false;
 	socket->disconnect();
 	receiveThread.join();
-	Console::log("Client successfully disconnected", Console::LogLevel::INFO);
 }
 
 
@@ -48,9 +55,9 @@ void Player::receive() {
 			break;
 		}
 	}
-	//Shutdown socket
+	Console::log("Client successfully disconnected", Console::LogLevel::INFO);
 	socket->disconnect();
-	Console::log("Player disconnect complete", Console::LogLevel::INFO);
+	server->updateConnectedList();
 }
 
 
