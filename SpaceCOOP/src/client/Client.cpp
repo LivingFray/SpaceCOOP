@@ -53,6 +53,12 @@ void Client::sendText(std::string msg) {
 	toSend.push(packet);
 }
 
+void Client::draw() {
+	window->clear(sf::Color::Black);
+	window->draw(galaxy);
+	window->display();
+}
+
 void Client::threadedReceive() {
 	Console::log("Attempting to connect to server", Console::LogLevel::INFO);
 	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
@@ -85,7 +91,9 @@ void Client::threadedReceive() {
 void Client::threadedSend() {
 	while (connected) {
 		sf::Packet p = toSend.poll();
-		socket.send(p);
+		if (p.getDataSize() > 0) {
+			socket.send(p);
+		}
 	}
 }
 
@@ -97,9 +105,16 @@ void Client::handlePacket(sf::Packet& packet) {
 	}
 	switch (type) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT):
+	{
 		std::string msg;
 		packet >> msg;
 		Console::log(msg, Console::LogLevel::INFO);
+		break;
+	}
+	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY):
+		packet >> galaxy;
+		galaxy.createVertexArray();
+		Console::log("Received galaxy data", Console::LogLevel::INFO);
 		break;
 	}
 }

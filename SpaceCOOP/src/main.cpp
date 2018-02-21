@@ -4,14 +4,21 @@
 #include "shared\Console.h"
 
 int main() {
+	if (!sf::Shader::isAvailable()) {
+		//TODO: Fancier error message
+		return 1;
+	}
 	sf::RenderWindow window(sf::VideoMode(1280, 720), "Spaaaaaace");
+	sf::Clock clock;
 	Client client;
 	Server server;
 	server.port = 5000;
 	server.start();
 	client.ip = "127.0.0.1";
 	client.port = 5000;
+	client.window = &window;
 	client.connect();
+	clock.restart();
 	while (window.isOpen()) {
 		//Poll events
 		sf::Event e;
@@ -28,12 +35,12 @@ int main() {
 					client.sendText("This is a test");
 				}
 			}
-			server.update(0);
 		}
-
-		//Draw window
-		window.clear();
-		window.display();
+		sf::Time t = clock.restart();
+		//Update server
+		server.update(t.asSeconds());
+		//Draw client
+		client.draw();
 	}
 	server.stop();
 	client.disconnect();

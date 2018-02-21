@@ -9,10 +9,8 @@ Player::Player(){
 
 
 Player::~Player() {
-	if (receiveThread.joinable()) {
-		running = false;
-		receiveThread.join();
-		Console::log("PL_Receive: joined", Console::LogLevel::INFO);
+	if (running) {
+		disconnect();
 	}
 }
 
@@ -23,9 +21,15 @@ void Player::start() {
 		return;
 	}
 	running = true;
-	//Start thread
-	receiveThread = std::thread(&Player::receive, this);
+	//Start threads
+	receiveThread = std::thread(&Player::threadedReceive, this);
 	Console::log("PL_Receive: started", Console::LogLevel::INFO);
+	sendThread = std::thread(&Player::threadedSend, this);
+	Console::log("PL_Send: started", Console::LogLevel::INFO);
+	Console::log("Sending player current galaxy", Console::LogLevel::INFO);
+	sf::Packet p;
+	p << static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) << server->getGalaxy();
+	toSend.push(p);
 }
 
 
@@ -40,10 +44,20 @@ void Player::disconnect() {
 	Console::log("PL_Socket: closed", Console::LogLevel::INFO);
 	receiveThread.join();
 	Console::log("PL_Receive: joined", Console::LogLevel::INFO);
+	toSend.push(sf::Packet());
+	sendThread.join();
+	Console::log("PL_Send: joined", Console::LogLevel::INFO);
 }
 
 
-void Player::receive() {
+void Player::sendText(std::string msg) {
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
+	toSend.push(packet);
+}
+
+
+void Player::threadedReceive() {
 	while (running) {
 		sf::Packet packet;
 		auto status = socket->receive(packet);
@@ -64,6 +78,16 @@ void Player::receive() {
 	socket->disconnect();
 	Console::log("PL_Socket: closed", Console::LogLevel::INFO);
 	server->updateConnectedList();
+}
+
+
+void Player::threadedSend() {
+	while (running) {
+		sf::Packet p = toSend.poll();
+		if (p.getDataSize() > 0) {
+			socket->send(p);
+		}
+	}
 }
 
 

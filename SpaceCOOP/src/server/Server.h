@@ -4,6 +4,8 @@
 #include <memory>
 #include <mutex>
 #include "Player.h"
+#include "ServerGalaxy.h"
+#include <atomic>
 
 /*
 Server is the main class for server side operations
@@ -24,13 +26,15 @@ public:
 	int numPlayers = 0;
 	int port;
 	void updateConnectedList();
+	const ServerGalaxy& getGalaxy();
 private:
 	std::thread incomingThread;
 	sf::TcpListener listen;
 	void handleConnections();
 	bool running = false;
 	std::vector<std::shared_ptr<Player>> players;
-	std::mutex checkMutex;
-	bool checkConnected = false;
+	std::atomic<bool> checkConnected = false;
+
+	ServerGalaxy galaxy;
 };
 

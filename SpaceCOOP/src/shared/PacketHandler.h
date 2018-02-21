@@ -4,6 +4,6 @@ public:
 	PacketHandler();
 	~PacketHandler();
 
-	enum class Type {TEXT};
+	enum class Type {TEXT, GALAXY};
 };
 

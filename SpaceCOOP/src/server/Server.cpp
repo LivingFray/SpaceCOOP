@@ -4,15 +4,6 @@
 #include <algorithm>
 #include <mutex>
 
-/*
-
-TODO
-TODO  Players DCing are still listed as active on server: FIX THIS
-TODO
-TODO
-
-*/
-
 Server::Server() {
 }
 
@@ -33,6 +24,9 @@ void Server::start() {
 	running = true;
 	incomingThread = std::thread(&Server::handleConnections, this);
 	Console::log("SV_Incoming: started", Console::LogLevel::INFO);
+	Console::log("Generating galaxy", Console::LogLevel::INFO);
+	galaxy.generateGalaxy();
+	Console::log("Galaxy generated", Console::LogLevel::INFO);
 }
 
 
@@ -52,27 +46,27 @@ void Server::stop() {
 }
 
 void Server::update(double dt) {
-	{
-		std::unique_lock<std::mutex> lock(checkMutex);
-		if (checkConnected) {
-			auto it = players.begin();
-			while (it != players.end()) {
-				if (!(*it)->running) {
-					it = players.erase(it);
-					numPlayers--;
-				} else {
-					it++;
-				}
+	if (checkConnected) {
+		auto it = players.begin();
+		while (it != players.end()) {
+			if (!(*it)->running) {
+				it = players.erase(it);
+				numPlayers--;
+			} else {
+				it++;
 			}
-			checkConnected = false;
-			Console::log(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 		}
+		checkConnected = false;
+		Console::log(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 	}
 }
 
 void Server::updateConnectedList() {
-	std::unique_lock<std::mutex> lock(checkMutex);
 	checkConnected = true;
+}
+
+const ServerGalaxy& Server::getGalaxy() {
+	return galaxy;
 }
 
 
