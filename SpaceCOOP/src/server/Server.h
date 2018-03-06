@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "ServerGalaxy.h"
 #include <atomic>
+#include "../shared/CommandHandler.h"
 
 /*
 Server is the main class for server side operations
@@ -27,6 +28,7 @@ public:
 	int port;
 	void updateConnectedList();
 	const ServerGalaxy& getGalaxy();
+	CommandHandler commandHandler;
 private:
 	std::thread incomingThread;
 	sf::TcpListener listen;

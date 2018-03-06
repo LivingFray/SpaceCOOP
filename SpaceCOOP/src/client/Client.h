@@ -4,6 +4,11 @@
 #include <thread>
 #include "../shared/TSQueue.h"
 #include "ClientGalaxy.h"
+#include "../shared/CommandHandler.h"
+#include "ClientCommand.h"
+#include "InputHandler.h"
+
+class ClientCommand;
 
 class Client {
 public:
@@ -14,9 +19,12 @@ public:
 	std::string ip;
 	int port;
 	void sendText(std::string msg);
+	void sendCommand(ClientCommand* cmd);
 	void draw();
 
 	sf::RenderWindow* window;
+	CommandHandler commandHandler;
+	InputHandler inputHandler;
 private:
 	sf::TcpSocket socket;
 	std::thread receiveThread;

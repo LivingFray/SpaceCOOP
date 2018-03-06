@@ -27,6 +27,7 @@ int main() {
 				window.close();
 			}
 			if (e.type == sf::Event::KeyPressed) {
+				client.inputHandler.keyEvent(e);
 				if (e.key.code == sf::Keyboard::Space) {
 					Console::log("Severing connection from client end", Console::LogLevel::INFO);
 					client.disconnect();
@@ -34,6 +35,9 @@ int main() {
 				if (e.key.code == sf::Keyboard::Return) {
 					client.sendText("This is a test");
 				}
+			}
+			if (e.type == sf::Event::KeyReleased) {
+				client.inputHandler.keyEvent(e);
 			}
 		}
 		sf::Time t = clock.restart();

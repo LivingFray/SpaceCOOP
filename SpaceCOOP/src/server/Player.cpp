@@ -1,10 +1,12 @@
 #include "Player.h"
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
+#include "../shared/CommandHandler.h"
 #include "Server.h"
+#include "PlayerCommand.h"
 
 
-Player::Player(){
+Player::Player() {
 }
 
 
@@ -98,9 +100,25 @@ void Player::handlePacket(sf::Packet& packet) {
 	}
 	switch (type) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) :
+	{
 		std::string msg;
 		packet >> msg;
 		Console::log(msg, Console::LogLevel::INFO);
+		break;
+	}
+	case static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) :
+		CommandID commandId;
+		packet >> commandId;
+		try {
+			std::shared_ptr<Command> command = server->commandHandler.getCommand(commandId);
+			if (auto p = std::dynamic_pointer_cast<PlayerCommand>(command)) {
+				packet >> *p;
+				p->player = this;
+				p->execute();
+			}
+		} catch (std::exception e) {
+			Console::log("Player sent invalid command (" + std::to_string(commandId) + ")", Console::LogLevel::WARNING);
+		}
 		break;
 	}
 }

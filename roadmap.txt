@@ -5,7 +5,7 @@ Networking protocol (TCP, important data)			DONE
 Networking protocol (UDP, fast data)
 
 
-Server generates starmap, client renders it
+Server generates starmap, client renders it			DONE
 
 Flyable warp ship
 

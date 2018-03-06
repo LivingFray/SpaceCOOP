@@ -3,8 +3,25 @@
 #include "Player.h"
 #include <algorithm>
 #include <mutex>
+#include "../shared/CommandHandler.h"
+#include "ForwardsServerCommand.h"
+#include "BackwardsServerCommand.h"
+#include "StrafeLeftServerCommand.h"
+#include "StrafeRightServerCommand.h"
+
+#define REGCMD(c, i) { \
+auto _cmd = std::make_shared<c>(); \
+_cmd->id = i; \
+commandHandler.registerCommand(_cmd, i); \
+}
+
 
 Server::Server() {
+	//Register all commands here
+	REGCMD(ForwardsServerCommand, 0);
+	REGCMD(BackwardsServerCommand, 1);
+	REGCMD(StrafeLeftServerCommand, 2);
+	REGCMD(StrafeRightServerCommand, 3);
 }
 
 

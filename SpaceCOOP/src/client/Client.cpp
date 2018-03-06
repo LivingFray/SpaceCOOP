@@ -1,9 +1,28 @@
 #include "Client.h"
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
+#include <memory>
+#include "ForwardsClientCommand.h"
+#include "../shared/Command.h"
 
+#define REGCMD(c, i) { \
+auto _cmd = std::make_shared<c>(); \
+_cmd->client = this; \
+commandHandler.registerCommand(_cmd, i); \
+}
+
+#define BINDCMD(k, c) { \
+std::shared_ptr<ClientCommand> _cmd = std::dynamic_pointer_cast<ClientCommand>(commandHandler.getCommand(c)); \
+_cmd->client = this; \
+inputHandler.bind(k, _cmd); \
+}
 
 Client::Client() {
+	//Register commands here
+	REGCMD(ForwardsClientCommand, 0);
+
+	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
+	BINDCMD(sf::Keyboard::W, "forwards");
 }
 
 
@@ -50,6 +69,12 @@ void Client::disconnect() {
 void Client::sendText(std::string msg) {
 	sf::Packet packet;
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
+	toSend.push(packet);
+}
+
+void Client::sendCommand(ClientCommand* cmd) {
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) << *cmd;
 	toSend.push(packet);
 }
 
@@ -104,17 +129,34 @@ void Client::handlePacket(sf::Packet& packet) {
 		Console::log("Could not decode packet", Console::LogLevel::ERROR);
 	}
 	switch (type) {
-	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT):
+	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) :
 	{
 		std::string msg;
 		packet >> msg;
 		Console::log(msg, Console::LogLevel::INFO);
 		break;
 	}
-	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY):
+	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) :
+	{
 		packet >> galaxy;
 		galaxy.createVertexArray();
 		Console::log("Received galaxy data", Console::LogLevel::INFO);
 		break;
+	}
+	case static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) :
+	{
+		CommandID id;
+		packet >> id;
+		try {
+			std::shared_ptr<Command> command = commandHandler.getCommand(id);
+			if (auto c = std::dynamic_pointer_cast<ClientCommand>(command)) {
+				packet >> *c;
+				c->client = this;
+				c->execute();
+			}
+		} catch (std::exception e) {
+			Console::log("Received invalid command from server", Console::LogLevel::WARNING);
+		}
+	}
 	}
 }
