@@ -4,15 +4,22 @@
 #include <algorithm>
 #include <mutex>
 #include "../shared/CommandHandler.h"
-#include "ForwardsServerCommand.h"
-#include "BackwardsServerCommand.h"
-#include "StrafeLeftServerCommand.h"
-#include "StrafeRightServerCommand.h"
+#include "commands/ForwardsServerCommand.h"
+#include "commands/BackwardsServerCommand.h"
+#include "commands/StrafeLeftServerCommand.h"
+#include "commands/StrafeRightServerCommand.h"
+//TODO: Server side ship with movement and such
+#include "../shared/entities/Ship.h"
 
 #define REGCMD(c, i) { \
 auto _cmd = std::make_shared<c>(); \
 _cmd->id = i; \
 commandHandler.registerCommand(_cmd, i); \
+}
+
+#define REGENT(e, i) { \
+std::function<shared_ptr<EntityCore>()> fun = []() { return std::make_shared<e>();}; \
+entityHandler.registerEntity(fun, i); \
 }
 
 
@@ -55,7 +62,7 @@ void Server::stop() {
 	incomingThread.join();
 	Console::log("SV_Incoming: joined", Console::LogLevel::INFO);
 	Console::log("No longer listening for new connections", Console::LogLevel::INFO);
-	for (std::shared_ptr<Player> t : players) {
+	for (shared_ptr<Player> t : players) {
 		t->disconnect();
 	}
 	players.clear();
@@ -67,6 +74,7 @@ void Server::update(double dt) {
 		auto it = players.begin();
 		while (it != players.end()) {
 			if (!(*it)->running) {
+				onPlayerDisconnected(*it);
 				it = players.erase(it);
 				numPlayers--;
 			} else {
@@ -84,6 +92,31 @@ void Server::updateConnectedList() {
 
 const ServerGalaxy& Server::getGalaxy() {
 	return galaxy;
+}
+
+void Server::onPlayerConnected(shared_ptr<Player> player) {
+	//Add player's ship
+	shared_ptr<Ship> playerShip = std::make_shared<Ship>();
+	//Send ship to clients
+	addEntity(playerShip);
+	//Send all entities to client
+}
+
+void Server::onPlayerDisconnected(shared_ptr<Player> player) {
+	//Remove player's ship
+}
+
+void Server::addEntity(shared_ptr<EntityCore> entity) {
+	UUID id = entity->id;
+	if (entities[id]) {
+		Console::log("Could not create entity, UUID already in use", Console::LogLevel::ERROR);
+		return;
+	}
+	entities[id] = entity;
+	for (auto player : players) {
+		player->sendEntity(entity);
+	}
+
 }
 
 
@@ -109,6 +142,7 @@ void Server::handleConnections() {
 			players.push_back(player);
 			numPlayers++;
 			Console::log(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
+			onPlayerConnected(player);
 		}
 	}
 	listen.close();

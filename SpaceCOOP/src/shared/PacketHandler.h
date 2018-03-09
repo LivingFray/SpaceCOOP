@@ -4,6 +4,7 @@ public:
 	PacketHandler();
 	~PacketHandler();
 
-	enum class Type {TEXT, GALAXY, COMMAND};
+	enum class Type {TEXT, GALAXY, COMMAND, ENTITY};
+	enum class Entity {CREATE, MODIFY, REMOVE};
 };
 

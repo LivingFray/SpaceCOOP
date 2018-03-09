@@ -1,5 +1,5 @@
 #include "StrafeLeftServerCommand.h"
-#include "../shared/Console.h"
+#include "../../shared/Console.h"
 
 
 StrafeLeftServerCommand::StrafeLeftServerCommand() {

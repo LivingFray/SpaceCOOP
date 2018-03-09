@@ -1,7 +1,7 @@
 #include "ClientGalaxy.h"
 #include "../shared/Console.h"
 
-
+using std::shared_ptr;
 
 ClientGalaxy::ClientGalaxy() {
 }
@@ -14,7 +14,7 @@ void ClientGalaxy::createVertexArray() {
 	vertexArray.setPrimitiveType(sf::Quads);
 	vertexArray.resize(stars.size() * 4);
 	int i = 0;
-	for (std::shared_ptr<Star> s : stars) {
+	for (shared_ptr<Star> s : stars) {
 		sf::Vector2f offset1(s->radius, s->radius);
 		sf::Vector2f offset2(-s->radius, s->radius);
 		sf::Vertex* quad = &vertexArray[i * 4];

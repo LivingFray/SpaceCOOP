@@ -8,18 +8,18 @@ CommandHandler::CommandHandler() {
 CommandHandler::~CommandHandler() {
 }
 
-std::shared_ptr<Command> CommandHandler::getCommand(CommandID id) {
+shared_ptr<Command> CommandHandler::getCommand(CommandID id) {
 	if (id >= commands.size() || id < 0) {
 		throw std::exception("Command not recognised");
 	}
 	return commands[id];
 }
 
-std::shared_ptr<Command> CommandHandler::getCommand(std::string name) {
+shared_ptr<Command> CommandHandler::getCommand(std::string name) {
 	return namedCommands[name];
 }
 
-void CommandHandler::registerCommand(std::shared_ptr<Command> c, CommandID id) {
+void CommandHandler::registerCommand(shared_ptr<Command> c, CommandID id) {
 	if (id >= commands.size() || id < 0) {
 		throw std::exception("Command ID out of range");
 	}

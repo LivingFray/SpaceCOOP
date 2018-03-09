@@ -5,8 +5,13 @@
 #include "../shared/TSQueue.h"
 #include "ClientGalaxy.h"
 #include "../shared/CommandHandler.h"
-#include "ClientCommand.h"
+#include "commands/ClientCommand.h"
 #include "InputHandler.h"
+#include "../shared/EntityHandler.h"
+
+using std::thread;
+using std::shared_ptr;
+using std::unordered_map;
 
 class ClientCommand;
 
@@ -25,10 +30,11 @@ public:
 	sf::RenderWindow* window;
 	CommandHandler commandHandler;
 	InputHandler inputHandler;
+	EntityHandler entityHandler;
 private:
 	sf::TcpSocket socket;
-	std::thread receiveThread;
-	std::thread sendThread;
+	thread receiveThread;
+	thread sendThread;
 	bool connected;
 	void threadedReceive();
 	void threadedSend();
@@ -36,5 +42,6 @@ private:
 	TSQueue<sf::Packet> toSend;
 
 	ClientGalaxy galaxy;
+	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 };
 

@@ -7,6 +7,13 @@
 #include "ServerGalaxy.h"
 #include <atomic>
 #include "../shared/CommandHandler.h"
+#include "../shared/EntityHandler.h"
+#include <unordered_map>
+#include "../shared/entities/EntityCore.h"
+
+using std::vector;
+using std::shared_ptr;
+using std::thread;
 
 /*
 Server is the main class for server side operations
@@ -29,14 +36,20 @@ public:
 	void updateConnectedList();
 	const ServerGalaxy& getGalaxy();
 	CommandHandler commandHandler;
+	EntityHandler entityHandler;
+	void onPlayerConnected(shared_ptr<Player> player);
+	void onPlayerDisconnected(shared_ptr<Player> player);
+
+	void addEntity(shared_ptr<EntityCore> entity);
 private:
-	std::thread incomingThread;
+	thread incomingThread;
 	sf::TcpListener listen;
 	void handleConnections();
 	bool running = false;
-	std::vector<std::shared_ptr<Player>> players;
+	vector<shared_ptr<Player>> players;
 	std::atomic<bool> checkConnected = false;
 
 	ServerGalaxy galaxy;
+	std::unordered_map<UUID, shared_ptr<EntityCore>> entities;
 };
 

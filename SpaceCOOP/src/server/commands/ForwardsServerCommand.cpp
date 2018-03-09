@@ -1,5 +1,5 @@
 #include "ForwardsServerCommand.h"
-#include "../shared/Console.h"
+#include "../../shared/Console.h"
 
 
 ForwardsServerCommand::ForwardsServerCommand() {

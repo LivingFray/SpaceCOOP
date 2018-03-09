@@ -2,8 +2,12 @@
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
 #include <memory>
-#include "ForwardsClientCommand.h"
+#include <functional>
+#include "commands/ForwardsClientCommand.h"
 #include "../shared/Command.h"
+#include "../shared/EntityHandler.h"
+#include "../shared/entities/EntityCore.h"
+#include "../shared/entities/Ship.h"
 
 #define REGCMD(c, i) { \
 auto _cmd = std::make_shared<c>(); \
@@ -12,9 +16,14 @@ commandHandler.registerCommand(_cmd, i); \
 }
 
 #define BINDCMD(k, c) { \
-std::shared_ptr<ClientCommand> _cmd = std::dynamic_pointer_cast<ClientCommand>(commandHandler.getCommand(c)); \
+shared_ptr<ClientCommand> _cmd = std::dynamic_pointer_cast<ClientCommand>(commandHandler.getCommand(c)); \
 _cmd->client = this; \
 inputHandler.bind(k, _cmd); \
+}
+
+#define REGENT(e) { \
+std::function<shared_ptr<EntityCore>()> fun = []() { return std::make_shared<e>();}; \
+entityHandler.registerEntity(fun); \
 }
 
 Client::Client() {
@@ -23,6 +32,9 @@ Client::Client() {
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
+
+	//Register entities here
+	REGENT(Ship, 0);
 }
 
 
@@ -44,9 +56,9 @@ void Client::connect() {
 		return;
 	}
 	connected = true;
-	receiveThread = std::thread(&Client::threadedReceive, this);
+	receiveThread = thread(&Client::threadedReceive, this);
 	Console::log("CL_Receive: started", Console::LogLevel::INFO);
-	sendThread = std::thread(&Client::threadedSend, this);
+	sendThread = thread(&Client::threadedSend, this);
 	Console::log("CL_Send: started", Console::LogLevel::INFO);
 }
 
@@ -96,7 +108,7 @@ void Client::threadedReceive() {
 	sf::Packet packet;
 	while (connected) {
 		sf::TcpSocket::Status st = socket.receive(packet);
-		switch(st) {
+		switch (st) {
 		case sf::TcpSocket::Disconnected:
 			connected = false;
 			Console::log("Connection to server was terminated", Console::LogLevel::INFO);
@@ -129,26 +141,23 @@ void Client::handlePacket(sf::Packet& packet) {
 		Console::log("Could not decode packet", Console::LogLevel::ERROR);
 	}
 	switch (type) {
-	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) :
-	{
+	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) : {
 		std::string msg;
 		packet >> msg;
 		Console::log(msg, Console::LogLevel::INFO);
 		break;
 	}
-	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) :
-	{
+	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) : {
 		packet >> galaxy;
 		galaxy.createVertexArray();
 		Console::log("Received galaxy data", Console::LogLevel::INFO);
 		break;
 	}
-	case static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) :
-	{
+	case static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) : {
 		CommandID id;
 		packet >> id;
 		try {
-			std::shared_ptr<Command> command = commandHandler.getCommand(id);
+			shared_ptr<Command> command = commandHandler.getCommand(id);
 			if (auto c = std::dynamic_pointer_cast<ClientCommand>(command)) {
 				packet >> *c;
 				c->client = this;
@@ -156,6 +165,25 @@ void Client::handlePacket(sf::Packet& packet) {
 			}
 		} catch (std::exception e) {
 			Console::log("Received invalid command from server", Console::LogLevel::WARNING);
+		}
+	}
+	case static_cast<sf::Uint8>(PacketHandler::Type::ENTITY) : {
+		sf::Uint8 entType;
+		packet >> entType;
+		UUID id;
+		packet >> id;
+		switch (entType) {
+		case static_cast<sf::Uint8>(PacketHandler::Entity::CREATE) : {
+			try {
+				shared_ptr<EntityCore> entity = entityHandler.getEntity(entType);
+				//Parse to client type?
+				packet >> *entity;
+				entities.insert_or_assign(id, entity);
+				Console::log("Added entity", Console::LogLevel::INFO);
+			} catch (std::exception e) {
+				Console::log("Received invalid entity from server ("+ std::to_string(entType)+")", Console::LogLevel::WARNING);
+			}
+		}
 		}
 	}
 	}

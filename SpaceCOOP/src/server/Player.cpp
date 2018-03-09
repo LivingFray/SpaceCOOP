@@ -3,7 +3,7 @@
 #include "../shared/PacketHandler.h"
 #include "../shared/CommandHandler.h"
 #include "Server.h"
-#include "PlayerCommand.h"
+#include "commands/PlayerCommand.h"
 
 
 Player::Player() {
@@ -58,6 +58,13 @@ void Player::sendText(std::string msg) {
 	toSend.push(packet);
 }
 
+void Player::sendEntity(shared_ptr<EntityCore> entity) {
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
+	packet << static_cast<sf::Uint8>(PacketHandler::Entity::CREATE);
+	packet << *entity;
+	toSend.push(packet);
+}
 
 void Player::threadedReceive() {
 	while (running) {
@@ -110,7 +117,7 @@ void Player::handlePacket(sf::Packet& packet) {
 		CommandID commandId;
 		packet >> commandId;
 		try {
-			std::shared_ptr<Command> command = server->commandHandler.getCommand(commandId);
+			shared_ptr<Command> command = server->commandHandler.getCommand(commandId);
 			if (auto p = std::dynamic_pointer_cast<PlayerCommand>(command)) {
 				packet >> *p;
 				p->player = this;

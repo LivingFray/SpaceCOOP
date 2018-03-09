@@ -1,7 +1,5 @@
 #pragma once
-#include <memory>
-#include "../shared/HeldCommand.h"
-#include "Player.h"
+#include "../../shared/HeldCommand.h"
 #include "PlayerCommand.h"
 class BackwardsServerCommand :
 	virtual public HeldCommand,

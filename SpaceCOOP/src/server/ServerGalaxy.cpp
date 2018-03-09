@@ -1,6 +1,7 @@
 #include "ServerGalaxy.h"
 #include <cstdlib>
 
+using std::shared_ptr;
 
 float randF(float min, float max) {
 	float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -28,7 +29,7 @@ ServerGalaxy::~ServerGalaxy() {
 void ServerGalaxy::generateGalaxy() {
 	//Test generator, real thing will hopefully have some semblance of balance
 	for (int i = 0; i < 150; i++) {
-		std::shared_ptr<Star> s(new Star());
+		shared_ptr<Star> s(new Star());
 		s->position.x = randF(0.0f, 1200.0f);
 		s->position.y = randF(0.0f, 700.0f);
 		s->radius = randF(10.0f, 20.0f);

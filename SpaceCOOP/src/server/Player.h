@@ -4,6 +4,10 @@
 #include <thread>
 #include <string>
 #include "../shared/TSQueue.h"
+#include "../shared/entities/EntityCore.h"
+
+using std::shared_ptr;
+using std::thread;
 
 class Server;
 
@@ -14,10 +18,11 @@ public:
 	void start();
 	void disconnect();
 	void sendText(std::string msg);
+	void sendEntity(shared_ptr<EntityCore> entity);
 private:
-	std::shared_ptr<sf::TcpSocket> socket;
-	std::thread receiveThread;
-	std::thread sendThread;
+	shared_ptr<sf::TcpSocket> socket;
+	thread receiveThread;
+	thread sendThread;
 	void threadedReceive();
 	void threadedSend();
 	bool running = false;

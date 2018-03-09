@@ -57,25 +57,34 @@
     <ClCompile Include="src\shared\CommandHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\server\ForwardsServerCommand.cpp">
+    <ClCompile Include="src\server\commands\BackwardsServerCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\server\BackwardsServerCommand.cpp">
+    <ClCompile Include="src\server\commands\ForwardsServerCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\server\StrafeLeftServerCommand.cpp">
+    <ClCompile Include="src\server\commands\StrafeLeftServerCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\server\StrafeRightServerCommand.cpp">
+    <ClCompile Include="src\server\commands\StrafeRightServerCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\server\PlayerCommand.cpp">
+    <ClCompile Include="src\client\commands\ForwardsClientCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\ClientCommand.cpp">
+    <ClCompile Include="src\client\commands\ClientCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\ForwardsClientCommand.cpp">
+    <ClCompile Include="src\server\commands\PlayerCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shared\entities\EntityCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shared\entities\Ship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shared\EntityHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -122,25 +131,34 @@
     <ClInclude Include="src\shared\CommandHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\server\ForwardsServerCommand.h">
+    <ClInclude Include="src\server\commands\ForwardsServerCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\server\BackwardsServerCommand.h">
+    <ClInclude Include="src\server\commands\BackwardsServerCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\server\StrafeLeftServerCommand.h">
+    <ClInclude Include="src\server\commands\StrafeLeftServerCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\server\StrafeRightServerCommand.h">
+    <ClInclude Include="src\server\commands\StrafeRightServerCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\server\PlayerCommand.h">
+    <ClInclude Include="src\client\commands\ForwardsClientCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\ClientCommand.h">
+    <ClInclude Include="src\client\commands\ClientCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\ForwardsClientCommand.h">
+    <ClInclude Include="src\server\commands\PlayerCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared\entities\EntityCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared\entities\Ship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared\EntityHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

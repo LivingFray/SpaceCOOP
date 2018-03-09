@@ -1,6 +1,6 @@
 #pragma once
-#include "..\shared\Command.h"
-#include "Client.h"
+#include "../../shared/Command.h"
+#include "../Client.h"
 
 class Client;
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "Player.h"
-#include "../shared/Command.h"
+#include "../Player.h"
+#include "../../shared/Command.h"
 
 class PlayerCommand:
 virtual public Command {
