@@ -4,6 +4,7 @@
 #include "../shared/CommandHandler.h"
 #include "Server.h"
 #include "commands/PlayerCommand.h"
+#include "../shared/Helper.h"
 
 
 Player::Player() {
@@ -63,6 +64,14 @@ void Player::sendEntity(shared_ptr<EntityCore> entity) {
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
 	packet << static_cast<sf::Uint8>(PacketHandler::Entity::CREATE);
 	packet << *entity;
+	toSend.push(packet);
+}
+
+void Player::updateEntity(sf::Packet p) {
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
+	packet << static_cast<sf::Uint8>(PacketHandler::Entity::MODIFY);
+	concatPackets(packet, p);
 	toSend.push(packet);
 }
 

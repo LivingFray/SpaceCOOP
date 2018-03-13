@@ -14,12 +14,26 @@ public:
 	virtual ~EntityCore();
 	UUID id;
 	EntityType type;
-	sf::Vector2f pos;
-	sf::Vector2f vel;
+	sf::Vector2f getPos() const { return pos; }
+	sf::Vector2f getVel() const { return pos; }
+	void setPos(sf::Vector2f p);
+	void setVel(sf::Vector2f v);
 	friend sf::Packet& operator<<(sf::Packet& packet, const EntityCore& command);
 	friend sf::Packet& operator>>(sf::Packet& packet, EntityCore& command);
+	virtual void modify(sf::Packet& p);
+	virtual void generateModifyPacket(sf::Packet& p); //Pass by reference should be faster
 protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet) const;
+	//If the ID can be used by this instantation of Entity, use it to
+	virtual bool applyModification(sf::Uint8, sf::Packet& p);
+	const static int NUM_MODIFY_PROTOCOLS = 2;
+	sf::Vector2f pos;
+	bool posChanged = false;
+	sf::Vector2f vel;
+	bool velChanged = false;
+private:
+	static const sf::Uint8 POS_MODID = 0;
+	static const sf::Uint8 VEL_MODID = 1;
 };
 

@@ -153,6 +153,7 @@
     <ClCompile Include="src\shared\EntityHandler.cpp" />
     <ClCompile Include="src\shared\Galaxy.cpp" />
     <ClCompile Include="src\shared\HeldCommand.cpp" />
+    <ClCompile Include="src\shared\Helper.cpp" />
     <ClCompile Include="src\shared\PacketHandler.cpp" />
     <ClCompile Include="src\shared\Star.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="src\shared\EntityHandler.h" />
     <ClInclude Include="src\shared\Galaxy.h" />
     <ClInclude Include="src\shared\HeldCommand.h" />
+    <ClInclude Include="src\shared\Helper.h" />
     <ClInclude Include="src\shared\PacketHandler.h" />
     <ClInclude Include="src\shared\Star.h" />
     <ClInclude Include="src\shared\TSQueue.h" />

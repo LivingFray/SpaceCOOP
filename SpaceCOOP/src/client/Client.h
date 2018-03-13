@@ -27,6 +27,8 @@ public:
 	void sendCommand(ClientCommand* cmd);
 	void draw();
 
+	void removeEntity(UUID id);
+
 	sf::RenderWindow* window;
 	CommandHandler commandHandler;
 	InputHandler inputHandler;

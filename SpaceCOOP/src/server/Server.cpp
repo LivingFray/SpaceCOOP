@@ -10,6 +10,7 @@
 #include "commands/StrafeRightServerCommand.h"
 //TODO: Server side ship with movement and such
 #include "../shared/entities/Ship.h"
+#include "../shared/Helper.h"
 
 #define REGCMD(c, i) { \
 auto _cmd = std::make_shared<c>(); \
@@ -46,6 +47,7 @@ void Server::start() {
 		Console::log("Attempted to start server that was already running", Console::LogLevel::ERROR);
 	}
 	running = true;
+	lastSentPackets = 0;
 	incomingThread = std::thread(&Server::handleConnections, this);
 	Console::log("SV_Incoming: started", Console::LogLevel::INFO);
 	Console::log("Generating galaxy", Console::LogLevel::INFO);
@@ -84,6 +86,23 @@ void Server::update(double dt) {
 		checkConnected = false;
 		Console::log(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 	}
+	lastSentPackets += dt;
+	if (lastSentPackets > packetRate) {
+		lastSentPackets -= packetRate;
+		for (auto tuple : entities) {
+			auto ent = tuple.second;
+			sf::Packet p;
+			ent->generateModifyPacket(p);
+			if (p.getDataSize() > 0) {
+				sf::Packet sendPacket;
+				sendPacket << ent->id;
+				concatPackets(sendPacket, p);
+				for (auto player : players) {
+					player->updateEntity(sendPacket);
+				}
+			}
+		}
+	}
 }
 
 void Server::updateConnectedList() {
@@ -97,6 +116,7 @@ const ServerGalaxy& Server::getGalaxy() {
 void Server::onPlayerConnected(shared_ptr<Player> player) {
 	//Add player's ship
 	shared_ptr<Ship> playerShip = std::make_shared<Ship>();
+	player->ship = playerShip;
 	//Send ship to clients
 	addEntity(playerShip);
 	//Send all entities to client

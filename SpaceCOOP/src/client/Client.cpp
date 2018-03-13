@@ -96,6 +96,12 @@ void Client::draw() {
 	window->display();
 }
 
+void Client::removeEntity(UUID id) {
+	if (!entities.erase(id)) {
+		Console::log("Could not find entity with UUID " + id, Console::LogLevel::WARNING);
+	}
+}
+
 void Client::threadedReceive() {
 	Console::log("Attempting to connect to server", Console::LogLevel::INFO);
 	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
@@ -166,6 +172,7 @@ void Client::handlePacket(sf::Packet& packet) {
 		} catch (std::exception e) {
 			Console::log("Received invalid command from server", Console::LogLevel::WARNING);
 		}
+		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::ENTITY) : {
 		sf::Uint8 entType;
@@ -178,13 +185,29 @@ void Client::handlePacket(sf::Packet& packet) {
 				shared_ptr<EntityCore> entity = entityHandler.getEntity(entType);
 				//Parse to client type?
 				packet >> *entity;
+				entity->id = id;
 				entities.insert_or_assign(id, entity);
-				Console::log("Added entity", Console::LogLevel::INFO);
+				Console::log("Added entity " + std::to_string(id), Console::LogLevel::INFO);
 			} catch (std::exception e) {
 				Console::log("Received invalid entity from server ("+ std::to_string(entType)+")", Console::LogLevel::WARNING);
 			}
+			break;
+		}
+		case static_cast<sf::Uint8>(PacketHandler::Entity::MODIFY) : {
+			auto ent = entities[id];
+			if (!ent) {
+				Console::log("Cannot modify entity, does not exist (" + std::to_string(id) + ")", Console::LogLevel::WARNING);
+				break;
+			}
+			ent->modify(packet);
+			break;
+		}
+		case static_cast<sf::Uint8>(PacketHandler::Entity::REMOVE) : {
+			removeEntity(id);
+			break;
 		}
 		}
+		break;
 	}
 	}
 }

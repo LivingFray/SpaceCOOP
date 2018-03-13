@@ -51,5 +51,8 @@ private:
 
 	ServerGalaxy galaxy;
 	std::unordered_map<UUID, shared_ptr<EntityCore>> entities;
+
+	double const packetRate = 1.0/15.0;
+	double lastSentPackets = 0;
 };
 

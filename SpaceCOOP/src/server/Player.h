@@ -5,6 +5,7 @@
 #include <string>
 #include "../shared/TSQueue.h"
 #include "../shared/entities/EntityCore.h"
+#include "../shared/entities/Ship.h"
 
 using std::shared_ptr;
 using std::thread;
@@ -19,6 +20,8 @@ public:
 	void disconnect();
 	void sendText(std::string msg);
 	void sendEntity(shared_ptr<EntityCore> entity);
+	void updateEntity(sf::Packet p);
+	shared_ptr<Ship> ship;
 private:
 	shared_ptr<sf::TcpSocket> socket;
 	thread receiveThread;
