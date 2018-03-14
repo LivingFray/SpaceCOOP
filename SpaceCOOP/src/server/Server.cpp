@@ -72,6 +72,7 @@ void Server::stop() {
 }
 
 void Server::update(double dt) {
+	//Handle disconnects
 	if (checkConnected) {
 		auto it = players.begin();
 		while (it != players.end()) {
@@ -86,6 +87,12 @@ void Server::update(double dt) {
 		checkConnected = false;
 		Console::log(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 	}
+	//Update entities
+	for (auto ent : entities) {
+		ent.second->update(dt);
+	}
+
+	//Send packets if it is that time again
 	lastSentPackets += dt;
 	if (lastSentPackets > packetRate) {
 		lastSentPackets -= packetRate;

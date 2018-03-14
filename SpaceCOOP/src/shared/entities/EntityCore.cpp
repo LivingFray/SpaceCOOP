@@ -13,12 +13,12 @@ EntityCore::EntityCore() {
 EntityCore::~EntityCore() {
 }
 
-void EntityCore::setPos(sf::Vector2f p) {
-	pos = p;
+void EntityCore::setPosition(const sf::Vector2f& p) {
 	posChanged = true;
+	Transformable::setPosition(p);
 }
 
-void EntityCore::setVel(sf::Vector2f v) {
+void EntityCore::setVelocity(sf::Vector2f v) {
 	vel = v;
 	velChanged = true;
 }
@@ -38,6 +38,7 @@ void EntityCore::modify(sf::Packet& p) {
 void EntityCore::generateModifyPacket(sf::Packet& p) {
 	if (posChanged) {
 		p << POS_MODID;
+		sf::Vector2f pos = Transformable::getPosition();
 		p << pos.x << pos.y;
 		posChanged = false;
 	}
@@ -48,15 +49,25 @@ void EntityCore::generateModifyPacket(sf::Packet& p) {
 	}
 }
 
+void EntityCore::update(double dt) {
+	//TODO: More useful update things
+	sf::Vector2f newPos = getPosition();
+	newPos += getVelocity() * static_cast<float>(dt);
+	setPosition(newPos);
+}
+
 void EntityCore::packetIn(sf::Packet& packet) {
 	//DO NOT READ IN UUID, this is already read in to determine which entity to call packetIn from
+	sf::Vector2f pos;
 	packet >> pos.x >> pos.y;
+	Transformable::setPosition(pos);
 	packet >> vel.x >> vel.y;
 	//TODO: Other core data
 }
 
 void EntityCore::packetOut(sf::Packet& packet) const{
 	packet << id;
+	sf::Vector2f pos = Transformable::getPosition();
 	packet << pos.x << pos.y;
 	packet << vel.x << vel.y;
 }
@@ -67,8 +78,10 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 	}
 	switch (modId) {
 	case POS_MODID: { //Position change
+		sf::Vector2f pos;
 		p >> pos.x;
 		p >> pos.y;
+		Transformable::setPosition(pos);
 		return true;
 	}
 	case VEL_MODID: { //Velocity change
@@ -78,6 +91,11 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 	}
 	}
 	return false;
+}
+
+void EntityCore::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= getTransform();
+	target.draw(sprite, states);
 }
 
 sf::Packet& operator<<(sf::Packet& packet, const EntityCore& command) {

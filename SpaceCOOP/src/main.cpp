@@ -19,6 +19,7 @@ int main() {
 	client.window = &window;
 	client.connect();
 	clock.restart();
+	window.setKeyRepeatEnabled(false);
 	while (window.isOpen()) {
 		//Poll events
 		sf::Event e;

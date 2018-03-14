@@ -1,7 +1,9 @@
 #include "Ship.h"
+#include "../AssetHandler.h"
 
 Ship::Ship() {
 	type = 0;
+	sprite.setTexture(AssetHandler::getTexture("assets/ship.png"));
 }
 
 

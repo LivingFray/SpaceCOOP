@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\shared\AssetHandler.cpp" />
     <ClCompile Include="src\client\commands\ClientCommand.cpp" />
     <ClCompile Include="src\client\commands\ForwardsClientCommand.cpp" />
     <ClCompile Include="src\server\commands\BackwardsServerCommand.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="src\shared\Star.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\shared\AssetHandler.h" />
     <ClInclude Include="src\client\commands\ClientCommand.h" />
     <ClInclude Include="src\client\commands\ForwardsClientCommand.h" />
     <ClInclude Include="src\server\commands\BackwardsServerCommand.h" />

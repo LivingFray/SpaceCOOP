@@ -34,7 +34,7 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::W, "forwards");
 
 	//Register entities here
-	REGENT(Ship, 0);
+	REGENT(Ship);
 }
 
 
@@ -93,6 +93,9 @@ void Client::sendCommand(ClientCommand* cmd) {
 void Client::draw() {
 	window->clear(sf::Color::Black);
 	window->draw(galaxy);
+	for (auto ent : entities) {
+		window->draw(*ent.second);
+	}
 	window->display();
 }
 
