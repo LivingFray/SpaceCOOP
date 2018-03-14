@@ -8,6 +8,7 @@
 #include "commands/ClientCommand.h"
 #include "InputHandler.h"
 #include "../shared/EntityHandler.h"
+#include "../shared/entities/Ship.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -26,13 +27,14 @@ public:
 	void sendText(std::string msg);
 	void sendCommand(ClientCommand* cmd);
 	void draw();
-
+	void update(double dt);
 	void removeEntity(UUID id);
 
 	sf::RenderWindow* window;
 	CommandHandler commandHandler;
 	InputHandler inputHandler;
 	EntityHandler entityHandler;
+	shared_ptr<Ship> ship;
 private:
 	sf::TcpSocket socket;
 	thread receiveThread;

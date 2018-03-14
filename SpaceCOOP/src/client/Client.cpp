@@ -99,6 +99,12 @@ void Client::draw() {
 	window->display();
 }
 
+void Client::update(double dt) {
+	for (auto ent : entities) {
+		ent.second->update(dt);
+	}
+}
+
 void Client::removeEntity(UUID id) {
 	if (!entities.erase(id)) {
 		Console::log("Could not find entity with UUID " + id, Console::LogLevel::WARNING);
@@ -190,7 +196,7 @@ void Client::handlePacket(sf::Packet& packet) {
 				packet >> *entity;
 				entity->id = id;
 				entities.insert_or_assign(id, entity);
-				Console::log("Added entity " + std::to_string(id), Console::LogLevel::INFO);
+				//Console::log("Added entity " + std::to_string(id), Console::LogLevel::INFO);
 			} catch (std::exception e) {
 				Console::log("Received invalid entity from server ("+ std::to_string(entType)+")", Console::LogLevel::WARNING);
 			}
@@ -210,6 +216,12 @@ void Client::handlePacket(sf::Packet& packet) {
 			break;
 		}
 		}
+		break;
+	}
+	case static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP) : {
+		UUID id;
+		packet >> id;
+		ship = std::dynamic_pointer_cast<Ship>(entities[id]);
 		break;
 	}
 	}

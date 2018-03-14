@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <mutex>
 #include "../shared/CommandHandler.h"
+#include "../shared/PacketHandler.h"
 #include "commands/ForwardsServerCommand.h"
 #include "commands/BackwardsServerCommand.h"
 #include "commands/StrafeLeftServerCommand.h"
@@ -126,6 +127,10 @@ void Server::onPlayerConnected(shared_ptr<Player> player) {
 	player->ship = playerShip;
 	//Send ship to clients
 	addEntity(playerShip);
+	sf::Packet p;
+	p << static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP);
+	p << playerShip->id;
+	player->toSend.push(p);
 	//Send all entities to client
 }
 

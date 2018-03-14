@@ -44,6 +44,8 @@ int main() {
 		sf::Time t = clock.restart();
 		//Update server
 		server.update(t.asSeconds());
+		//Update client
+		client.update(t.asSeconds());
 		//Draw client
 		client.draw();
 	}
