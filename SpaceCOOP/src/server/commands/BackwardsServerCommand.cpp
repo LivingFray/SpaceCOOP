@@ -12,8 +12,8 @@ BackwardsServerCommand::~BackwardsServerCommand() {
 
 void BackwardsServerCommand::execute() {
 	if (held) {
-		Console::log("DUMMY backwards start command", Console::LogLevel::INFO);
+		player->ship->moveForward(-50.0f);
 	} else {
-		Console::log("DUMMY backwards stop command", Console::LogLevel::INFO);
+		player->ship->moveForward(0.0f);
 	}
 }

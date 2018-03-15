@@ -6,10 +6,27 @@ Ship::Ship() {
 	height = 50;
 	loadSpriteAndResize("assets/ship.png");
 	type = 0;
+	setRotation(30.0f);
 }
 
 
 Ship::~Ship() {
+}
+
+void Ship::moveForward(float vel) {
+	forwardThrust = vel;
+}
+
+void Ship::moveRight(float vel) {
+	sidewaysThrust = vel;
+}
+
+void Ship::update(double dt) {
+	sf::Vector2f thrust = getFront() * forwardThrust;
+	thrust += getRight() * sidewaysThrust;
+	thrust *= static_cast<float>(dt);
+	setVelocity(getVelocity() + thrust);
+	EntityCore::update(dt);
 }
 
 void Ship::packetIn(sf::Packet& packet) {

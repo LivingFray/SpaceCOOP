@@ -4,6 +4,9 @@
 #include <memory>
 #include <functional>
 #include "commands/ForwardsClientCommand.h"
+#include "commands/BackwardsClientCommand.h"
+#include "commands/StrafeLeftClientCommand.h"
+#include "commands/StrafeRightClientCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -29,9 +32,15 @@ entityHandler.registerEntity(fun); \
 Client::Client() {
 	//Register commands here
 	REGCMD(ForwardsClientCommand, 0);
+	REGCMD(BackwardsClientCommand, 1);
+	REGCMD(StrafeLeftClientCommand, 2);
+	REGCMD(StrafeRightClientCommand, 3);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
+	BINDCMD(sf::Keyboard::S, "backwards");
+	BINDCMD(sf::Keyboard::A, "strafeleft");
+	BINDCMD(sf::Keyboard::D, "straferight");
 
 	//Register entities here
 	REGENT(Ship);

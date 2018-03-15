@@ -1,7 +1,7 @@
 #include "EntityCore.h"
 #include "../AssetHandler.h"
 #include <chrono>
-
+#include "../Helper.h"
 
 
 EntityCore::EntityCore() {
@@ -15,6 +15,11 @@ EntityCore::~EntityCore() {
 void EntityCore::setPosition(const sf::Vector2f& p) {
 	posChanged = true;
 	Transformable::setPosition(p);
+}
+
+void EntityCore::setRotation(float angle) {
+	angleChanged = true;
+	Transformable::setRotation(angle);
 }
 
 void EntityCore::setVelocity(sf::Vector2f v) {
@@ -35,6 +40,8 @@ void EntityCore::modify(sf::Packet& p) {
 
 //Called every time the server wants to update client states
 void EntityCore::generateModifyPacket(sf::Packet& p) {
+	//Go through each tracked property and add it to the packet if it needs updating
+	//Reset relevant changed flags as states are now synced
 	if (posChanged) {
 		p << POS_MODID;
 		sf::Vector2f pos = Transformable::getPosition();
@@ -46,6 +53,16 @@ void EntityCore::generateModifyPacket(sf::Packet& p) {
 		p << vel.x << vel.y;
 		velChanged = false;
 	}
+	if (angleChanged) {
+		p << ANG_MODID;
+		p << getRotation();
+		angleChanged = false;
+	}
+	if (angMomentumChanged) {
+		p << ANGMOM_MODID;
+		p << angMomentum;
+		angMomentumChanged = false;
+	}
 }
 
 void EntityCore::update(double dt) {
@@ -53,6 +70,24 @@ void EntityCore::update(double dt) {
 	sf::Vector2f newPos = getPosition();
 	newPos += getVelocity() * static_cast<float>(dt);
 	setPosition(newPos);
+	if (abs(angMomentum) > 1e-5) {
+		float newAng = getRotation();
+		newAng += angMomentum * static_cast<float>(dt);
+		setRotation(newAng);
+	}
+}
+
+sf::Vector2f EntityCore::getFront() {
+	float ang = -toDegrees(getRotation());
+	sf::Vector2f dir(cosf(ang), -sinf(ang));
+	return dir;
+	//return dir / sqrtf(dir.x * dir.x + dir.y * dir.y);
+}
+
+sf::Vector2f EntityCore::getRight() {
+	float ang = -toDegrees(getRotation());
+	sf::Vector2f dir(-cosf(ang), -sinf(ang));
+	return dir;
 }
 
 void EntityCore::packetIn(sf::Packet& packet) {
@@ -61,14 +96,20 @@ void EntityCore::packetIn(sf::Packet& packet) {
 	packet >> pos.x >> pos.y;
 	Transformable::setPosition(pos);
 	packet >> vel.x >> vel.y;
+	float ang;
+	packet >> ang;
+	Transformable::setRotation(ang);
+	packet >> angMomentum;
 	//TODO: Other core data
 }
 
-void EntityCore::packetOut(sf::Packet& packet) const{
+void EntityCore::packetOut(sf::Packet& packet) const {
 	packet << id;
 	sf::Vector2f pos = Transformable::getPosition();
 	packet << pos.x << pos.y;
 	packet << vel.x << vel.y;
+	packet << getRotation();
+	packet << angMomentum;
 }
 
 bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
@@ -76,18 +117,36 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 		return false;
 	}
 	switch (modId) {
-	case POS_MODID: { //Position change
-		sf::Vector2f pos;
-		p >> pos.x;
-		p >> pos.y;
-		Transformable::setPosition(pos);
-		return true;
-	}
-	case VEL_MODID: { //Velocity change
-		p >> vel.x;
-		p >> vel.y;
-		return true;
-	}
+		case POS_MODID:
+		{
+			//Position change
+			sf::Vector2f pos;
+			p >> pos.x;
+			p >> pos.y;
+			Transformable::setPosition(pos);
+			return true;
+		}
+		case VEL_MODID:
+		{
+			//Velocity change
+			p >> vel.x;
+			p >> vel.y;
+			return true;
+		}
+		case ANG_MODID:
+		{
+			//Angle change
+			float ang;
+			p >> ang;
+			Transformable::setRotation(ang);
+			return true;
+		}
+		case ANGMOM_MODID:
+		{
+			//Angular Momentum change
+			p >> angMomentum;
+			return true;
+		}
 	}
 	return false;
 }
@@ -111,7 +170,7 @@ sf::Packet& operator<<(sf::Packet& packet, const EntityCore& command) {
 	return packet;
 }
 
-sf::Packet & operator>>(sf::Packet& packet, EntityCore& command) {
+sf::Packet & operator >> (sf::Packet& packet, EntityCore& command) {
 	command.packetIn(packet);
 	return packet;
 }

@@ -12,8 +12,8 @@ StrafeRightServerCommand::~StrafeRightServerCommand() {
 
 void StrafeRightServerCommand::execute() {
 	if (held) {
-		Console::log("DUMMY strafe right start command", Console::LogLevel::INFO);
+		player->ship->moveRight(50.0f);
 	} else {
-		Console::log("DUMMY strafe right stop command", Console::LogLevel::INFO);
+		player->ship->moveRight(0.0f);
 	}
 }

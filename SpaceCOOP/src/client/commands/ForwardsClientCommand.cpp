@@ -14,9 +14,9 @@ ForwardsClientCommand::~ForwardsClientCommand() {
 void ForwardsClientCommand::execute() {
 	//Client side extrapolation here
 	if (held) {
-		client->ship->setVelocity(sf::Vector2f(50.0, 0.0));
+		client->ship->moveForward(50.0f);
 	} else {
-		client->ship->setVelocity(sf::Vector2f(0.0, 0.0));
+		client->ship->moveForward(0.0f);
 	}
 	//Tell server to run command
 	ClientCommand::executeRemote();
