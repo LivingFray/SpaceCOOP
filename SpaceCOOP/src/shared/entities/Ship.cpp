@@ -2,14 +2,10 @@
 #include "../AssetHandler.h"
 
 Ship::Ship() {
-	type = 0;
 	width = 100;
 	height = 50;
-	sprite.setTexture(AssetHandler::getTexture("assets/ship.png"));
-	auto bounds = sprite.getLocalBounds();
-	float sX = width / bounds.width;
-	float sY = height / bounds.height;
-	setScale(sX, sY);
+	loadSpriteAndResize("assets/ship.png");
+	type = 0;
 }
 
 

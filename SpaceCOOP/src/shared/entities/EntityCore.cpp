@@ -1,4 +1,5 @@
 #include "EntityCore.h"
+#include "../AssetHandler.h"
 #include <chrono>
 
 
@@ -6,9 +7,7 @@
 EntityCore::EntityCore() {
 	//Set the unique id to be the current time, because its the easiest way to ensure uniqueness
 	id = static_cast<UUID>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	type = -1;
 }
-
 
 EntityCore::~EntityCore() {
 }
@@ -91,6 +90,15 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 	}
 	}
 	return false;
+}
+
+void EntityCore::loadSpriteAndResize(std::string texture) {
+	sprite.setTexture(AssetHandler::getTexture(texture));
+	auto bounds = sprite.getLocalBounds();
+	float sX = width / bounds.width;
+	float sY = height / bounds.height;
+	setScale(sX, sY);
+	setOrigin(bounds.width * 0.5, bounds.height * 0.5);
 }
 
 void EntityCore::draw(sf::RenderTarget& target, sf::RenderStates states) const {

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
+#include <string>
 
 //Set to the highest id a command may have, default is based on size of CommandID
 #define MAX_ENTITIES 1<<(8*sizeof(EntityType))
@@ -37,6 +38,8 @@ protected:
 	sf::Sprite sprite;
 	float width;
 	float height;
+	void loadSpriteAndResize(std::string texture);
+
 private:
 	static const sf::Uint8 POS_MODID = 0;
 	static const sf::Uint8 VEL_MODID = 1;
