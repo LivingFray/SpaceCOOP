@@ -12,7 +12,7 @@ StrafeRightClientCommand::~StrafeRightClientCommand() {
 
 void StrafeRightClientCommand::execute() {
 	if (held) {
-		client->ship->moveForward(50.0f);
+		client->ship->moveRight(50.0f);
 	} else {
 		client->ship->moveRight(0.0f);
 	}

@@ -7,6 +7,8 @@
 #include "commands/BackwardsClientCommand.h"
 #include "commands/StrafeLeftClientCommand.h"
 #include "commands/StrafeRightClientCommand.h"
+#include "commands/RotateLeftClientCommand.h"
+#include "commands/RotateRightClientCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -35,12 +37,16 @@ Client::Client() {
 	REGCMD(BackwardsClientCommand, 1);
 	REGCMD(StrafeLeftClientCommand, 2);
 	REGCMD(StrafeRightClientCommand, 3);
+	REGCMD(RotateLeftClientCommand, 4);
+	REGCMD(RotateRightClientCommand, 5);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
 	BINDCMD(sf::Keyboard::S, "backwards");
 	BINDCMD(sf::Keyboard::A, "strafeleft");
 	BINDCMD(sf::Keyboard::D, "straferight");
+	BINDCMD(sf::Keyboard::Q, "rotateleft");
+	BINDCMD(sf::Keyboard::E, "rotateright");
 
 	//Register entities here
 	REGENT(Ship);

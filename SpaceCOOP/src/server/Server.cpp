@@ -9,6 +9,8 @@
 #include "commands/BackwardsServerCommand.h"
 #include "commands/StrafeLeftServerCommand.h"
 #include "commands/StrafeRightServerCommand.h"
+#include "commands/RotateLeftServerCommand.h"
+#include "commands/RotateRightServerCommand.h"
 //TODO: Server side ship with movement and such
 #include "../shared/entities/Ship.h"
 #include "../shared/Helper.h"
@@ -31,6 +33,8 @@ Server::Server() {
 	REGCMD(BackwardsServerCommand, 1);
 	REGCMD(StrafeLeftServerCommand, 2);
 	REGCMD(StrafeRightServerCommand, 3);
+	REGCMD(RotateLeftServerCommand, 4);
+	REGCMD(RotateRightServerCommand, 5);
 }
 
 

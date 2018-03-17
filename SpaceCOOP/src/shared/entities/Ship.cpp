@@ -21,6 +21,11 @@ void Ship::moveRight(float vel) {
 	sidewaysThrust = vel;
 }
 
+void Ship::rotate(float ang) {
+	angMomentum = ang;
+	angMomentumChanged = true;
+}
+
 void Ship::update(double dt) {
 	sf::Vector2f thrust = getFront() * forwardThrust;
 	thrust += getRight() * sidewaysThrust;

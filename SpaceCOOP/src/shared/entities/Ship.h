@@ -8,6 +8,7 @@ public:
 	~Ship();
 	void moveForward(float vel);
 	void moveRight(float vel);
+	void rotate(float ang);
 	virtual void update(double dt);
 protected:
 	virtual void packetIn(sf::Packet& packet);
