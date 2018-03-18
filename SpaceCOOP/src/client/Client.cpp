@@ -13,12 +13,8 @@
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
 #include "../shared/entities/Ship.h"
+#include "../shared/Helper.h"
 
-#define REGCMD(c, i) { \
-auto _cmd = std::make_shared<c>(); \
-_cmd->client = this; \
-commandHandler.registerCommand(_cmd, i); \
-}
 
 #define BINDCMD(k, c) { \
 shared_ptr<ClientCommand> _cmd = std::dynamic_pointer_cast<ClientCommand>(commandHandler.getCommand(c)); \
@@ -26,10 +22,6 @@ _cmd->client = this; \
 inputHandler.bind(k, _cmd); \
 }
 
-#define REGENT(e) { \
-std::function<shared_ptr<EntityCore>()> fun = []() { return std::make_shared<e>();}; \
-entityHandler.registerEntity(fun); \
-}
 
 Client::Client() {
 	//Register commands here

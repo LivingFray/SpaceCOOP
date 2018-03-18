@@ -15,18 +15,6 @@
 #include "../shared/entities/Ship.h"
 #include "../shared/Helper.h"
 
-#define REGCMD(c, i) { \
-auto _cmd = std::make_shared<c>(); \
-_cmd->id = i; \
-commandHandler.registerCommand(_cmd, i); \
-}
-
-#define REGENT(e, i) { \
-std::function<shared_ptr<EntityCore>()> fun = []() { return std::make_shared<e>();}; \
-entityHandler.registerEntity(fun, i); \
-}
-
-
 Server::Server() {
 	//Register all commands here
 	REGCMD(ForwardsServerCommand, 0);
