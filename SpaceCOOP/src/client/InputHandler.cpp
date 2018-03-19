@@ -18,8 +18,10 @@ void InputHandler::keyEvent(sf::Event e) {
 		//Dynamically cast command to HeldCommand
 		if (shared_ptr<HeldCommand> h = std::dynamic_pointer_cast<HeldCommand>(c)) {
 			h->held = e.type == e.KeyPressed;
+			c->execute();
+		} else if (e.type == e.KeyPressed) {
+			c->execute();
 		}
-		c->execute();
 	}
 
 }

@@ -30,7 +30,7 @@ int main() {
 			if (e.type == sf::Event::KeyPressed) {
 				client.inputHandler.keyEvent(e);
 				if (e.key.code == sf::Keyboard::Space) {
-					Console::log("Severing connection from client end", Console::LogLevel::INFO);
+					Console::logToConsole("Severing connection from client end", Console::LogLevel::INFO);
 					client.disconnect();
 				}
 				if (e.key.code == sf::Keyboard::Return) {

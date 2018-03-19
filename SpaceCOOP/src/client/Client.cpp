@@ -1,5 +1,5 @@
 #include "Client.h"
-#include "../shared/Console.h"
+#include "GraphicalConsole.h"
 #include "../shared/PacketHandler.h"
 #include <memory>
 #include <functional>
@@ -9,6 +9,7 @@
 #include "commands/StrafeRightClientCommand.h"
 #include "commands/RotateLeftClientCommand.h"
 #include "commands/RotateRightClientCommand.h"
+#include "commands/ToggleConsoleCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -31,6 +32,7 @@ Client::Client() {
 	REGCMD(StrafeRightClientCommand, 3);
 	REGCMD(RotateLeftClientCommand, 4);
 	REGCMD(RotateRightClientCommand, 5);
+	REGCMD(ToggleConsoleCommand, 200);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
@@ -39,50 +41,54 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::D, "straferight");
 	BINDCMD(sf::Keyboard::Q, "rotateleft");
 	BINDCMD(sf::Keyboard::E, "rotateright");
+	BINDCMD(sf::Keyboard::Tilde, "toggleconsole");
 
 	//Register entities here
 	REGENT(Ship);
+
+	//Set up console
+	console.loadFont("assets/cour.ttf");
 }
 
 
 Client::~Client() {
 	if (receiveThread.joinable()) {
 		receiveThread.join();
-		Console::log("CL_Receive: joined", Console::LogLevel::INFO);
+		console.log("CL_Receive: joined", GraphicalConsole::LogLevel::INFO);
 	}
 	if (sendThread.joinable()) {
 		toSend.push(sf::Packet());
 		sendThread.join();
-		Console::log("CL_Send: joined", Console::LogLevel::INFO);
+		console.log("CL_Send: joined", GraphicalConsole::LogLevel::INFO);
 	}
 }
 
 void Client::connect() {
 	if (connected) {
-		Console::log("Already connected", Console::LogLevel::ERROR);
+		console.log("Already connected", GraphicalConsole::LogLevel::ERROR);
 		return;
 	}
 	connected = true;
 	receiveThread = thread(&Client::threadedReceive, this);
-	Console::log("CL_Receive: started", Console::LogLevel::INFO);
+	console.log("CL_Receive: started", GraphicalConsole::LogLevel::INFO);
 	sendThread = thread(&Client::threadedSend, this);
-	Console::log("CL_Send: started", Console::LogLevel::INFO);
+	console.log("CL_Send: started", GraphicalConsole::LogLevel::INFO);
 }
 
 void Client::disconnect() {
 	if (!connected) {
-		Console::log("Already disconnected", Console::LogLevel::ERROR);
+		console.log("Already disconnected", GraphicalConsole::LogLevel::ERROR);
 		return;
 	}
 	connected = false;
 	socket.disconnect();
-	Console::log("CL_Socket: closed", Console::LogLevel::INFO);
+	console.log("CL_Socket: closed", GraphicalConsole::LogLevel::INFO);
 	receiveThread.join();
-	Console::log("CL_Receive: joined", Console::LogLevel::INFO);
+	console.log("CL_Receive: joined", GraphicalConsole::LogLevel::INFO);
 	//Kind of a hack but the easiest way to interrupt the TSQueue
 	toSend.push(sf::Packet());
 	sendThread.join();
-	Console::log("CL_Send: joined", Console::LogLevel::INFO);
+	console.log("CL_Send: joined", GraphicalConsole::LogLevel::INFO);
 }
 
 void Client::sendText(std::string msg) {
@@ -103,6 +109,9 @@ void Client::draw() {
 	for (auto ent : entities) {
 		window->draw(*ent.second);
 	}
+	if (consoleVisible) {
+		window->draw(console);
+	}
 	window->display();
 }
 
@@ -114,18 +123,18 @@ void Client::update(double dt) {
 
 void Client::removeEntity(UUID id) {
 	if (!entities.erase(id)) {
-		Console::log("Could not find entity with UUID " + id, Console::LogLevel::WARNING);
+		console.log("Could not find entity with UUID " + id, GraphicalConsole::LogLevel::WARNING);
 	}
 }
 
 void Client::threadedReceive() {
-	Console::log("Attempting to connect to server", Console::LogLevel::INFO);
+	console.log("Attempting to connect to server", GraphicalConsole::LogLevel::INFO);
 	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
-	Console::log("CL_Socket: opened", Console::LogLevel::INFO);
+	console.log("CL_Socket: opened", GraphicalConsole::LogLevel::INFO);
 	if (connected) {
-		Console::log("Connected to server at " + ip + ":" + std::to_string(port), Console::LogLevel::INFO);
+		console.log("Connected to server at " + ip + ":" + std::to_string(port), GraphicalConsole::LogLevel::INFO);
 	} else {
-		Console::log("Could not connect to server", Console::LogLevel::WARNING);
+		console.log("Could not connect to server", GraphicalConsole::LogLevel::WARNING);
 	}
 	sf::Packet packet;
 	while (connected) {
@@ -133,18 +142,18 @@ void Client::threadedReceive() {
 		switch (st) {
 		case sf::TcpSocket::Disconnected:
 			connected = false;
-			Console::log("Connection to server was terminated", Console::LogLevel::INFO);
+			console.log("Connection to server was terminated", GraphicalConsole::LogLevel::INFO);
 			break;
 		case sf::TcpSocket::Done:
 			handlePacket(packet);
 			break;
 		default:
-			Console::log("Error receiving packet", Console::LogLevel::ERROR);
+			console.log("Error receiving packet", GraphicalConsole::LogLevel::ERROR);
 		}
 	}
 	//Shutdown socket
 	socket.disconnect();
-	Console::log("CL_Socket: closed", Console::LogLevel::INFO);
+	console.log("CL_Socket: closed", GraphicalConsole::LogLevel::INFO);
 }
 
 void Client::threadedSend() {
@@ -160,19 +169,19 @@ void Client::threadedSend() {
 void Client::handlePacket(sf::Packet& packet) {
 	sf::Uint8 type;
 	if (!(packet >> type)) {
-		Console::log("Could not decode packet", Console::LogLevel::ERROR);
+		console.log("Could not decode packet", GraphicalConsole::LogLevel::ERROR);
 	}
 	switch (type) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) : {
 		std::string msg;
 		packet >> msg;
-		Console::log(msg, Console::LogLevel::INFO);
+		console.log(msg, GraphicalConsole::LogLevel::INFO);
 		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) : {
 		packet >> galaxy;
 		galaxy.createVertexArray();
-		Console::log("Received galaxy data", Console::LogLevel::INFO);
+		console.log("Received galaxy data", GraphicalConsole::LogLevel::INFO);
 		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) : {
@@ -186,7 +195,7 @@ void Client::handlePacket(sf::Packet& packet) {
 				c->execute();
 			}
 		} catch (std::exception e) {
-			Console::log("Received invalid command from server", Console::LogLevel::WARNING);
+			console.log("Received invalid command from server", GraphicalConsole::LogLevel::WARNING);
 		}
 		break;
 	}
@@ -203,16 +212,16 @@ void Client::handlePacket(sf::Packet& packet) {
 				packet >> *entity;
 				entity->id = id;
 				entities.insert_or_assign(id, entity);
-				//Console::log("Added entity " + std::to_string(id), Console::LogLevel::INFO);
+				//console.log("Added entity " + std::to_string(id), GraphicalConsole::LogLevel::INFO);
 			} catch (std::exception e) {
-				Console::log("Received invalid entity from server ("+ std::to_string(entType)+")", Console::LogLevel::WARNING);
+				console.log("Received invalid entity from server ("+ std::to_string(entType)+")", GraphicalConsole::LogLevel::WARNING);
 			}
 			break;
 		}
 		case static_cast<sf::Uint8>(PacketHandler::Entity::MODIFY) : {
 			auto ent = entities[id];
 			if (!ent) {
-				Console::log("Cannot modify entity, does not exist (" + std::to_string(id) + ")", Console::LogLevel::WARNING);
+				console.log("Cannot modify entity, does not exist (" + std::to_string(id) + ")", GraphicalConsole::LogLevel::WARNING);
 				break;
 			}
 			ent->modify(packet);

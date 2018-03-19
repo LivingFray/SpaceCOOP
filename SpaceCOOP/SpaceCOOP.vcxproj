@@ -131,6 +131,8 @@
     <ClCompile Include="src\client\commands\StrafeLeftClientCommand.cpp" />
     <ClCompile Include="src\client\commands\StrafeRightClientCommand.cpp" />
     <ClCompile Include="src\client\commands\RotateRightClientCommand.cpp" />
+    <ClCompile Include="src\client\commands\ToggleConsoleCommand.cpp" />
+    <ClCompile Include="src\client\GraphicalConsole.cpp" />
     <ClCompile Include="src\server\commands\RotateLeftServerCommand.cpp" />
     <ClCompile Include="src\server\commands\RotateRightServerCommand.cpp" />
     <ClCompile Include="src\shared\AssetHandler.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="src\client\commands\StrafeLeftClientCommand.h" />
     <ClInclude Include="src\client\commands\StrafeRightClientCommand.h" />
     <ClInclude Include="src\client\commands\RotateRightClientCommand.h" />
+    <ClInclude Include="src\client\commands\ToggleConsoleCommand.h" />
+    <ClInclude Include="src\client\GraphicalConsole.h" />
     <ClInclude Include="src\server\commands\RotateLeftServerCommand.h" />
     <ClInclude Include="src\server\commands\RotateRightServerCommand.h" />
     <ClInclude Include="src\shared\AssetHandler.h" />

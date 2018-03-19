@@ -9,7 +9,7 @@ Console::Console() {
 Console::~Console() {
 }
 
-void Console::log(std::string msg, LogLevel level) {
+void Console::logToConsole(std::string msg, LogLevel level) {
 	//TEMP, Until proper console can be made
 	std::string pre;
 	switch (level) {

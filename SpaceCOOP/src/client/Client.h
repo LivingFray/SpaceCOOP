@@ -9,6 +9,7 @@
 #include "InputHandler.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/Ship.h"
+#include "GraphicalConsole.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -35,6 +36,7 @@ public:
 	InputHandler inputHandler;
 	EntityHandler entityHandler;
 	shared_ptr<Ship> ship;
+	bool consoleVisible = false;
 private:
 	sf::TcpSocket socket;
 	thread receiveThread;
@@ -45,6 +47,7 @@ private:
 	void handlePacket(sf::Packet& packet);
 	TSQueue<sf::Packet> toSend;
 
+	GraphicalConsole console;
 	ClientGalaxy galaxy;
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 };

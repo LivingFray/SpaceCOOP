@@ -6,6 +6,6 @@ public:
 	Console();
 	~Console();
 	enum class LogLevel { INFO, WARNING, ERROR };
-	static void log(std::string msg, LogLevel level);
+	static void logToConsole(std::string msg, LogLevel level);
 };
 
