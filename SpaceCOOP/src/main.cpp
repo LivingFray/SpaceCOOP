@@ -28,17 +28,18 @@ int main() {
 				window.close();
 			}
 			if (e.type == sf::Event::KeyPressed) {
-				client.inputHandler.keyEvent(e);
-				if (e.key.code == sf::Keyboard::Space) {
+				client.keyEvent(e);
+				//TEMP
+				if (e.key.code == sf::Keyboard::Space && !client.consoleVisible) {
 					Console::logToConsole("Severing connection from client end", Console::LogLevel::INFO);
 					client.disconnect();
 				}
-				if (e.key.code == sf::Keyboard::Return) {
-					client.sendText("This is a test");
-				}
 			}
 			if (e.type == sf::Event::KeyReleased) {
-				client.inputHandler.keyEvent(e);
+				client.keyEvent(e);
+			}
+			if (e.type == sf::Event::TextEntered) {
+				client.textEvent(e);
 			}
 		}
 		sf::Time t = clock.restart();

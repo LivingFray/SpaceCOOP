@@ -117,7 +117,7 @@
     <ClCompile Include="src\client\GraphicalConsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\commands\ToggleConsoleCommand.cpp">
+    <ClCompile Include="src\client\commands\ShowConsoleCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -224,7 +224,7 @@
     <ClInclude Include="src\client\GraphicalConsole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\commands\ToggleConsoleCommand.h">
+    <ClInclude Include="src\client\commands\ShowConsoleCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

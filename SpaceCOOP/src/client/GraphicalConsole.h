@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <mutex>
+#include <string>
 class GraphicalConsole :
 	public sf::Drawable {
 public:
@@ -16,12 +17,13 @@ public:
 		std::string msg;
 		LogLevel level;
 	};
+	sf::String command;
+	static sf::Font font;
 private:
 	std::vector<Message> logs;
 	mutable std::mutex lock;
 	size_t viewOffset = 0;
 	static const unsigned int fontSize;
-	static sf::Font font;
 
 	//Positioning variables
 	static const float borderX;

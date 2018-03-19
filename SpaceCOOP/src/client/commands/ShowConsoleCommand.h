@@ -1,10 +1,10 @@
 #pragma once
 #include "ClientCommand.h"
-class ToggleConsoleCommand:
+class ShowConsoleCommand:
 	public ClientCommand {
 public:
-	ToggleConsoleCommand();
-	~ToggleConsoleCommand();
+	ShowConsoleCommand();
+	~ShowConsoleCommand();
 	void execute();
 };
 

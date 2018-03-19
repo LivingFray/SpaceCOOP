@@ -9,7 +9,7 @@
 #include "commands/StrafeRightClientCommand.h"
 #include "commands/RotateLeftClientCommand.h"
 #include "commands/RotateRightClientCommand.h"
-#include "commands/ToggleConsoleCommand.h"
+#include "commands/ShowConsoleCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -32,7 +32,7 @@ Client::Client() {
 	REGCMD(StrafeRightClientCommand, 3);
 	REGCMD(RotateLeftClientCommand, 4);
 	REGCMD(RotateRightClientCommand, 5);
-	REGCMD(ToggleConsoleCommand, 200);
+	REGCMD(ShowConsoleCommand, 200);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
@@ -41,7 +41,7 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::D, "straferight");
 	BINDCMD(sf::Keyboard::Q, "rotateleft");
 	BINDCMD(sf::Keyboard::E, "rotateright");
-	BINDCMD(sf::Keyboard::Tilde, "toggleconsole");
+	BINDCMD(sf::Keyboard::Escape, "showconsole");
 
 	//Register entities here
 	REGENT(Ship);
@@ -124,6 +124,39 @@ void Client::update(double dt) {
 void Client::removeEntity(UUID id) {
 	if (!entities.erase(id)) {
 		console.log("Could not find entity with UUID " + id, GraphicalConsole::LogLevel::WARNING);
+	}
+}
+
+void Client::keyEvent(sf::Event e) {
+	if (!consoleVisible) {
+		inputHandler.keyEvent(e);
+	} else if (e.key.code == sf::Keyboard::Escape && e.type == sf::Event::KeyPressed) {
+		consoleVisible = false;
+	} else if (e.key.code == sf::Keyboard::BackSpace && e.type == sf::Event::KeyPressed && console.command.getSize() > 0) {
+		console.command = console.command.substring(0, console.command.getSize() - 1);
+	} else if (e.key.code == sf::Keyboard::Return && e.type == sf::Event::KeyPressed && console.command.getSize() > 0) {
+		std::string cmdString;
+		if (console.command[0] == '-' || console.command[0] == '+') {
+			cmdString = console.command.substring(1, console.command.getSize()).toAnsiString();
+		} else {
+			cmdString = console.command.toAnsiString();
+		}
+		auto cmd = commandHandler.getCommand(cmdString);
+		if (cmd) {
+			auto clCommand = std::dynamic_pointer_cast<ClientCommand>(cmd);
+			clCommand->client = this;
+			clCommand->parseString(console.command.toAnsiString());
+		}
+		console.command.clear();
+	}
+}
+
+void Client::textEvent(sf::Event e) {
+	if (e.text.unicode < 32) {
+		return;
+	}
+	if (consoleVisible) {
+		console.command += e.text.unicode;
 	}
 }
 

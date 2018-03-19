@@ -31,6 +31,9 @@ public:
 	void update(double dt);
 	void removeEntity(UUID id);
 
+	void keyEvent(sf::Event e);
+	void textEvent(sf::Event e);
+
 	sf::RenderWindow* window;
 	CommandHandler commandHandler;
 	InputHandler inputHandler;

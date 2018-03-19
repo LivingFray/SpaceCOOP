@@ -18,7 +18,10 @@ shared_ptr<Command> CommandHandler::getCommand(CommandID id) {
 }
 
 shared_ptr<Command> CommandHandler::getCommand(std::string name) {
-	return namedCommands[name]();
+	if (namedCommands.find(name) != namedCommands.end()) {
+		return namedCommands[name]();
+	}
+	return NULL;
 }
 
 void CommandHandler::registerCommand(function<shared_ptr<Command>()> c, CommandID id) {
