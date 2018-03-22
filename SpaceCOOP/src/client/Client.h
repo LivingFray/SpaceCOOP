@@ -30,6 +30,7 @@ public:
 	void draw();
 	void update(double dt);
 	void removeEntity(UUID id);
+	void showConsole();
 
 	void keyEvent(sf::Event e);
 	void textEvent(sf::Event e);
@@ -60,5 +61,6 @@ private:
 	GraphicalConsole console;
 	ClientGalaxy galaxy;
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
+	bool consoleJustVisible = false;
 };
 

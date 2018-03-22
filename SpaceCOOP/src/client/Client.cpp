@@ -41,7 +41,7 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::D, "straferight");
 	BINDCMD(sf::Keyboard::Q, "rotateleft");
 	BINDCMD(sf::Keyboard::E, "rotateright");
-	BINDCMD(sf::Keyboard::Escape, "showconsole");
+	BINDCMD(sf::Keyboard::F1, "showconsole");
 
 	//Register entities here
 	REGENT(Ship);
@@ -52,7 +52,6 @@ Client::Client() {
 
 
 Client::~Client() {
-	//TODO: JOINS FOR UDP
 	connected = false;
 	if (receiveTCPThread.joinable()) {
 		receiveTCPThread.join();
@@ -138,6 +137,7 @@ void Client::draw() {
 }
 
 void Client::update(double dt) {
+	consoleJustVisible = false;
 	for (auto ent : entities) {
 		ent.second->update(dt);
 	}
@@ -147,6 +147,12 @@ void Client::removeEntity(UUID id) {
 	if (!entities.erase(id)) {
 		console.log("Could not find entity with UUID " + id, GraphicalConsole::LogLevel::WARNING);
 	}
+}
+
+void Client::showConsole() {
+	consoleVisible = true;
+	//console.command.clear();
+	consoleJustVisible = true;
 }
 
 void Client::keyEvent(sf::Event e) {
@@ -168,6 +174,9 @@ void Client::keyEvent(sf::Event e) {
 			auto clCommand = std::dynamic_pointer_cast<ClientCommand>(cmd);
 			clCommand->client = this;
 			clCommand->parseString(console.command.toAnsiString());
+			console.log(console.command, GraphicalConsole::LogLevel::INFO);
+		} else {
+			console.log("Command not recognised: " + console.command, GraphicalConsole::LogLevel::ERROR);
 		}
 		console.command.clear();
 	}
@@ -177,7 +186,7 @@ void Client::textEvent(sf::Event e) {
 	if (e.text.unicode < 32) {
 		return;
 	}
-	if (consoleVisible) {
+	if (consoleVisible && !consoleJustVisible) {
 		console.command += e.text.unicode;
 	}
 }

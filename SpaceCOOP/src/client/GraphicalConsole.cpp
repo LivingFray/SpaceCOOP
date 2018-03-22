@@ -31,7 +31,7 @@ void GraphicalConsole::draw(sf::RenderTarget& target, sf::RenderStates states) c
 	background.setFillColor(sf::Color(0, 0, 0, 127));
 	target.draw(background, states);
 	//Draw text
-	float lineStartPos = size.y - 2.0f * (fontSize - lineGap);
+	float lineStartPos = size.y - 2.0f * (fontSize + lineGap) - lineGap;
 	int lineIndex = logs.size() - viewOffset - 1;
 	//TODO: Line wrapping
 	lock.lock();
@@ -61,7 +61,7 @@ void GraphicalConsole::draw(sf::RenderTarget& target, sf::RenderStates states) c
 	//Draw input box
 	float h = fontSize + lineGap * 2;
 	sf::RectangleShape input(sf::Vector2f(size.x, h));
-	input.setFillColor(sf::Color(0, 0, 0, 255));
+	input.setFillColor(sf::Color(0, 0, 0, 127));
 	input.setPosition(0.0f, size.y - h);
 	target.draw(input, states);
 	//Draw current input

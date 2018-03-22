@@ -11,5 +11,5 @@ ShowConsoleCommand::~ShowConsoleCommand() {
 }
 
 void ShowConsoleCommand::execute() {
-	client->consoleVisible = !client->consoleVisible;
+	client->showConsole();
 }
