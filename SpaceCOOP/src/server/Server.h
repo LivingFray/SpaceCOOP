@@ -43,8 +43,11 @@ public:
 	void addEntity(shared_ptr<EntityCore> entity);
 private:
 	thread incomingThread;
+	thread udpThread;
 	sf::TcpListener listen;
+	sf::UdpSocket udp;
 	void handleConnections();
+	void receiveUDP();
 	bool running = false;
 	vector<shared_ptr<Player>> players;
 	std::atomic<bool> checkConnected = false;

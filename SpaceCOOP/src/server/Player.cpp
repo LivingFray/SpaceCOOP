@@ -25,14 +25,16 @@ void Player::start() {
 	}
 	running = true;
 	//Start threads
-	receiveThread = std::thread(&Player::threadedReceive, this);
+	receiveTCPThread = std::thread(&Player::threadedTCPReceive, this);
 	Console::logToConsole("PL_Receive: started", Console::LogLevel::INFO);
-	sendThread = std::thread(&Player::threadedSend, this);
-	Console::logToConsole("PL_Send: started", Console::LogLevel::INFO);
+	sendTCPThread = std::thread(&Player::threadedTCPSend, this);
+	Console::logToConsole("PL_Send_TCP: started", Console::LogLevel::INFO);
+	sendUDPThread = std::thread(&Player::threadedUDPSend, this);
+	Console::logToConsole("PL_Send_UDP: started", Console::LogLevel::INFO);
 	Console::logToConsole("Sending player current galaxy", Console::LogLevel::INFO);
 	sf::Packet p;
 	p << static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) << server->getGalaxy();
-	toSend.push(p);
+	toSendTCP.push(p);
 }
 
 
@@ -43,20 +45,23 @@ void Player::disconnect() {
 	}
 	Console::logToConsole("Shutting down connection", Console::LogLevel::INFO);
 	running = false;
-	socket->disconnect();
+	tcpSocket->disconnect();
 	Console::logToConsole("PL_Socket: closed", Console::LogLevel::INFO);
-	receiveThread.join();
+	receiveTCPThread.join();
 	Console::logToConsole("PL_Receive: joined", Console::LogLevel::INFO);
-	toSend.push(sf::Packet());
-	sendThread.join();
-	Console::logToConsole("PL_Send: joined", Console::LogLevel::INFO);
+	toSendTCP.push(sf::Packet());
+	toSendUDP.push(sf::Packet());
+	sendTCPThread.join();
+	Console::logToConsole("PL_Send_TCP: joined", Console::LogLevel::INFO);
+	sendUDPThread.join();
+	Console::logToConsole("PL_Send_UDP: joined", Console::LogLevel::INFO);
 }
 
 
 void Player::sendText(std::string msg) {
 	sf::Packet packet;
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
-	toSend.push(packet);
+	toSendTCP.push(packet);
 }
 
 void Player::sendEntity(shared_ptr<EntityCore> entity) {
@@ -64,7 +69,7 @@ void Player::sendEntity(shared_ptr<EntityCore> entity) {
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
 	packet << static_cast<sf::Uint8>(PacketHandler::Entity::CREATE);
 	packet << *entity;
-	toSend.push(packet);
+	toSendTCP.push(packet);
 }
 
 void Player::updateEntity(sf::Packet p) {
@@ -72,13 +77,13 @@ void Player::updateEntity(sf::Packet p) {
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
 	packet << static_cast<sf::Uint8>(PacketHandler::Entity::MODIFY);
 	concatPackets(packet, p);
-	toSend.push(packet);
+	toSendUDP.push(packet);
 }
 
-void Player::threadedReceive() {
+void Player::threadedTCPReceive() {
 	while (running) {
 		sf::Packet packet;
-		auto status = socket->receive(packet);
+		auto status = tcpSocket->receive(packet);
 		switch (status) {
 		case sf::TcpSocket::Disconnected:
 			Console::logToConsole("Client disconnected", Console::LogLevel::INFO);
@@ -93,21 +98,29 @@ void Player::threadedReceive() {
 		}
 	}
 	Console::logToConsole("Client successfully disconnected", Console::LogLevel::INFO);
-	socket->disconnect();
+	tcpSocket->disconnect();
 	Console::logToConsole("PL_Socket: closed", Console::LogLevel::INFO);
 	server->updateConnectedList();
 }
 
 
-void Player::threadedSend() {
+void Player::threadedTCPSend() {
 	while (running) {
-		sf::Packet p = toSend.poll();
+		sf::Packet p = toSendTCP.poll();
 		if (p.getDataSize() > 0) {
-			socket->send(p);
+			tcpSocket->send(p);
 		}
 	}
 }
 
+void Player::threadedUDPSend() {
+	while (running) {
+		sf::Packet p = toSendUDP.poll();
+		if (p.getDataSize() > 0) {
+			udpSocket->send(p, ip, port);
+		}
+	}
+}
 
 void Player::handlePacket(sf::Packet& packet) {
 	sf::Uint8 type;

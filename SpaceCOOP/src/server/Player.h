@@ -22,15 +22,22 @@ public:
 	void sendEntity(shared_ptr<EntityCore> entity);
 	void updateEntity(sf::Packet p);
 	shared_ptr<Ship> ship;
+
+	sf::IpAddress ip;
+	unsigned short port;
 private:
-	shared_ptr<sf::TcpSocket> socket;
-	thread receiveThread;
-	thread sendThread;
-	void threadedReceive();
-	void threadedSend();
+	shared_ptr<sf::TcpSocket> tcpSocket;
+	sf::UdpSocket* udpSocket;
+	thread receiveTCPThread;
+	thread sendTCPThread;
+	thread sendUDPThread;
+	void threadedTCPReceive();
+	void threadedTCPSend();
+	void threadedUDPSend();
 	bool running = false;
 	void handlePacket(sf::Packet& packet);
-	TSQueue<sf::Packet> toSend;
+	TSQueue<sf::Packet> toSendTCP;
+	TSQueue<sf::Packet> toSendUDP;
 	Server* server;
 	friend class Server;
 };

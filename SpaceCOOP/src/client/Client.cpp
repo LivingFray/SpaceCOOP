@@ -52,14 +52,26 @@ Client::Client() {
 
 
 Client::~Client() {
-	if (receiveThread.joinable()) {
-		receiveThread.join();
-		console.log("CL_Receive: joined", GraphicalConsole::LogLevel::INFO);
+	//TODO: JOINS FOR UDP
+	connected = false;
+	if (receiveTCPThread.joinable()) {
+		receiveTCPThread.join();
+		console.log("CL_Receive_TCP: joined", GraphicalConsole::LogLevel::INFO);
 	}
-	if (sendThread.joinable()) {
-		toSend.push(sf::Packet());
-		sendThread.join();
-		console.log("CL_Send: joined", GraphicalConsole::LogLevel::INFO);
+	if (sendTCPThread.joinable()) {
+		tcpToSend.push(sf::Packet());
+		sendTCPThread.join();
+		console.log("CL_Send_TCP: joined", GraphicalConsole::LogLevel::INFO);
+	}
+	if (receiveUDPThread.joinable()) {
+		udpSocket.unbind();
+		receiveUDPThread.join();
+		console.log("CL_Receive_UDP: joined", GraphicalConsole::LogLevel::INFO);
+	}
+	if (sendUDPThread.joinable()) {
+		udpToSend.push(sf::Packet());
+		sendUDPThread.join();
+		console.log("CL_Send_UDP: joined", GraphicalConsole::LogLevel::INFO);
 	}
 }
 
@@ -69,10 +81,14 @@ void Client::connect() {
 		return;
 	}
 	connected = true;
-	receiveThread = thread(&Client::threadedReceive, this);
-	console.log("CL_Receive: started", GraphicalConsole::LogLevel::INFO);
-	sendThread = thread(&Client::threadedSend, this);
-	console.log("CL_Send: started", GraphicalConsole::LogLevel::INFO);
+	receiveTCPThread = thread(&Client::threadedTCPReceive, this);
+	console.log("CL_Receive_TCP: started", GraphicalConsole::LogLevel::INFO);
+	receiveUDPThread = thread(&Client::threadedUDPReceive, this);
+	console.log("CL_Receive_UDP: started", GraphicalConsole::LogLevel::INFO);
+	sendTCPThread = thread(&Client::threadedTCPSend, this);
+	console.log("CL_Send_TCP: started", GraphicalConsole::LogLevel::INFO);
+	sendUDPThread = thread(&Client::threadedUDPSend, this);
+	console.log("CL_Send_UDP: started", GraphicalConsole::LogLevel::INFO);
 }
 
 void Client::disconnect() {
@@ -81,26 +97,32 @@ void Client::disconnect() {
 		return;
 	}
 	connected = false;
-	socket.disconnect();
-	console.log("CL_Socket: closed", GraphicalConsole::LogLevel::INFO);
-	receiveThread.join();
-	console.log("CL_Receive: joined", GraphicalConsole::LogLevel::INFO);
+	tcpSocket.disconnect();
+	console.log("CL_Socket_TCP: closed", GraphicalConsole::LogLevel::INFO);
+	receiveTCPThread.join();
+	console.log("CL_Receive_TCP: joined", GraphicalConsole::LogLevel::INFO);
+	udpSocket.unbind();
+	receiveUDPThread.join();
+	console.log("CL_Receive_UDP: joined", GraphicalConsole::LogLevel::INFO);
 	//Kind of a hack but the easiest way to interrupt the TSQueue
-	toSend.push(sf::Packet());
-	sendThread.join();
-	console.log("CL_Send: joined", GraphicalConsole::LogLevel::INFO);
+	tcpToSend.push(sf::Packet());
+	udpToSend.push(sf::Packet());
+	sendTCPThread.join();
+	console.log("CL_Send_TCP: joined", GraphicalConsole::LogLevel::INFO);
+	sendUDPThread.join();
+	console.log("CL_Send_UDP: joined", GraphicalConsole::LogLevel::INFO);
 }
 
 void Client::sendText(std::string msg) {
 	sf::Packet packet;
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::TEXT) << msg;
-	toSend.push(packet);
+	tcpToSend.push(packet);
 }
 
 void Client::sendCommand(ClientCommand* cmd) {
 	sf::Packet packet;
 	packet << static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) << *cmd;
-	toSend.push(packet);
+	tcpToSend.push(packet);
 }
 
 void Client::draw() {
@@ -160,9 +182,9 @@ void Client::textEvent(sf::Event e) {
 	}
 }
 
-void Client::threadedReceive() {
+void Client::threadedTCPReceive() {
 	console.log("Attempting to connect to server", GraphicalConsole::LogLevel::INFO);
-	connected = socket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
+	connected = tcpSocket.connect(sf::IpAddress(ip), port) == sf::TcpSocket::Done;
 	console.log("CL_Socket: opened", GraphicalConsole::LogLevel::INFO);
 	if (connected) {
 		console.log("Connected to server at " + ip + ":" + std::to_string(port), GraphicalConsole::LogLevel::INFO);
@@ -171,7 +193,7 @@ void Client::threadedReceive() {
 	}
 	sf::Packet packet;
 	while (connected) {
-		sf::TcpSocket::Status st = socket.receive(packet);
+		sf::TcpSocket::Status st = tcpSocket.receive(packet);
 		switch (st) {
 		case sf::TcpSocket::Disconnected:
 			connected = false;
@@ -185,15 +207,48 @@ void Client::threadedReceive() {
 		}
 	}
 	//Shutdown socket
-	socket.disconnect();
+	tcpSocket.disconnect();
 	console.log("CL_Socket: closed", GraphicalConsole::LogLevel::INFO);
 }
 
-void Client::threadedSend() {
+void Client::threadedTCPSend() {
 	while (connected) {
-		sf::Packet p = toSend.poll();
+		sf::Packet p = tcpToSend.poll();
 		if (p.getDataSize() > 0) {
-			socket.send(p);
+			tcpSocket.send(p);
+		}
+	}
+}
+
+void Client::threadedUDPReceive() {
+	udpSocket.bind(tcpSocket.getLocalPort());
+	console.log("Bound UDP socket on port " + std::to_string(udpSocket.getLocalPort()), GraphicalConsole::LogLevel::INFO);
+	addr = sf::IpAddress(ip);
+	sf::Packet packet;
+	sf::IpAddress remote;
+	unsigned short packetPort;
+	while (connected) {
+		sf::UdpSocket::Status st = udpSocket.receive(packet, remote, packetPort);
+		if (remote != addr || port != packetPort) {
+			console.log("Received packet from unknown address " + remote.toString() + ":" + std::to_string(packetPort), GraphicalConsole::LogLevel::WARNING);
+			console.log(std::to_string(st), GraphicalConsole::LogLevel::INFO);
+			continue;
+		}
+		switch (st) {
+			case sf::UdpSocket::Done:
+				handlePacket(packet);
+				break;
+			default:
+				console.log("Error receiving packet", GraphicalConsole::LogLevel::ERROR);
+		}
+	}
+}
+
+void Client::threadedUDPSend() {
+	while (connected) {
+		sf::Packet p = udpToSend.poll();
+		if (p.getDataSize() > 0) {
+			udpSocket.send(p, addr, port);
 		}
 	}
 }

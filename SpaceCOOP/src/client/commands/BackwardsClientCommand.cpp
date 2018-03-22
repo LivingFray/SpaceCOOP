@@ -11,6 +11,9 @@ BackwardsClientCommand::~BackwardsClientCommand() {
 }
 
 void BackwardsClientCommand::execute() {
+	if (!client || !client->ship) {
+		return;
+	}
 	if (held) {
 		client->ship->moveForward(-50.0f);
 	} else {

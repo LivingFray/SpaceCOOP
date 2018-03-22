@@ -11,6 +11,9 @@ StrafeLeftClientCommand::~StrafeLeftClientCommand() {
 }
 
 void StrafeLeftClientCommand::execute() {
+	if (!client || !client->ship) {
+		return;
+	}
 	if (held) {
 		client->ship->moveRight(-50.0f);
 	} else {

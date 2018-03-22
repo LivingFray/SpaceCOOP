@@ -24,7 +24,7 @@ public:
 	void connect();
 	void disconnect();
 	std::string ip;
-	int port;
+	unsigned short port;
 	void sendText(std::string msg);
 	void sendCommand(ClientCommand* cmd);
 	void draw();
@@ -41,14 +41,21 @@ public:
 	shared_ptr<Ship> ship;
 	bool consoleVisible = false;
 private:
-	sf::TcpSocket socket;
-	thread receiveThread;
-	thread sendThread;
+	sf::TcpSocket tcpSocket;
+	sf::UdpSocket udpSocket;
+	thread receiveTCPThread;
+	thread sendTCPThread;
+	thread receiveUDPThread;
+	thread sendUDPThread;
 	bool connected;
-	void threadedReceive();
-	void threadedSend();
+	void threadedTCPReceive();
+	void threadedTCPSend();
+	void threadedUDPReceive();
+	void threadedUDPSend();
 	void handlePacket(sf::Packet& packet);
-	TSQueue<sf::Packet> toSend;
+	TSQueue<sf::Packet> tcpToSend;
+	TSQueue<sf::Packet> udpToSend;
+	sf::IpAddress addr;
 
 	GraphicalConsole console;
 	ClientGalaxy galaxy;

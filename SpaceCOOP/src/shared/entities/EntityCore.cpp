@@ -13,18 +13,21 @@ EntityCore::~EntityCore() {
 }
 
 void EntityCore::setPosition(const sf::Vector2f& p) {
-	posChanged = true;
+	auto current = getPosition();
+	posChanged = current != p;
 	Transformable::setPosition(p);
 }
 
 void EntityCore::setRotation(float angle) {
-	angleChanged = true;
+	auto current = getRotation();
+	angleChanged = current != angle;
 	Transformable::setRotation(angle);
 }
 
 void EntityCore::setVelocity(sf::Vector2f v) {
+	auto current = getVelocity();
+	velChanged = current != v;
 	vel = v;
-	velChanged = true;
 }
 
 void EntityCore::modify(sf::Packet& p) {
@@ -42,6 +45,7 @@ void EntityCore::modify(sf::Packet& p) {
 void EntityCore::generateModifyPacket(sf::Packet& p) {
 	//Go through each tracked property and add it to the packet if it needs updating
 	//Reset relevant changed flags as states are now synced
+	//TODO: Only sync if it is likely the client has desynced, to save bandwidth
 	if (posChanged) {
 		p << POS_MODID;
 		sf::Vector2f pos = Transformable::getPosition();

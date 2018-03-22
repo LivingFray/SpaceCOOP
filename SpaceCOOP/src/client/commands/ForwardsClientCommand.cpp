@@ -1,5 +1,4 @@
 #include "ForwardsClientCommand.h"
-#include "../../shared/Console.h"
 
 
 
@@ -12,6 +11,9 @@ ForwardsClientCommand::~ForwardsClientCommand() {
 }
 
 void ForwardsClientCommand::execute() {
+	if (!client || !client->ship) {
+		return;
+	}
 	//Client side extrapolation here
 	if (held) {
 		client->ship->moveForward(50.0f);

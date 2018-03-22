@@ -27,10 +27,14 @@ Server::Server() {
 
 
 Server::~Server() {
+	running = false;
 	if (incomingThread.joinable()) {
-		running = false;
 		incomingThread.join();
 		Console::logToConsole("SV_Incoming: joined", Console::LogLevel::INFO);
+	}
+	if (udpThread.joinable()) {
+		udpThread.join();
+		Console::logToConsole("SV_UDP: joined", Console::LogLevel::INFO);
 	}
 }
 
@@ -43,6 +47,8 @@ void Server::start() {
 	lastSentPackets = 0;
 	incomingThread = std::thread(&Server::handleConnections, this);
 	Console::logToConsole("SV_Incoming: started", Console::LogLevel::INFO);
+	udpThread = std::thread(&Server::receiveUDP, this);
+	Console::logToConsole("SV_UDP: started", Console::LogLevel::INFO);
 	Console::logToConsole("Generating galaxy", Console::LogLevel::INFO);
 	galaxy.generateGalaxy();
 	Console::logToConsole("Galaxy generated", Console::LogLevel::INFO);
@@ -56,6 +62,9 @@ void Server::stop() {
 	Console::logToConsole("SV_Listen: closed", Console::LogLevel::INFO);
 	incomingThread.join();
 	Console::logToConsole("SV_Incoming: joined", Console::LogLevel::INFO);
+	udp.unbind();
+	udpThread.join();
+	Console::logToConsole("SV_UDP: joined", Console::LogLevel::INFO);
 	Console::logToConsole("No longer listening for new connections", Console::LogLevel::INFO);
 	for (shared_ptr<Player> t : players) {
 		t->disconnect();
@@ -122,7 +131,7 @@ void Server::onPlayerConnected(shared_ptr<Player> player) {
 	sf::Packet p;
 	p << static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP);
 	p << playerShip->id;
-	player->toSend.push(p);
+	player->toSendTCP.push(p);
 	//Send all entities to client
 }
 
@@ -157,7 +166,10 @@ void Server::handleConnections() {
 			Console::logToConsole("New client connected", Console::LogLevel::INFO);
 			auto player = std::make_shared<Player>();
 			//Pass socket to player
-			player->socket = client;
+			player->tcpSocket = client;
+			player->ip = client->getRemoteAddress();
+			player->port = client->getRemotePort();
+			player->udpSocket = &udp;
 			Console::logToConsole("PL_Socket: opened", Console::LogLevel::INFO);
 			player->server = this;
 			//Start listening
@@ -171,4 +183,22 @@ void Server::handleConnections() {
 	}
 	listen.close();
 	Console::logToConsole("SV_Listen: closed", Console::LogLevel::INFO);
+}
+
+void Server::receiveUDP() {
+	auto status = udp.bind(port);
+	if (status != sf::UdpSocket::Status::Done) {
+		Console::logToConsole("Error binding UDP socket to port " + std::to_string(port), Console::LogLevel::ERROR);
+	}
+	sf::Packet packet;
+	sf::IpAddress fromAddr;
+	unsigned short fromPort;
+	while (running) {
+		udp.receive(packet, fromAddr, fromPort);
+		for (auto p : players) {
+			if (p->ip == fromAddr && p->port == fromPort) {
+				p->handlePacket(packet);
+			}
+		}
+	}
 }
