@@ -2,6 +2,8 @@
 #include "server\Server.h"
 #include "client\Client.h"
 #include "shared\Console.h"
+#include "State.h"
+#include "TitleScreen.h"
 
 int main() {
 	if (!sf::Shader::isAvailable()) {
@@ -10,6 +12,12 @@ int main() {
 	}
 	sf::RenderWindow window(sf::VideoMode(1280, 720), "Spaaaaaace");
 	sf::Clock clock;
+	{
+		auto title = std::make_shared<TitleScreen>();
+		title->window = &window;
+		State::setState(title);
+	}
+	/*
 	Client client;
 	Server server;
 	server.port = 5000;
@@ -18,9 +26,11 @@ int main() {
 	client.port = 5000;
 	client.window = &window;
 	client.connect();
+	*/
 	clock.restart();
 	window.setKeyRepeatEnabled(false);
 	while (window.isOpen()) {
+		auto state = State::advanceState();
 		//Poll events
 		sf::Event e;
 		while (window.pollEvent(e)) {
@@ -28,32 +38,33 @@ int main() {
 				window.close();
 			}
 			if (e.type == sf::Event::KeyPressed) {
-				client.keyEvent(e);
-				//TEMP
-				if (e.key.code == sf::Keyboard::Space && !client.consoleVisible) {
-					Console::logToConsole("Severing connection from client end", Console::LogLevel::INFO);
-					client.disconnect();
-				}
+				//client.keyEvent(e);
+				state->keyEvent(e);
 			}
 			if (e.type == sf::Event::KeyReleased) {
-				client.keyEvent(e);
+				//client.keyEvent(e);
+				state->keyEvent(e);
 			}
 			if (e.type == sf::Event::TextEntered) {
-				client.textEvent(e);
+				//client.textEvent(e);
+				state->textEvent(e);
 			}
 			if (e.type == sf::Event::Resized) {
-				client.resizeEvent(e);
+				//client.resizeEvent(e);
+				state->resizeEvent(e);
 			}
 		}
 		sf::Time t = clock.restart();
 		//Update server
-		server.update(t.asSeconds());
+		//server.update(t.asSeconds());
 		//Update client
-		client.update(t.asSeconds());
+		//client.update(t.asSeconds());
+		state->update(t.asSeconds());
 		//Draw client
-		client.draw();
+		//client.draw();
+		state->draw();
 	}
-	server.stop();
-	client.disconnect();
+	//server.stop();
+	//client.disconnect();
 	return 0;
 }

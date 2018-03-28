@@ -49,7 +49,7 @@ private:
 	thread sendTCPThread;
 	thread receiveUDPThread;
 	thread sendUDPThread;
-	bool connected;
+	bool connected = false;
 	void threadedTCPReceive();
 	void threadedTCPSend();
 	void threadedUDPReceive();
