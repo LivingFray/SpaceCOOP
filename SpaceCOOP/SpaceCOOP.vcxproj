@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ClientState.cpp" />
     <ClCompile Include="src\client\commands\BackwardsClientCommand.cpp" />
     <ClCompile Include="src\client\commands\RotateLeftClientCommand.cpp" />
     <ClCompile Include="src\client\commands\StrafeLeftClientCommand.cpp" />
@@ -133,6 +134,7 @@
     <ClCompile Include="src\client\commands\RotateRightClientCommand.cpp" />
     <ClCompile Include="src\client\commands\ShowConsoleCommand.cpp" />
     <ClCompile Include="src\client\GraphicalConsole.cpp" />
+    <ClCompile Include="src\LocalServerState.cpp" />
     <ClCompile Include="src\server\commands\RotateLeftServerCommand.cpp" />
     <ClCompile Include="src\server\commands\RotateRightServerCommand.cpp" />
     <ClCompile Include="src\shared\AssetHandler.cpp" />
@@ -166,8 +168,11 @@
     <ClCompile Include="src\shared\Helper.cpp" />
     <ClCompile Include="src\shared\PacketHandler.cpp" />
     <ClCompile Include="src\shared\Star.cpp" />
+    <ClCompile Include="src\State.cpp" />
+    <ClCompile Include="src\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ClientState.h" />
     <ClInclude Include="src\client\commands\BackwardsClientCommand.h" />
     <ClInclude Include="src\client\commands\RotateLeftClientCommand.h" />
     <ClInclude Include="src\client\commands\StrafeLeftClientCommand.h" />
@@ -175,6 +180,7 @@
     <ClInclude Include="src\client\commands\RotateRightClientCommand.h" />
     <ClInclude Include="src\client\commands\ShowConsoleCommand.h" />
     <ClInclude Include="src\client\GraphicalConsole.h" />
+    <ClInclude Include="src\LocalServerState.h" />
     <ClInclude Include="src\server\commands\RotateLeftServerCommand.h" />
     <ClInclude Include="src\server\commands\RotateRightServerCommand.h" />
     <ClInclude Include="src\shared\AssetHandler.h" />
@@ -203,6 +209,8 @@
     <ClInclude Include="src\shared\PacketHandler.h" />
     <ClInclude Include="src\shared\Star.h" />
     <ClInclude Include="src\shared\TSQueue.h" />
+    <ClInclude Include="src\State.h" />
+    <ClInclude Include="src\TitleScreen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
