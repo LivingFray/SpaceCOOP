@@ -24,14 +24,16 @@ void GraphicalConsole::log(std::string msg, LogLevel level) {
 
 void GraphicalConsole::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	auto view = target.getView();
-	target.setView(target.getDefaultView());
+	target.setView(consoleView);
 	sf::Vector2u size = target.getSize();
 	//Draw backing
 	sf::RectangleShape background(sf::Vector2f(size.x, size.y));
 	background.setFillColor(sf::Color(0, 0, 0, 127));
 	target.draw(background, states);
+	float inputHeight = borderY + fontSize;
+	float inputTop = size.y - inputHeight - lineGap;
 	//Draw text
-	float lineStartPos = size.y - 2.0f * (fontSize + lineGap) - lineGap;
+	float lineStartPos = inputTop - (fontSize + lineGap);
 	int lineIndex = logs.size() - viewOffset - 1;
 	//TODO: Line wrapping
 	lock.lock();
@@ -59,19 +61,26 @@ void GraphicalConsole::draw(sf::RenderTarget& target, sf::RenderStates states) c
 	}
 	lock.unlock();
 	//Draw input box
-	float h = fontSize + lineGap * 2;
-	sf::RectangleShape input(sf::Vector2f(size.x, h));
+	//float h = fontSize + lineGap * 2;
+	sf::RectangleShape input(sf::Vector2f(size.x, inputHeight));
 	input.setFillColor(sf::Color(0, 0, 0, 127));
-	input.setPosition(0.0f, size.y - h);
+	input.setPosition(0.0f, inputTop);
 	target.draw(input, states);
 	//Draw current input
 	sf::Text inputText(command, font, fontSize);
 	inputText.setOutlineColor(sf::Color::Green);
 	inputText.setFillColor(sf::Color::Green);
-	inputText.setPosition(borderX, size.y - h);
+	inputText.setPosition(borderX, inputTop);
 	target.draw(inputText, states);
+
+	//Reset view
+	target.setView(view);
 }
 
 void GraphicalConsole::loadFont(std::string fontName) {
 	font.loadFromFile(fontName);
+}
+
+void GraphicalConsole::resize(unsigned int width, unsigned int height) {
+	consoleView = sf::View(sf::FloatRect(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)));
 }

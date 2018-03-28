@@ -48,6 +48,7 @@ Client::Client() {
 
 	//Set up console
 	console.loadFont("assets/cour.ttf");
+	console.resize(1280, 720);
 }
 
 
@@ -189,6 +190,10 @@ void Client::textEvent(sf::Event e) {
 	if (consoleVisible && !consoleJustVisible) {
 		console.command += e.text.unicode;
 	}
+}
+
+void Client::resizeEvent(sf::Event e) {
+	console.resize(e.size.width, e.size.height);
 }
 
 void Client::threadedTCPReceive() {

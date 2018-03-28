@@ -41,6 +41,9 @@ int main() {
 			if (e.type == sf::Event::TextEntered) {
 				client.textEvent(e);
 			}
+			if (e.type == sf::Event::Resized) {
+				client.resizeEvent(e);
+			}
 		}
 		sf::Time t = clock.restart();
 		//Update server

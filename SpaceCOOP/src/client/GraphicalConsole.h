@@ -13,6 +13,8 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	static void loadFont(std::string font);
 
+	void resize(unsigned int width, unsigned int height);
+
 	struct Message {
 		std::string msg;
 		LogLevel level;
@@ -29,5 +31,7 @@ private:
 	static const float borderX;
 	static const float borderY;
 	static const float lineGap;
+
+	sf::View consoleView;
 };
 

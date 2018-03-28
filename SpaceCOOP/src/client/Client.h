@@ -34,6 +34,7 @@ public:
 
 	void keyEvent(sf::Event e);
 	void textEvent(sf::Event e);
+	void resizeEvent(sf::Event e);
 
 	sf::RenderWindow* window;
 	CommandHandler commandHandler;
