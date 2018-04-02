@@ -12,9 +12,7 @@ Player::Player() {
 
 
 Player::~Player() {
-	if (running) {
-		disconnect();
-	}
+	disconnect();
 }
 
 
@@ -39,22 +37,24 @@ void Player::start() {
 
 
 void Player::disconnect() {
-	if (!running) {
-		Console::logToConsole("Player is already disconnected", Console::LogLevel::ERROR);
-		return;
-	}
 	Console::logToConsole("Shutting down connection", Console::LogLevel::INFO);
 	running = false;
 	tcpSocket->disconnect();
 	Console::logToConsole("PL_Socket: closed", Console::LogLevel::INFO);
-	receiveTCPThread.join();
-	Console::logToConsole("PL_Receive: joined", Console::LogLevel::INFO);
-	toSendTCP.push(sf::Packet());
-	toSendUDP.push(sf::Packet());
-	sendTCPThread.join();
-	Console::logToConsole("PL_Send_TCP: joined", Console::LogLevel::INFO);
-	sendUDPThread.join();
-	Console::logToConsole("PL_Send_UDP: joined", Console::LogLevel::INFO);
+	if (receiveTCPThread.joinable()) {
+		receiveTCPThread.join();
+		Console::logToConsole("PL_Receive: joined", Console::LogLevel::INFO);
+	}
+	if (sendTCPThread.joinable()) {
+		toSendTCP.push(sf::Packet());
+		sendTCPThread.join();
+		Console::logToConsole("PL_Send_TCP: joined", Console::LogLevel::INFO);
+	}
+	if (sendUDPThread.joinable()) {
+		toSendUDP.push(sf::Packet());
+		sendUDPThread.join();
+		Console::logToConsole("PL_Send_UDP: joined", Console::LogLevel::INFO);
+	}
 }
 
 
