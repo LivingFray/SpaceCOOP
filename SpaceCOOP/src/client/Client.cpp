@@ -53,26 +53,7 @@ Client::Client() {
 
 
 Client::~Client() {
-	connected = false;
-	if (receiveTCPThread.joinable()) {
-		receiveTCPThread.join();
-		console.log("CL_Receive_TCP: joined", GraphicalConsole::LogLevel::INFO);
-	}
-	if (sendTCPThread.joinable()) {
-		tcpToSend.push(sf::Packet());
-		sendTCPThread.join();
-		console.log("CL_Send_TCP: joined", GraphicalConsole::LogLevel::INFO);
-	}
-	if (receiveUDPThread.joinable()) {
-		udpSocket.unbind();
-		receiveUDPThread.join();
-		console.log("CL_Receive_UDP: joined", GraphicalConsole::LogLevel::INFO);
-	}
-	if (sendUDPThread.joinable()) {
-		udpToSend.push(sf::Packet());
-		sendUDPThread.join();
-		console.log("CL_Send_UDP: joined", GraphicalConsole::LogLevel::INFO);
-	}
+	disconnect();
 }
 
 void Client::connect() {
@@ -92,25 +73,28 @@ void Client::connect() {
 }
 
 void Client::disconnect() {
-	if (!connected) {
-		console.log("Already disconnected", GraphicalConsole::LogLevel::ERROR);
-		return;
-	}
 	connected = false;
 	tcpSocket.disconnect();
 	console.log("CL_Socket_TCP: closed", GraphicalConsole::LogLevel::INFO);
-	receiveTCPThread.join();
-	console.log("CL_Receive_TCP: joined", GraphicalConsole::LogLevel::INFO);
+	if (receiveTCPThread.joinable()) {
+		receiveTCPThread.join();
+		console.log("CL_Receive_TCP: joined", GraphicalConsole::LogLevel::INFO);
+	}
 	udpSocket.unbind();
-	receiveUDPThread.join();
-	console.log("CL_Receive_UDP: joined", GraphicalConsole::LogLevel::INFO);
-	//Kind of a hack but the easiest way to interrupt the TSQueue
-	tcpToSend.push(sf::Packet());
-	udpToSend.push(sf::Packet());
-	sendTCPThread.join();
-	console.log("CL_Send_TCP: joined", GraphicalConsole::LogLevel::INFO);
-	sendUDPThread.join();
-	console.log("CL_Send_UDP: joined", GraphicalConsole::LogLevel::INFO);
+	if (receiveUDPThread.joinable()) {
+		receiveUDPThread.join();
+		console.log("CL_Receive_UDP: joined", GraphicalConsole::LogLevel::INFO);
+	}
+	if (sendTCPThread.joinable()) {
+		tcpToSend.push(sf::Packet());
+		sendTCPThread.join();
+		console.log("CL_Send_TCP: joined", GraphicalConsole::LogLevel::INFO);
+	}
+	if (sendUDPThread.joinable()) {
+		udpToSend.push(sf::Packet());
+		sendUDPThread.join();
+		console.log("CL_Send_UDP: joined", GraphicalConsole::LogLevel::INFO);
+	}
 }
 
 void Client::sendText(std::string msg) {
