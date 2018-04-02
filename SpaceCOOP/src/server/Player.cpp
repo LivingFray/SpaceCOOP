@@ -80,6 +80,14 @@ void Player::updateEntity(sf::Packet p) {
 	toSendUDP.push(packet);
 }
 
+void Player::removeEntity(shared_ptr<EntityCore> entity) {
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
+	packet << static_cast<sf::Uint8>(PacketHandler::Entity::REMOVE);
+	packet << entity->id;
+	toSendTCP.push(packet);
+}
+
 void Player::threadedTCPReceive() {
 	while (running) {
 		sf::Packet packet;

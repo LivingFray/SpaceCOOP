@@ -133,10 +133,17 @@ void Server::onPlayerConnected(shared_ptr<Player> player) {
 	p << playerShip->id;
 	player->toSendTCP.push(p);
 	//Send all entities to client
+	for (auto ent : entities) {
+		if (ent.first != playerShip->id) {
+			//TODO: Range check and such to only send needed entities
+			player->sendEntity(ent.second);
+		}
+	}
 }
 
 void Server::onPlayerDisconnected(shared_ptr<Player> player) {
 	//Remove player's ship
+	removeEntity(player->ship);
 }
 
 void Server::addEntity(shared_ptr<EntityCore> entity) {
@@ -150,6 +157,18 @@ void Server::addEntity(shared_ptr<EntityCore> entity) {
 		player->sendEntity(entity);
 	}
 
+}
+
+void Server::removeEntity(shared_ptr<EntityCore> entity) {
+	UUID id = entity->id;
+	if (!entities[id]) {
+		Console::logToConsole("Could not find entity with UUID " + std::to_string(entity->id), Console::LogLevel::ERROR);
+		return;
+	}
+	for (auto player : players) {
+		player->removeEntity(entity);
+	}
+	entities.erase(id);
 }
 
 

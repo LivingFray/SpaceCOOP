@@ -21,6 +21,7 @@ public:
 	void sendText(std::string msg);
 	void sendEntity(shared_ptr<EntityCore> entity);
 	void updateEntity(sf::Packet p);
+	void removeEntity(shared_ptr<EntityCore> entity);
 	shared_ptr<Ship> ship;
 
 	sf::IpAddress ip;

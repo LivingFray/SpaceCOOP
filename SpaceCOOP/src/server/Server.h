@@ -41,6 +41,7 @@ public:
 	void onPlayerDisconnected(shared_ptr<Player> player);
 
 	void addEntity(shared_ptr<EntityCore> entity);
+	void removeEntity(shared_ptr<EntityCore> entity);
 private:
 	thread incomingThread;
 	thread udpThread;
