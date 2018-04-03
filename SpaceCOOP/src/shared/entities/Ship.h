@@ -16,5 +16,6 @@ protected:
 	//The thrust being applied by the engines
 	float forwardThrust = 0.0f;
 	float sidewaysThrust = 0.0f;
+	static const float decel;
 };
 

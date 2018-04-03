@@ -1,5 +1,8 @@
 #include "Ship.h"
 #include "../AssetHandler.h"
+#include <algorithm>
+
+const float Ship::decel = 5.0f;
 
 Ship::Ship() {
 	width = 100;
@@ -27,10 +30,22 @@ void Ship::rotate(float ang) {
 }
 
 void Ship::update(double dt) {
-	sf::Vector2f thrust = getFront() * forwardThrust;
-	thrust += getRight() * sidewaysThrust;
-	thrust *= static_cast<float>(dt);
-	setVelocity(getVelocity() + thrust);
+	if (abs(forwardThrust) < 1e-5 && abs(sidewaysThrust) < 1e-5) {
+		//Decelerate if not trying to move
+		//Get unit direction
+		sf::Vector2f dir = getVelocity();
+		float speed = sqrtf(dir.x * dir.x + dir.y * dir.y);
+		if (speed > 0.0f) {
+			dir /= speed;
+			float newSpeed = std::max(0.0f, static_cast<float>(speed - decel * dt));
+			setVelocity(dir * newSpeed);
+		}
+	} else {
+		sf::Vector2f thrust = getFront() * forwardThrust;
+		thrust += getRight() * sidewaysThrust;
+		thrust *= static_cast<float>(dt);
+		setVelocity(getVelocity() + thrust);
+	}
 	EntityCore::update(dt);
 }
 
