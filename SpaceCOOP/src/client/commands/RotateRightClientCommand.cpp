@@ -4,6 +4,7 @@
 
 RotateRightClientCommand::RotateRightClientCommand() {
 	name = "rotateright";
+	id = 5;
 }
 
 

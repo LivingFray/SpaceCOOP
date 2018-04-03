@@ -82,14 +82,14 @@ void EntityCore::update(double dt) {
 }
 
 sf::Vector2f EntityCore::getFront() {
-	float ang = -toDegrees(getRotation());
+	float ang = -toRadians(getRotation());
 	sf::Vector2f dir(cosf(ang), -sinf(ang));
 	return dir;
 	//return dir / sqrtf(dir.x * dir.x + dir.y * dir.y);
 }
 
 sf::Vector2f EntityCore::getRight() {
-	float ang = -toDegrees(getRotation());
+	float ang = -toRadians(getRotation());
 	sf::Vector2f dir(-cosf(ang), -sinf(ang));
 	return dir;
 }

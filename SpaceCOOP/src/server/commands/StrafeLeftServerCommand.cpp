@@ -4,6 +4,7 @@
 
 StrafeLeftServerCommand::StrafeLeftServerCommand() {
 	name = "strafeleft";
+	id = 2;
 }
 
 

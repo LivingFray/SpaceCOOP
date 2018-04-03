@@ -4,6 +4,7 @@
 
 RotateLeftServerCommand::RotateLeftServerCommand() {
 	name = "rotateleft";
+	id = 4;
 }
 
 

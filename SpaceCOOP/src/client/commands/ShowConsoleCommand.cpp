@@ -4,6 +4,7 @@
 
 ShowConsoleCommand::ShowConsoleCommand() {
 	name = "showconsole";
+	id = 200;
 }
 
 

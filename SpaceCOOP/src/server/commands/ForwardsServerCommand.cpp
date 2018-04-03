@@ -4,6 +4,7 @@
 
 ForwardsServerCommand::ForwardsServerCommand() {
 	name = "forwards";
+	id = 0;
 }
 
 

@@ -4,6 +4,7 @@
 
 BackwardsClientCommand::BackwardsClientCommand() {
 	name = "backwards";
+	id = 1;
 }
 
 

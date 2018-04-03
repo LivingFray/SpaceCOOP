@@ -10,6 +10,7 @@
 #include "commands/RotateLeftClientCommand.h"
 #include "commands/RotateRightClientCommand.h"
 #include "commands/ShowConsoleCommand.h"
+#include "commands/PreciseRotateClientCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -26,13 +27,14 @@ inputHandler.bind(k, _cmd); \
 
 Client::Client() {
 	//Register commands here
-	REGCMD(ForwardsClientCommand, 0);
-	REGCMD(BackwardsClientCommand, 1);
-	REGCMD(StrafeLeftClientCommand, 2);
-	REGCMD(StrafeRightClientCommand, 3);
-	REGCMD(RotateLeftClientCommand, 4);
-	REGCMD(RotateRightClientCommand, 5);
-	REGCMD(ShowConsoleCommand, 200);
+	REGCMD(ForwardsClientCommand);
+	REGCMD(BackwardsClientCommand);
+	REGCMD(StrafeLeftClientCommand);
+	REGCMD(StrafeRightClientCommand);
+	REGCMD(RotateLeftClientCommand);
+	REGCMD(RotateRightClientCommand);
+	REGCMD(PreciseRotateClientCommand);
+	REGCMD(ShowConsoleCommand);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
@@ -123,6 +125,18 @@ void Client::draw() {
 
 void Client::update(double dt) {
 	consoleJustVisible = false;
+	//Should be moved to own class eventually
+	//Update player angles
+	if (ship && orientToMouse) {
+		sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+		sf::Vector2f rel = mousePos - ship->getPosition();
+		float desiredAngle = toDegrees(atan2f(rel.y, rel.x));
+		console.log(std::to_string(mousePos.x) + ", " + std::to_string(mousePos.y) + ": " + std::to_string(desiredAngle), GraphicalConsole::LogLevel::INFO);
+		PreciseRotateClientCommand cmd;
+		cmd.client = this;
+		cmd.angle = desiredAngle;
+		cmd.execute();
+	}
 	for (auto ent : entities) {
 		ent.second->update(dt);
 	}

@@ -24,14 +24,15 @@ shared_ptr<Command> CommandHandler::getCommand(std::string name) {
 	return NULL;
 }
 
-void CommandHandler::registerCommand(function<shared_ptr<Command>()> c, CommandID id) {
+void CommandHandler::registerCommand(function<shared_ptr<Command>()> c) {
+	auto cmd = c();
+	CommandID id = cmd->id;
 	if (id >= commands.size() || id < 0) {
 		throw std::exception("Command ID out of range");
 	}
 	if (commands[id]) {
 		throw std::exception("Command already registered to ID " + id);
 	}
-	auto cmd = c();
 	commands[id] = c;
 	namedCommands[cmd->name] = c;
 }

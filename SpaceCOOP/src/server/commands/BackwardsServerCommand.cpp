@@ -4,6 +4,7 @@
 
 BackwardsServerCommand::BackwardsServerCommand() {
 	name = "backwards";
+	id = 1;
 }
 
 

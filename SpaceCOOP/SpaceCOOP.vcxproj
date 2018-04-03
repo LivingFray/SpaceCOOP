@@ -128,6 +128,7 @@
   <ItemGroup>
     <ClCompile Include="src\ClientState.cpp" />
     <ClCompile Include="src\client\commands\BackwardsClientCommand.cpp" />
+    <ClCompile Include="src\client\commands\PreciseRotateClientCommand.cpp" />
     <ClCompile Include="src\client\commands\RotateLeftClientCommand.cpp" />
     <ClCompile Include="src\client\commands\StrafeLeftClientCommand.cpp" />
     <ClCompile Include="src\client\commands\StrafeRightClientCommand.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="src\client\commands\ShowConsoleCommand.cpp" />
     <ClCompile Include="src\client\GraphicalConsole.cpp" />
     <ClCompile Include="src\LocalServerState.cpp" />
+    <ClCompile Include="src\server\commands\PreciseRotateServerCommand.cpp" />
     <ClCompile Include="src\server\commands\RotateLeftServerCommand.cpp" />
     <ClCompile Include="src\server\commands\RotateRightServerCommand.cpp" />
     <ClCompile Include="src\shared\AssetHandler.cpp" />
@@ -174,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="src\ClientState.h" />
     <ClInclude Include="src\client\commands\BackwardsClientCommand.h" />
+    <ClInclude Include="src\client\commands\PreciseRotateClientCommand.h" />
     <ClInclude Include="src\client\commands\RotateLeftClientCommand.h" />
     <ClInclude Include="src\client\commands\StrafeLeftClientCommand.h" />
     <ClInclude Include="src\client\commands\StrafeRightClientCommand.h" />
@@ -181,6 +184,7 @@
     <ClInclude Include="src\client\commands\ShowConsoleCommand.h" />
     <ClInclude Include="src\client\GraphicalConsole.h" />
     <ClInclude Include="src\LocalServerState.h" />
+    <ClInclude Include="src\server\commands\PreciseRotateServerCommand.h" />
     <ClInclude Include="src\server\commands\RotateLeftServerCommand.h" />
     <ClInclude Include="src\server\commands\RotateRightServerCommand.h" />
     <ClInclude Include="src\shared\AssetHandler.h" />

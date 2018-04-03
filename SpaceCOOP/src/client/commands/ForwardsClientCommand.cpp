@@ -4,6 +4,7 @@
 
 ForwardsClientCommand::ForwardsClientCommand() {
 	name = "forwards";
+	id = 0;
 }
 
 

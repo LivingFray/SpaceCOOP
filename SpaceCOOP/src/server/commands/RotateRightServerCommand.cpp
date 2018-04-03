@@ -4,6 +4,7 @@
 
 RotateRightServerCommand::RotateRightServerCommand() {
 	name = "rotateright";
+	id = 5;
 }
 
 

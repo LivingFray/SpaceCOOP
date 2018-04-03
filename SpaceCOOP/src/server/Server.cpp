@@ -11,18 +11,20 @@
 #include "commands/StrafeRightServerCommand.h"
 #include "commands/RotateLeftServerCommand.h"
 #include "commands/RotateRightServerCommand.h"
+#include "commands/PreciseRotateServerCommand.h"
 //TODO: Server side ship with movement and such
 #include "../shared/entities/Ship.h"
 #include "../shared/Helper.h"
 
 Server::Server() {
 	//Register all commands here
-	REGCMD(ForwardsServerCommand, 0);
-	REGCMD(BackwardsServerCommand, 1);
-	REGCMD(StrafeLeftServerCommand, 2);
-	REGCMD(StrafeRightServerCommand, 3);
-	REGCMD(RotateLeftServerCommand, 4);
-	REGCMD(RotateRightServerCommand, 5);
+	REGCMD(ForwardsServerCommand);
+	REGCMD(BackwardsServerCommand);
+	REGCMD(StrafeLeftServerCommand);
+	REGCMD(StrafeRightServerCommand);
+	REGCMD(RotateLeftServerCommand);
+	REGCMD(RotateRightServerCommand);
+	REGCMD(PreciseRotateServerCommand);
 }
 
 
