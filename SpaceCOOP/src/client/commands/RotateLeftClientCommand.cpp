@@ -15,7 +15,7 @@ void RotateLeftClientCommand::execute() {
 		return;
 	}
 	if (held) {
-		client->ship->rotate(-amount);
+		client->ship->rotate(-client->ship->rotateAmount);
 	} else {
 		client->ship->rotate(0.0f);
 	}

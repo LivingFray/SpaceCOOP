@@ -2,7 +2,7 @@
 #include "../AssetHandler.h"
 #include <algorithm>
 
-const float Ship::decel = 5.0f;
+const float Ship::decel = 25.0f;
 
 Ship::Ship() {
 	width = 100;
@@ -17,11 +17,11 @@ Ship::~Ship() {
 }
 
 void Ship::moveForward(float vel) {
-	forwardThrust = vel;
+	forwardThrust = acceleration * vel;
 }
 
 void Ship::moveRight(float vel) {
-	sidewaysThrust = vel;
+	sidewaysThrust = acceleration * vel;
 }
 
 void Ship::rotate(float ang) {

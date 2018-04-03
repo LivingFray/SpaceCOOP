@@ -12,7 +12,7 @@ BackwardsServerCommand::~BackwardsServerCommand() {
 
 void BackwardsServerCommand::execute() {
 	if (held) {
-		player->ship->moveForward(-50.0f);
+		player->ship->moveForward(-1.0f);
 	} else {
 		player->ship->moveForward(0.0f);
 	}

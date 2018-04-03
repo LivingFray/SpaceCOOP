@@ -16,7 +16,7 @@ void ForwardsClientCommand::execute() {
 	}
 	//Client side extrapolation here
 	if (held) {
-		client->ship->moveForward(50.0f);
+		client->ship->moveForward(1.0f);
 	} else {
 		client->ship->moveForward(0.0f);
 	}

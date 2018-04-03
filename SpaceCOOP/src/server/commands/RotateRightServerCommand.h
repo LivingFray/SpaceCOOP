@@ -8,6 +8,5 @@ public:
 	RotateRightServerCommand();
 	~RotateRightServerCommand();
 	void execute();
-	float amount = 10.0f;
 };
 
