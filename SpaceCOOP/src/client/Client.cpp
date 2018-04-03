@@ -131,7 +131,6 @@ void Client::update(double dt) {
 		sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 		sf::Vector2f rel = mousePos - ship->getPosition();
 		float desiredAngle = toDegrees(atan2f(rel.y, rel.x));
-		console.log(std::to_string(mousePos.x) + ", " + std::to_string(mousePos.y) + ": " + std::to_string(desiredAngle), GraphicalConsole::LogLevel::INFO);
 		PreciseRotateClientCommand cmd;
 		cmd.client = this;
 		cmd.angle = desiredAngle;
