@@ -89,8 +89,8 @@ sf::Vector2f EntityCore::getFront() {
 }
 
 sf::Vector2f EntityCore::getRight() {
-	float ang = -toRadians(getRotation());
-	sf::Vector2f dir(-cosf(ang), -sinf(ang));
+	float ang = -toRadians(getRotation() + 90.0f);
+	sf::Vector2f dir(cosf(ang), -sinf(ang));
 	return dir;
 }
 
