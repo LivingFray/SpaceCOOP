@@ -53,6 +53,11 @@ Client::Client() {
 	//Set up console
 	console.loadFont("assets/cour.ttf");
 	console.resize(1280, 720);
+
+	//Set view
+	//TODO: Aspect radio stuff
+	shipView.setSize(1600, 900);
+	shipView.setCenter(0.0f, 0.0f);
 }
 
 
@@ -115,6 +120,10 @@ void Client::sendCommand(ClientCommand* cmd) {
 
 void Client::draw() {
 	window->clear(sf::Color::Black);
+	if (ship) {
+		shipView.setCenter(ship->getPosition());
+	}
+	window->setView(shipView);
 	window->draw(galaxy);
 	for (auto ent : entities) {
 		window->draw(*ent.second);

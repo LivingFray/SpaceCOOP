@@ -64,5 +64,7 @@ private:
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 	bool consoleJustVisible = false;
 	bool orientToMouse = true;
+
+	sf::View shipView;
 };
 

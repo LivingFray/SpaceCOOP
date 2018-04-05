@@ -45,6 +45,7 @@ protected:
 	bool angMomentumChanged = false;
 	float angMomentum = 0.0f;
 	void loadSpriteAndResize(std::string texture);
+	void resizeSprite();
 
 private:
 	//Could (probably should) use enum for this but for reasons I've forgotten I chose not to

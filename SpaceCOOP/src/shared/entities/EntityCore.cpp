@@ -105,7 +105,9 @@ void EntityCore::packetIn(sf::Packet& packet) {
 	packet >> ang;
 	Transformable::setRotation(ang);
 	packet >> angMomentum;
-	//TODO: Other core data
+	packet >> width;
+	packet >> height;
+	resizeSprite();
 }
 
 void EntityCore::packetOut(sf::Packet& packet) const {
@@ -116,6 +118,8 @@ void EntityCore::packetOut(sf::Packet& packet) const {
 	packet << vel.x << vel.y;
 	packet << getRotation();
 	packet << angMomentum;
+	packet << width;
+	packet << height;
 }
 
 bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
@@ -158,7 +162,12 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 }
 
 void EntityCore::loadSpriteAndResize(std::string texture) {
+	//Textures load in at the size of the image, this isn't too helpful
 	sprite.setTexture(AssetHandler::getTexture(texture));
+	resizeSprite();
+}
+
+void EntityCore::resizeSprite() {
 	auto bounds = sprite.getLocalBounds();
 	float sX = width / bounds.width;
 	float sY = height / bounds.height;

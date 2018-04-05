@@ -23,7 +23,7 @@ void SolarSystem::generateSystem(Server* server) {
 	float previousOrbit = 0.0f; // Distance (in AU) the previous planet was from the star
 	for (int i = 0; i < intDist(generator); i++) {
 		//Move out and put planet at random rotation around star
-		float orbit = previousOrbit + 5.0f;//orbitDist(generator);
+		float orbit = previousOrbit + orbitDist(generator);
 		previousOrbit = orbit;
 		float angle = angDist(generator);
 		sf::Vector2f planetPosition(cosf(angle), sinf(angle));
