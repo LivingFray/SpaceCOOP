@@ -13,6 +13,7 @@ public:
 	void textEvent(sf::Event e);
 	void resizeEvent(sf::Event e);
 
+	bool switched = false;
 private:
 	sf::Font font;
 };

@@ -54,6 +54,9 @@ void Server::start() {
 	Console::logToConsole("Generating galaxy", Console::LogLevel::INFO);
 	galaxy.generateGalaxy();
 	Console::logToConsole("Galaxy generated", Console::LogLevel::INFO);
+	Console::logToConsole("Generating system", Console::LogLevel::INFO);
+	tempSystem.generateSystem(this);
+	Console::logToConsole("System generated", Console::LogLevel::INFO);
 }
 
 
@@ -92,10 +95,11 @@ void Server::update(double dt) {
 		Console::logToConsole(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 	}
 	//Update entities
+	entityLock.lock();
 	for (auto ent : entities) {
 		ent.second->update(dt);
 	}
-
+	entityLock.unlock();
 	//Send packets if it is that time again
 	lastSentPackets += dt;
 	if (lastSentPackets > packetRate) {
@@ -135,12 +139,14 @@ void Server::onPlayerConnected(shared_ptr<Player> player) {
 	p << playerShip->id;
 	player->toSendTCP.push(p);
 	//Send all entities to client
+	entityLock.lock();
 	for (auto ent : entities) {
 		if (ent.first != playerShip->id) {
 			//TODO: Range check and such to only send needed entities
 			player->sendEntity(ent.second);
 		}
 	}
+	entityLock.unlock();
 }
 
 void Server::onPlayerDisconnected(shared_ptr<Player> player) {
@@ -150,10 +156,12 @@ void Server::onPlayerDisconnected(shared_ptr<Player> player) {
 
 void Server::addEntity(shared_ptr<EntityCore> entity) {
 	UUID id = entity->id;
+	std::lock_guard<std::mutex> guard(entityLock);
 	if (entities[id]) {
 		Console::logToConsole("Could not create entity, UUID already in use", Console::LogLevel::ERROR);
 		return;
 	}
+	Console::logToConsole("Created entity with id " + std::to_string(id) + " and type " + std::to_string(entity->type), Console::LogLevel::INFO);
 	entities[id] = entity;
 	for (auto player : players) {
 		player->sendEntity(entity);
@@ -163,6 +171,7 @@ void Server::addEntity(shared_ptr<EntityCore> entity) {
 
 void Server::removeEntity(shared_ptr<EntityCore> entity) {
 	UUID id = entity->id;
+	std::lock_guard<std::mutex> guard(entityLock);
 	if (!entities[id]) {
 		Console::logToConsole("Could not find entity with UUID " + std::to_string(entity->id), Console::LogLevel::ERROR);
 		return;

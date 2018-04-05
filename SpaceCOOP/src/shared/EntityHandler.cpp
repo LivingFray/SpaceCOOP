@@ -10,8 +10,8 @@ EntityHandler::~EntityHandler() {
 }
 
 shared_ptr<EntityCore> EntityHandler::getEntity(EntityType type) {
-	if (type >= entities.size() || type < 0) {
-		throw std::exception("Command not recognised");
+	if (type >= entities.size() || type < 0 || !entities[type]) {
+		throw "Entity type not registered: " + type;
 	}
 	//Create new entity
 	auto e = entities[type]();
@@ -21,12 +21,13 @@ shared_ptr<EntityCore> EntityHandler::getEntity(EntityType type) {
 }
 
 void EntityHandler::registerEntity(function<shared_ptr<EntityCore>()> c) {
-	EntityType type = c()->type;
+	auto inst = c();
+	EntityType type = inst->type;
 	if (type >= entities.size() || type < 0) {
-		throw std::exception("Entity ID out of range");
+		throw "Entity ID out of range";
 	}
 	if (entities[type]) {
-		throw std::exception("Entity already registered to ID " + type);
+		throw "Entity already registered to ID " + type;
 	}
 	entities[type] = c;
 }

@@ -15,6 +15,7 @@
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
 #include "../shared/entities/Ship.h"
+#include "../shared/entities/Planet.h"
 #include "../shared/Helper.h"
 
 
@@ -47,6 +48,7 @@ Client::Client() {
 
 	//Register entities here
 	REGENT(Ship);
+	REGENT(Planet);
 
 	//Set up console
 	console.loadFont("assets/cour.ttf");
@@ -299,21 +301,24 @@ void Client::handlePacket(sf::Packet& packet) {
 		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::ENTITY) : {
-		sf::Uint8 entType;
-		packet >> entType;
+		sf::Uint8 entPacketType;
+		packet >> entPacketType;
 		UUID id;
 		packet >> id;
-		switch (entType) {
+		switch (entPacketType) {
 		case static_cast<sf::Uint8>(PacketHandler::Entity::CREATE) : {
+			EntityType entityType;
+			packet >> entityType;
 			try {
-				shared_ptr<EntityCore> entity = entityHandler.getEntity(entType);
+				shared_ptr<EntityCore> entity = entityHandler.getEntity(entityType);
 				//Parse to client type?
 				packet >> *entity;
 				entity->id = id;
 				entities.insert_or_assign(id, entity);
-				//console.log("Added entity " + std::to_string(id), GraphicalConsole::LogLevel::INFO);
+				console.log("Added entity of type " + std::to_string(entityType) + " and ID " + std::to_string(id), GraphicalConsole::LogLevel::INFO);
 			} catch (std::exception e) {
-				console.log("Received invalid entity from server ("+ std::to_string(entType)+")", GraphicalConsole::LogLevel::WARNING);
+				console.log("Received invalid entity from server ("+ std::to_string(entityType)+")", GraphicalConsole::LogLevel::WARNING);
+				console.log(e.what(), GraphicalConsole::LogLevel::ERROR);
 			}
 			break;
 		}

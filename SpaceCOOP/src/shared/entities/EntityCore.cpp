@@ -96,6 +96,7 @@ sf::Vector2f EntityCore::getRight() {
 
 void EntityCore::packetIn(sf::Packet& packet) {
 	//DO NOT READ IN UUID, this is already read in to determine which entity to call packetIn from
+	//SAME FOR ENTITY TYPE
 	sf::Vector2f pos;
 	packet >> pos.x >> pos.y;
 	Transformable::setPosition(pos);
@@ -109,6 +110,7 @@ void EntityCore::packetIn(sf::Packet& packet) {
 
 void EntityCore::packetOut(sf::Packet& packet) const {
 	packet << id;
+	packet << type;
 	sf::Vector2f pos = Transformable::getPosition();
 	packet << pos.x << pos.y;
 	packet << vel.x << vel.y;

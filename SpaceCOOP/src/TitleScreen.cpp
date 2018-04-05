@@ -23,13 +23,18 @@ void TitleScreen::draw() {
 }
 
 void TitleScreen::keyEvent(sf::Event e) {
+	if (switched) {
+		return;
+	}
 	if (e.key.code == sf::Keyboard::Num1) {
+		switched = true;
 		auto newState = std::make_shared<LocalServerState>();
 		newState->window = window;
 		newState->startServer(5000);
 		newState->connect();
 		setState(newState);
 	} else if (e.key.code == sf::Keyboard::Num2) {
+		switched = true;
 		auto newState = std::make_shared<ClientState>();
 		newState->window = window;
 		newState->connect("127.0.0.1", 5000);
