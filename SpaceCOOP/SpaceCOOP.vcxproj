@@ -126,6 +126,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\client\Background.cpp" />
+    <ClCompile Include="src\client\Scene.cpp" />
     <ClCompile Include="src\shared\entities\Planet.cpp" />
     <ClCompile Include="src\server\SolarSystem.cpp" />
     <ClCompile Include="src\ClientState.cpp" />
@@ -176,6 +178,8 @@
     <ClCompile Include="src\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\client\Background.h" />
+    <ClInclude Include="src\client\Scene.h" />
     <ClInclude Include="src\shared\entities\Planet.h" />
     <ClInclude Include="src\server\SolarSystem.h" />
     <ClInclude Include="src\ClientState.h" />

@@ -58,6 +58,9 @@ Client::Client() {
 	//TODO: Aspect radio stuff
 	shipView.setSize(1600, 900);
 	shipView.setCenter(0.0f, 0.0f);
+
+	background.client = this;
+	background.generate();
 }
 
 
@@ -120,11 +123,12 @@ void Client::sendCommand(ClientCommand* cmd) {
 
 void Client::draw() {
 	window->clear(sf::Color::Black);
+	window->draw(background);
 	if (ship) {
 		shipView.setCenter(ship->getPosition());
 	}
 	window->setView(shipView);
-	window->draw(galaxy);
+	//window->draw(galaxy);
 	for (auto ent : entities) {
 		window->draw(*ent.second);
 	}
@@ -202,6 +206,7 @@ void Client::textEvent(sf::Event e) {
 
 void Client::resizeEvent(sf::Event e) {
 	console.resize(e.size.width, e.size.height);
+	background.setAspect(e.size.width, e.size.height);
 }
 
 void Client::threadedTCPReceive() {

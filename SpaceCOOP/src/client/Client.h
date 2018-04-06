@@ -10,6 +10,7 @@
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/Ship.h"
 #include "GraphicalConsole.h"
+#include "Background.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -42,6 +43,7 @@ public:
 	EntityHandler entityHandler;
 	shared_ptr<Ship> ship;
 	bool consoleVisible = false;
+	GraphicalConsole console;
 private:
 	sf::TcpSocket tcpSocket;
 	sf::UdpSocket udpSocket;
@@ -59,12 +61,14 @@ private:
 	TSQueue<sf::Packet> udpToSend;
 	sf::IpAddress addr;
 
-	GraphicalConsole console;
 	ClientGalaxy galaxy;
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 	bool consoleJustVisible = false;
 	bool orientToMouse = true;
 
 	sf::View shipView;
+
+	Background background;
+
 };
 
