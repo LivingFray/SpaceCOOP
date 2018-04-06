@@ -10,7 +10,7 @@
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/Ship.h"
 #include "GraphicalConsole.h"
-#include "Background.h"
+#include "Scene.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -22,6 +22,7 @@ class Client {
 public:
 	Client();
 	~Client();
+	void init();
 	void connect();
 	void disconnect();
 	std::string ip;
@@ -30,8 +31,11 @@ public:
 	void sendCommand(ClientCommand* cmd);
 	void draw();
 	void update(double dt);
+	void addEntity(shared_ptr<EntityCore> entity);
+	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
 	void showConsole();
+	shared_ptr<Ship> getShip();
 
 	void keyEvent(sf::Event e);
 	void textEvent(sf::Event e);
@@ -41,7 +45,6 @@ public:
 	CommandHandler commandHandler;
 	InputHandler inputHandler;
 	EntityHandler entityHandler;
-	shared_ptr<Ship> ship;
 	bool consoleVisible = false;
 	GraphicalConsole console;
 private:
@@ -62,13 +65,8 @@ private:
 	sf::IpAddress addr;
 
 	ClientGalaxy galaxy;
-	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 	bool consoleJustVisible = false;
-	bool orientToMouse = true;
 
-	sf::View shipView;
-
-	Background background;
-
+	Scene scene;
 };
 

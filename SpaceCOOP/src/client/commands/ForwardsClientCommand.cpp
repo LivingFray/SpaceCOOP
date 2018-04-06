@@ -12,14 +12,14 @@ ForwardsClientCommand::~ForwardsClientCommand() {
 }
 
 void ForwardsClientCommand::execute() {
-	if (!client || !client->ship) {
+	if (!client || !client->getShip()) {
 		return;
 	}
 	//Client side extrapolation here
 	if (held) {
-		client->ship->moveForward(1.0f);
+		client->getShip()->moveForward(1.0f);
 	} else {
-		client->ship->moveForward(0.0f);
+		client->getShip()->moveForward(0.0f);
 	}
 	//Tell server to run command
 	ClientCommand::executeRemote();

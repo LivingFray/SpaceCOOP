@@ -12,13 +12,13 @@ RotateLeftClientCommand::~RotateLeftClientCommand() {
 }
 
 void RotateLeftClientCommand::execute() {
-	if (!client || !client->ship) {
+	if (!client || !client->getShip()) {
 		return;
 	}
 	if (held) {
-		client->ship->rotate(-client->ship->rotateAmount);
+		client->getShip()->rotate(-client->getShip()->rotateAmount);
 	} else {
-		client->ship->rotate(0.0f);
+		client->getShip()->rotate(0.0f);
 	}
 	//Tell server to run command
 	ClientCommand::executeRemote();

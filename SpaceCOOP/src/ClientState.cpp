@@ -11,6 +11,7 @@ ClientState::~ClientState() {
 
 void ClientState::onActivation() {
 	client.window = window;
+	client.init();
 }
 
 void ClientState::update(double dt) {

@@ -12,10 +12,10 @@ PreciseRotateClientCommand::~PreciseRotateClientCommand() {
 }
 
 void PreciseRotateClientCommand::execute() {
-	if (!client || !client->ship) {
+	if (!client || !client->getShip()) {
 		return;
 	}
-	client->ship->setRotation(angle);
+	client->getShip()->setRotation(angle);
 	//Tell server to run command
 	ClientCommand::executeRemote();
 }

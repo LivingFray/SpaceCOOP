@@ -49,23 +49,20 @@ Client::Client() {
 	//Register entities here
 	REGENT(Ship);
 	REGENT(Planet);
-
-	//Set up console
-	console.loadFont("assets/cour.ttf");
-	console.resize(1280, 720);
-
-	//Set view
-	//TODO: Aspect radio stuff
-	shipView.setSize(1600, 900);
-	shipView.setCenter(0.0f, 0.0f);
-
-	background.client = this;
-	background.generate();
 }
 
 
 Client::~Client() {
 	disconnect();
+}
+
+void Client::init() {
+	//Set up console
+	console.loadFont("assets/cour.ttf");
+	console.resize(1280, 720);
+
+	scene.client = this;
+	scene.init();
 }
 
 void Client::connect() {
@@ -123,15 +120,7 @@ void Client::sendCommand(ClientCommand* cmd) {
 
 void Client::draw() {
 	window->clear(sf::Color::Black);
-	window->draw(background);
-	if (ship) {
-		shipView.setCenter(ship->getPosition());
-	}
-	window->setView(shipView);
-	//window->draw(galaxy);
-	for (auto ent : entities) {
-		window->draw(*ent.second);
-	}
+	scene.draw();
 	if (consoleVisible) {
 		window->draw(console);
 	}
@@ -140,32 +129,29 @@ void Client::draw() {
 
 void Client::update(double dt) {
 	consoleJustVisible = false;
-	//Should be moved to own class eventually
-	//Update player angles
-	if (ship && orientToMouse) {
-		sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
-		sf::Vector2f rel = mousePos - ship->getPosition();
-		float desiredAngle = toDegrees(atan2f(rel.y, rel.x));
-		PreciseRotateClientCommand cmd;
-		cmd.client = this;
-		cmd.angle = desiredAngle;
-		cmd.execute();
-	}
-	for (auto ent : entities) {
-		ent.second->update(dt);
-	}
+	scene.update(dt);
+}
+
+void Client::addEntity(shared_ptr<EntityCore> entity) {
+	scene.addEntity(entity);
+}
+
+shared_ptr<EntityCore> Client::getEntity(UUID id) {
+	return scene.getEntity(id);
 }
 
 void Client::removeEntity(UUID id) {
-	if (!entities.erase(id)) {
-		console.log("Could not find entity with UUID " + id, GraphicalConsole::LogLevel::WARNING);
-	}
+	scene.removeEntity(id);
 }
 
 void Client::showConsole() {
 	consoleVisible = true;
 	//console.command.clear();
 	consoleJustVisible = true;
+}
+
+shared_ptr<Ship> Client::getShip() {
+	return scene.ship;
 }
 
 void Client::keyEvent(sf::Event e) {
@@ -206,7 +192,7 @@ void Client::textEvent(sf::Event e) {
 
 void Client::resizeEvent(sf::Event e) {
 	console.resize(e.size.width, e.size.height);
-	background.setAspect(e.size.width, e.size.height);
+	scene.resizeEvent(e);
 }
 
 void Client::threadedTCPReceive() {
@@ -328,7 +314,7 @@ void Client::handlePacket(sf::Packet& packet) {
 				//Parse to client type?
 				packet >> *entity;
 				entity->id = id;
-				entities.insert_or_assign(id, entity);
+				addEntity(entity);
 				console.log("Added entity of type " + std::to_string(entityType) + " and ID " + std::to_string(id), GraphicalConsole::LogLevel::INFO);
 			} catch (std::exception e) {
 				console.log("Received invalid entity from server ("+ std::to_string(entityType)+")", GraphicalConsole::LogLevel::WARNING);
@@ -337,7 +323,7 @@ void Client::handlePacket(sf::Packet& packet) {
 			break;
 		}
 		case static_cast<sf::Uint8>(PacketHandler::Entity::MODIFY) : {
-			auto ent = entities[id];
+			auto ent = getEntity(id);
 			if (!ent) {
 				console.log("Cannot modify entity, does not exist (" + std::to_string(id) + ")", GraphicalConsole::LogLevel::WARNING);
 				break;
@@ -355,7 +341,14 @@ void Client::handlePacket(sf::Packet& packet) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP) : {
 		UUID id;
 		packet >> id;
-		ship = std::dynamic_pointer_cast<Ship>(entities[id]);
+		auto ent = getEntity(id);
+		if (!ent) {
+			console.log("Received ship ID from server that does not exist " + std::to_string(id), GraphicalConsole::LogLevel::ERROR);
+		}
+		scene.ship = std::dynamic_pointer_cast<Ship>(getEntity(id));
+		if (!scene.ship) {
+			console.log("Received ship ID from server for non ship entity " + std::to_string(id), GraphicalConsole::LogLevel::ERROR);
+		}
 		break;
 	}
 	}

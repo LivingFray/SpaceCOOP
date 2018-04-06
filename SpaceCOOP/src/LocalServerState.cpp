@@ -13,6 +13,7 @@ LocalServerState::~LocalServerState() {
 
 void LocalServerState::onActivation() {
 	client.window = window;
+	client.init();
 }
 
 void LocalServerState::update(double dt) {

@@ -12,13 +12,13 @@ StrafeLeftClientCommand::~StrafeLeftClientCommand() {
 }
 
 void StrafeLeftClientCommand::execute() {
-	if (!client || !client->ship) {
+	if (!client || !client->getShip()) {
 		return;
 	}
 	if (held) {
-		client->ship->moveRight(-1.0f);
+		client->getShip()->moveRight(-1.0f);
 	} else {
-		client->ship->moveRight(0.0f);
+		client->getShip()->moveRight(0.0f);
 	}
 	//Tell server to run command
 	ClientCommand::executeRemote();
