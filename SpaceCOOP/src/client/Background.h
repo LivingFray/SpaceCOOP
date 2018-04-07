@@ -14,7 +14,6 @@ public:
 	Client* client;
 private:
 	sf::VertexArray starVerts;
-	sf::VertexArray starFarVerts;
 	sf::Shader starShader;
 	sf::View backgroundView;
 };

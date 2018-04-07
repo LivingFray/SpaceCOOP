@@ -1,8 +1,8 @@
 #include "Background.h"
 #include "../shared/Helper.h"
 #include "Client.h"
-#define MIN_STARS 3000
-#define MAX_STARS 4000
+#define MIN_STARS 1500
+#define MAX_STARS 2000
 #define MIN_RADIUS 1.25f
 #define MAX_RADIUS 2.5f
 #define SIZE 1024.0f
@@ -17,7 +17,6 @@ Background::~Background() {
 void Background::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.setView(backgroundView);
 	states.shader = &starShader;
-	target.draw(starFarVerts, states);
 	target.draw(starVerts, states);
 }
 
@@ -31,7 +30,6 @@ void Background::generate() {
 		sf::Vector2f offset1(radius, radius);
 		sf::Vector2f offset2(-radius, radius);
 		sf::Vertex* quad = &starVerts[i * 4];
-		//sf::Vector2f position(randF(0.0f, SIZE), randF(0.0f, SIZE));
 		//Very janky way of ensuring stars appear random, but not clumped
 		//Stupid human brain and its pattern finding abilities ruining randomness
 		sf::Vector2f position;
@@ -65,7 +63,6 @@ void Background::generate() {
 		quad[1].texCoords = sf::Vector2f(-1.0f, 1.0f);
 		quad[2].texCoords = sf::Vector2f(1.0f, 1.0f);
 		quad[3].texCoords = sf::Vector2f(1.0f, -1.0f);
-		i++;
 	}
 	//Load shaders TODO: Asset handler for loading shaders once
 	if (!starShader.loadFromFile("shaders/star.frag", sf::Shader::Fragment)) {
