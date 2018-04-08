@@ -35,6 +35,7 @@ public:
 	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
 	void showConsole();
+	void setSystemMapVisibility(bool visible);
 	shared_ptr<Ship> getShip();
 
 	void keyEvent(sf::Event e);

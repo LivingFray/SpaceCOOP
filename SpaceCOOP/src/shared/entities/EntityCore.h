@@ -8,7 +8,6 @@
 
 typedef sf::Uint64 UUID;
 typedef sf::Uint8 EntityType;
-//TODO: Some kind of efficient update send that sends differences
 
 class EntityCore:
 	public sf::Transformable,

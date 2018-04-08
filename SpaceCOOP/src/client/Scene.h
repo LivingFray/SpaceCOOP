@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "../shared/entities/EntityCore.h"
 #include "../shared/entities/Ship.h"
+#include "ClientSolarSystem.h"
 
 using std::shared_ptr;
 using std::unordered_map;
@@ -28,10 +29,13 @@ public:
 	void addEntity(shared_ptr<EntityCore> entity);
 	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
+
+	void setMapVisibility(bool visible);
 private:
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 	sf::View shipView;
 	Background background;
+	ClientSolarSystem solarSystem;
 	sf::RenderWindow* window;
 	bool orientToMouse = true;
 };

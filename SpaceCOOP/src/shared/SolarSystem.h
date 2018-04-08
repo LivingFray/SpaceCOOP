@@ -2,10 +2,7 @@
 #include <vector>
 #include <memory>
 #include <random>
-
-#include "../shared/entities/Planet.h"
-
-class Server;
+#include "entities/Planet.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -15,12 +12,8 @@ using std::shared_ptr;
 class SolarSystem {
 public:
 	SolarSystem();
-	~SolarSystem();
-
-	//Pass in info about star?
-	void generateSystem(Server* server);
-
-	std::default_random_engine generator;
+	virtual ~SolarSystem();
+	virtual void addPlanet(shared_ptr<Planet> planet);
 
 protected:
 	vector<shared_ptr<Planet>> planets;

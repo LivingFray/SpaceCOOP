@@ -1,17 +1,17 @@
-#include "SolarSystem.h"
-#include "../shared/Helper.h"
+#include "ServerSolarSystem.h"
 #include "Server.h"
+#include "../shared/Helper.h"
 
 
-SolarSystem::SolarSystem() {
+ServerSolarSystem::ServerSolarSystem() {
 }
 
 
-SolarSystem::~SolarSystem() {
+ServerSolarSystem::~ServerSolarSystem() {
 }
 
 
-void SolarSystem::generateSystem(Server* server) {
+void ServerSolarSystem::generateSystem(Server* server) {
 	//Random number of planets from 1 to 12
 	std::uniform_int_distribution<int> intDist(1, 12);
 	//Random position of planets in orbit

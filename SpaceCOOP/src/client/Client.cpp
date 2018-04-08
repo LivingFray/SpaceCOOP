@@ -11,6 +11,7 @@
 #include "commands/RotateRightClientCommand.h"
 #include "commands/ShowConsoleCommand.h"
 #include "commands/PreciseRotateClientCommand.h"
+#include "commands/ShowSystemClientCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -36,6 +37,7 @@ Client::Client() {
 	REGCMD(RotateRightClientCommand);
 	REGCMD(PreciseRotateClientCommand);
 	REGCMD(ShowConsoleCommand);
+	REGCMD(ShowSystemClientCommand);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
@@ -45,6 +47,7 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::Q, "rotateleft");
 	BINDCMD(sf::Keyboard::E, "rotateright");
 	BINDCMD(sf::Keyboard::F1, "showconsole");
+	BINDCMD(sf::Keyboard::M, "systemmap");
 
 	//Register entities here
 	REGENT(Ship);
@@ -60,6 +63,11 @@ void Client::init() {
 	//Set up console
 	console.loadFont("assets/cour.ttf");
 	console.resize(1280, 720);
+	sf::Event e;
+	e.type = sf::Event::Resized;
+	e.size.width = 1280;
+	e.size.height = 720;
+	scene.resizeEvent(e);
 
 	scene.client = this;
 	scene.init();
@@ -148,6 +156,10 @@ void Client::showConsole() {
 	consoleVisible = true;
 	//console.command.clear();
 	consoleJustVisible = true;
+}
+
+void Client::setSystemMapVisibility(bool visible) {
+	scene.setMapVisibility(visible);
 }
 
 shared_ptr<Ship> Client::getShip() {

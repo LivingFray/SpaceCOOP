@@ -10,7 +10,7 @@
 #include "../shared/EntityHandler.h"
 #include <unordered_map>
 #include "../shared/entities/EntityCore.h"
-#include "SolarSystem.h"
+#include "ServerSolarSystem.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -60,7 +60,7 @@ private:
 	double const packetRate = 1.0/15.0;
 	double lastSentPackets = 0;
 
-	SolarSystem tempSystem;
+	ServerSolarSystem tempSystem;
 
 	mutable std::mutex entityLock;
 };
