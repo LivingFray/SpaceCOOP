@@ -34,6 +34,7 @@ public:
 	void addEntity(shared_ptr<EntityCore> entity);
 	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
+	void removeAll();
 	void showConsole();
 	void setSystemMapVisibility(bool visible);
 	shared_ptr<Ship> getShip();

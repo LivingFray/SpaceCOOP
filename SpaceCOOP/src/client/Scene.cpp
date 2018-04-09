@@ -81,6 +81,10 @@ void Scene::removeEntity(UUID id) {
 	}
 }
 
+void Scene::removeAll() {
+	entities.clear();
+}
+
 void Scene::setMapVisibility(bool visible) {
 	solarSystem.mapVisible = visible;
 }

@@ -88,6 +88,13 @@ void Player::removeEntity(shared_ptr<EntityCore> entity) {
 	toSendTCP.push(packet);
 }
 
+void Player::removeAll() {
+	sf::Packet packet;
+	packet << static_cast<sf::Uint8>(PacketHandler::Type::ENTITY);
+	packet << static_cast<sf::Uint8>(PacketHandler::Entity::REMOVE_ALL);
+	toSendTCP.push(packet);
+}
+
 void Player::threadedTCPReceive() {
 	while (running) {
 		sf::Packet packet;

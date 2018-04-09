@@ -152,6 +152,10 @@ void Client::removeEntity(UUID id) {
 	scene.removeEntity(id);
 }
 
+void Client::removeAll() {
+	scene.removeAll();
+}
+
 void Client::showConsole() {
 	consoleVisible = true;
 	//console.command.clear();
@@ -345,6 +349,10 @@ void Client::handlePacket(sf::Packet& packet) {
 		}
 		case static_cast<sf::Uint8>(PacketHandler::Entity::REMOVE) : {
 			removeEntity(id);
+			break;
+		}
+		case static_cast<sf::Uint8>(PacketHandler::Entity::REMOVE_ALL) : {
+			removeAll();
 			break;
 		}
 		}

@@ -94,12 +94,7 @@ void Server::update(double dt) {
 		checkConnected = false;
 		Console::logToConsole(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 	}
-	//Update entities
-	entityLock.lock();
-	for (auto ent : entities) {
-		ent.second->update(dt);
-	}
-	entityLock.unlock();
+	tempSystem.update(dt);
 	//Send packets if it is that time again
 	lastSentPackets += dt;
 	if (lastSentPackets > packetRate) {
@@ -129,29 +124,11 @@ const ServerGalaxy& Server::getGalaxy() {
 }
 
 void Server::onPlayerConnected(shared_ptr<Player> player) {
-	//Add player's ship
-	shared_ptr<Ship> playerShip = std::make_shared<Ship>();
-	player->ship = playerShip;
-	//Send ship to clients
-	addEntity(playerShip);
-	sf::Packet p;
-	p << static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP);
-	p << playerShip->id;
-	player->toSendTCP.push(p);
-	//Send all entities to client
-	entityLock.lock();
-	for (auto ent : entities) {
-		if (ent.first != playerShip->id) {
-			//TODO: Range check and such to only send needed entities
-			player->sendEntity(ent.second);
-		}
-	}
-	entityLock.unlock();
+	tempSystem.addPlayer(player);
 }
 
 void Server::onPlayerDisconnected(shared_ptr<Player> player) {
-	//Remove player's ship
-	removeEntity(player->ship);
+	tempSystem.removePlayer(player);
 }
 
 void Server::addEntity(shared_ptr<EntityCore> entity) {

@@ -1,6 +1,8 @@
 #include "ServerSolarSystem.h"
 #include "Server.h"
 #include "../shared/Helper.h"
+#include "../shared/Console.h"
+#include "../shared/PacketHandler.h"
 
 
 ServerSolarSystem::ServerSolarSystem() {
@@ -33,6 +35,94 @@ void ServerSolarSystem::generateSystem(Server* server) {
 		planet->setPosition(planetPosition);
 		planets.push_back(planet);
 		//Register planet in server entity list (May wish to change later, or add reference to system in planet to allow for multiple systems loaded at once)
-		server->addEntity(planet);
+		//server->addEntity(planet);
+		addEntity(planet);
 	}
+}
+
+
+void ServerSolarSystem::addEntity(shared_ptr<EntityCore> entity) {
+	entityLock.lock();
+	entities.insert_or_assign(entity->id, entity);
+	entityLock.unlock();
+	playerLock.lock();
+	for (auto player : players) {
+		player->sendEntity(entity);
+	}
+	playerLock.unlock();
+}
+
+shared_ptr<EntityCore> ServerSolarSystem::getEntity(UUID id) {
+	std::lock_guard<std::mutex> guard(entityLock);
+	return entities[id];
+}
+
+void ServerSolarSystem::removeEntity(UUID id) {
+	entityLock.lock();
+	auto ent = entities[id];
+	if (!ent) {
+		Console::logToConsole("Could not find entity with UUID " + id, Console::LogLevel::WARNING);
+		entityLock.unlock();
+		return;
+	}
+	entities.erase(id);
+	entityLock.unlock();
+	playerLock.lock();
+	for (auto player : players) {
+		player->removeEntity(ent);
+	}
+	playerLock.unlock();
+}
+
+void ServerSolarSystem::addPlayer(shared_ptr<Player> player) {
+	//Add player to list
+	playerLock.lock();
+	players.push_back(player);
+	playerLock.unlock();
+	//Create ship
+	shared_ptr<Ship> playerShip = std::make_shared<Ship>();
+	player->ship = playerShip;
+	//Send ship to players
+	addEntity(playerShip);
+	//Assign ship to player
+	sf::Packet p;
+	p << static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP);
+	p << playerShip->id;
+	player->toSendTCP.push(p);
+	//Send entities to new player
+	entityLock.lock();
+	for (auto ent : entities) {
+		if (ent.first != playerShip->id) {
+			player->sendEntity(ent.second);
+		}
+	}
+	entityLock.unlock();
+}
+
+void ServerSolarSystem::removePlayer(shared_ptr<Player> player) {
+	//Remove player from player list
+	playerLock.lock();
+	for (auto it = players.begin(); it != players.end();) {
+		if (*it == player) {
+			it = players.erase(it);
+		} else {
+			it++;
+		}
+	}
+	playerLock.unlock();
+	//Tell player to remove entities
+	player->removeAll();
+	//Remove ship entity
+	if (player->ship) {
+		removeEntity(player->ship->id);
+	}
+}
+
+void ServerSolarSystem::update(double dt) {
+	//Update entities
+	entityLock.lock();
+	for (auto ent : entities) {
+		ent.second->update(dt);
+	}
+	entityLock.unlock();
 }

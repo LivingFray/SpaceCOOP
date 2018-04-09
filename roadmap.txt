@@ -2,7 +2,7 @@ SPACECOOP RoadMap
 
 Networking protocol (TCP, important data)			DONE
 
-Networking protocol (UDP, fast data)
+Networking protocol (UDP, fast data)				DONE
 
 
 Server generates starmap, client renders it			DONE
@@ -11,7 +11,7 @@ Flyable warp ship
 
 Proper connect disconnect interface, wait for start etc
 
-Console command based IO
+Console command based IO					DONE
 
 .
 .

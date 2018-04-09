@@ -29,6 +29,7 @@ public:
 	void addEntity(shared_ptr<EntityCore> entity);
 	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
+	void removeAll();
 
 	void setMapVisibility(bool visible);
 private:
