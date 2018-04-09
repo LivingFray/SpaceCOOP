@@ -30,6 +30,7 @@ public:
 	void removePlayer(shared_ptr<Player> player);
 
 	void update(double dt);
+	void sendUpdates();
 
 	std::default_random_engine generator;
 

@@ -126,3 +126,23 @@ void ServerSolarSystem::update(double dt) {
 	}
 	entityLock.unlock();
 }
+
+void ServerSolarSystem::sendUpdates() {
+	entityLock.lock();
+	for (auto tuple : entities) {
+		auto ent = tuple.second;
+		sf::Packet p;
+		ent->generateModifyPacket(p);
+		if (p.getDataSize() > 0) {
+			sf::Packet sendPacket;
+			sendPacket << ent->id;
+			concatPackets(sendPacket, p);
+			playerLock.lock();
+			for (auto player : players) {
+				player->updateEntity(sendPacket);
+			}
+			playerLock.unlock();
+		}
+	}
+	entityLock.unlock();
+}

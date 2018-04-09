@@ -99,19 +99,7 @@ void Server::update(double dt) {
 	lastSentPackets += dt;
 	if (lastSentPackets > packetRate) {
 		lastSentPackets -= packetRate;
-		for (auto tuple : entities) {
-			auto ent = tuple.second;
-			sf::Packet p;
-			ent->generateModifyPacket(p);
-			if (p.getDataSize() > 0) {
-				sf::Packet sendPacket;
-				sendPacket << ent->id;
-				concatPackets(sendPacket, p);
-				for (auto player : players) {
-					player->updateEntity(sendPacket);
-				}
-			}
-		}
+		tempSystem.sendUpdates();
 	}
 }
 
