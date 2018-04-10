@@ -1,6 +1,6 @@
 #include "ServerGalaxy.h"
 #include "../shared/Helper.h"
-#include <cstdlib>
+#include "Server.h"
 
 using std::shared_ptr;
 
@@ -25,4 +25,57 @@ void ServerGalaxy::generateGalaxy() {
 		s->colour.b = static_cast<sf::Uint8>(b * 255.0f);
 		stars.push_back(s);
 	}
+}
+
+void ServerGalaxy::generateSystem() {
+	//TODO: Threading
+	shared_ptr<ServerSolarSystem> sys = std::make_shared<ServerSolarSystem>();
+	sys->generateSystem(server);
+	systems.push_back(sys);
+}
+
+void ServerGalaxy::updateSystems(double dt) {
+	systemLock.lock();
+	for (auto system : systems) {
+		system->update(dt);
+	}
+	systemLock.unlock();
+}
+
+void ServerGalaxy::sendUpdates() {
+	systemLock.lock();
+	for (auto system : systems) {
+		system->sendUpdates();
+	}
+	systemLock.unlock();
+}
+
+void ServerGalaxy::addPlayer(shared_ptr<Player> player) {
+	systemLock.lock();
+	//TODO: Handle properly
+	systems[0]->addPlayer(player);
+	systemLock.unlock();
+}
+
+void ServerGalaxy::movePlayer(shared_ptr<Player> player, int systemNum) {
+	//TODO: Pointers in player to get current system faster?
+	if (systemNum < 0 || systemNum >= systems.size()) {
+		return;
+	}
+	systemLock.lock();
+	//Remove player from current system
+	for (auto system : systems) {
+		system->removePlayer(player);
+	}
+	//Add player to new system
+	systems[systemNum]->addPlayer(player);
+	systemLock.unlock();
+}
+
+void ServerGalaxy::removePlayer(shared_ptr<Player> player) {
+	systemLock.lock();
+	for (auto system : systems) {
+		system->removePlayer(player);
+	}
+	systemLock.unlock();
 }

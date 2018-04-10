@@ -41,8 +41,8 @@ public:
 	void onPlayerConnected(shared_ptr<Player> player);
 	void onPlayerDisconnected(shared_ptr<Player> player);
 
-	void addEntity(shared_ptr<EntityCore> entity);
-	void removeEntity(shared_ptr<EntityCore> entity);
+	//void addEntity(shared_ptr<EntityCore> entity);
+	//void removeEntity(shared_ptr<EntityCore> entity);
 private:
 	thread incomingThread;
 	thread udpThread;
@@ -55,12 +55,9 @@ private:
 	std::atomic<bool> checkConnected = false;
 
 	ServerGalaxy galaxy;
-	std::unordered_map<UUID, shared_ptr<EntityCore>> entities;
 
 	double const packetRate = 1.0/15.0;
 	double lastSentPackets = 0;
-
-	ServerSolarSystem tempSystem;
 
 	mutable std::mutex entityLock;
 };

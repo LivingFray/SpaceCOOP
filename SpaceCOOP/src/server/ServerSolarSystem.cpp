@@ -4,6 +4,7 @@
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
 
+std::default_random_engine ServerSolarSystem::generator;
 
 ServerSolarSystem::ServerSolarSystem() {
 }
@@ -100,25 +101,36 @@ void ServerSolarSystem::addPlayer(shared_ptr<Player> player) {
 }
 
 void ServerSolarSystem::removePlayer(shared_ptr<Player> player) {
+	bool removed = false;
 	//Remove player from player list
 	playerLock.lock();
 	for (auto it = players.begin(); it != players.end();) {
 		if (*it == player) {
 			it = players.erase(it);
+			removed = true;
 		} else {
 			it++;
 		}
 	}
 	playerLock.unlock();
 	//Tell player to remove entities
-	player->removeAll();
-	//Remove ship entity
-	if (player->ship) {
-		removeEntity(player->ship->id);
+	if (removed) {
+		player->removeAll();
+		//Remove ship entity
+		if (player->ship) {
+			removeEntity(player->ship->id);
+		}
 	}
 }
 
 void ServerSolarSystem::update(double dt) {
+	playerLock.lock();
+	int numPlayers = players.size();
+	playerLock.unlock();
+	//Why update a system thats not occupied?
+	if (numPlayers == 0) {
+		return;
+	}
 	//Update entities
 	entityLock.lock();
 	for (auto ent : entities) {

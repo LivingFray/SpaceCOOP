@@ -49,8 +49,13 @@ void ClientSolarSystem::resize(unsigned int width, unsigned int height) {
 	adjustView();
 }
 
+void ClientSolarSystem::reset() {
+	planets.clear();
+	adjustView();
+}
+
 void ClientSolarSystem::adjustView() {
-	maxSize = 0;
+	maxSize = 1;
 	//Calculate smallest square that covers entire system
 	for (auto planet : planets) {
 		sf::Vector2f pos = planet->getPosition();

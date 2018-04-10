@@ -32,7 +32,7 @@ public:
 	void update(double dt);
 	void sendUpdates();
 
-	std::default_random_engine generator;
+	static std::default_random_engine generator;
 
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 	vector<shared_ptr<Player>> players;

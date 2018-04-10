@@ -83,6 +83,10 @@ void Scene::removeEntity(UUID id) {
 
 void Scene::removeAll() {
 	entities.clear();
+	//Reset solar system
+	solarSystem.reset();
+	//Clear pointer to ship, as its now gone
+	ship = NULL;
 }
 
 void Scene::setMapVisibility(bool visible) {

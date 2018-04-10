@@ -1,5 +1,16 @@
 #pragma once
 #include "..\shared\Galaxy.h"
+#include <vector>
+#include <memory>
+#include <mutex>
+#include "ServerSolarSystem.h"
+
+class Server;
+
+using std::vector;
+using std::shared_ptr;
+using std::mutex;
+
 class ServerGalaxy :
 	public Galaxy {
 public:
@@ -8,5 +19,20 @@ public:
 
 	//TODO: Save/Load
 	void generateGalaxy();
+	void generateSystem();
+
+	void updateSystems(double dt);
+	void sendUpdates();
+
+	void addPlayer(shared_ptr<Player> player);
+	void movePlayer(shared_ptr<Player> player, int systemNum);
+	void removePlayer(shared_ptr<Player> player);
+
+	Server* server;
+
+private:
+	vector<shared_ptr<ServerSolarSystem>> systems;
+
+	mutex systemLock;
 };
 

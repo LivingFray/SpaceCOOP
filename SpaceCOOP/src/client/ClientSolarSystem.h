@@ -16,6 +16,8 @@ public:
 	void resize(unsigned int width, unsigned int height);
 	bool mapVisible = false;
 
+	void reset();
+
 	Client* client;
 private:
 	sf::View view;
