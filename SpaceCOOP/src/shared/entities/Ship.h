@@ -13,14 +13,24 @@ public:
 	virtual void update(double dt);
 	//The amount to rotate the ship by when using keys
 	float rotateAmount = 90.0f;
+
+	float getTurnRate() const { return maxTurnRate; }
+
+	void setDesiredAngle(float angle);
 protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet);
 	//The thrust being applied by the engines
 	float forwardThrust = 0.0f;
 	float sidewaysThrust = 0.0f;
-	static const float decel;
+	//The effective thrust of the ship when no key is pressed
+	float decel = 100.0f;
 	//The maximum speed the ship can accelerate by
 	float acceleration = 50.0f;
+	//The maximum rate the ship can turn
+	float maxTurnRate = 720.0f;
+	//The angle the ship is trying to rotate to
+	float desiredAngle;
+	bool rotateToDesired = false;
 };
 

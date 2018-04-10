@@ -15,7 +15,8 @@ void PreciseRotateClientCommand::execute() {
 	if (!client || !client->getShip()) {
 		return;
 	}
-	client->getShip()->setRotation(angle);
+	//TODO: Limit frequency command is sent
+	client->getShip()->setDesiredAngle(angle);
 	//Tell server to run command
 	ClientCommand::executeRemote();
 }

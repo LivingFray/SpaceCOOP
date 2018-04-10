@@ -2,8 +2,6 @@
 #include "../AssetHandler.h"
 #include <algorithm>
 
-const float Ship::decel = 25.0f;
-
 Ship::Ship() {
 	width = 100;
 	height = 50;
@@ -25,11 +23,27 @@ void Ship::moveRight(float vel) {
 }
 
 void Ship::rotate(float ang) {
-	angMomentum = ang;
+	angMomentum = std::max(-maxTurnRate, std::min(ang, maxTurnRate));
 	angMomentumChanged = true;
 }
 
 void Ship::update(double dt) {
+	if (rotateToDesired) {
+		float rotateBy = desiredAngle - getRotation();
+		if (rotateBy > 180.0f) {
+			rotateBy -= 360.0f;
+		} else if (rotateBy < -180.0f) {
+			rotateBy += 360.0f;
+		}
+		float absRotate = abs(rotateBy);
+		if (absRotate > maxTurnRate * dt) {
+			rotateBy /= absRotate;
+			rotateBy *= maxTurnRate;
+		} else {
+			rotateToDesired = false;
+		}
+		rotate(rotateBy);
+	}
 	if (abs(forwardThrust) < 1e-5 && abs(sidewaysThrust) < 1e-5) {
 		//Decelerate if not trying to move
 		//Get unit direction
@@ -47,6 +61,11 @@ void Ship::update(double dt) {
 		setVelocity(getVelocity() + thrust);
 	}
 	EntityCore::update(dt);
+}
+
+void Ship::setDesiredAngle(float angle) {
+	desiredAngle = angle;
+	rotateToDesired = true;
 }
 
 void Ship::packetIn(sf::Packet& packet) {

@@ -15,7 +15,7 @@ void PreciseRotateServerCommand::execute() {
 	if (!player || !player->ship) {
 		return;
 	}
-	player->ship->setRotation(angle);
+	player->ship->setDesiredAngle(angle);
 }
 
 sf::Packet& PreciseRotateServerCommand::packetIn(sf::Packet& packet) {
