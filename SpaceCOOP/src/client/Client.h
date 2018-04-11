@@ -37,6 +37,7 @@ public:
 	void removeAll();
 	void showConsole();
 	void setSystemMapVisibility(bool visible);
+	void toggleGalaxyMapVisible();
 	shared_ptr<Ship> getShip();
 
 	void keyEvent(sf::Event e);
@@ -67,8 +68,17 @@ private:
 	sf::IpAddress addr;
 
 	ClientGalaxy galaxy;
+	bool galaxyMapVisible = false;
+
 	bool consoleJustVisible = false;
 
 	Scene scene;
+
+	sf::View uiView;
+
+	float sWidth;
+	float sHeight;
+
+	void resizeGalaxyMap();
 };
 

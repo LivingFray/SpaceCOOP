@@ -12,6 +12,7 @@
 #include "commands/ShowConsoleCommand.h"
 #include "commands/PreciseRotateClientCommand.h"
 #include "commands/ShowSystemClientCommand.h"
+#include "commands/ShowGalaxyClientCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -38,6 +39,7 @@ Client::Client() {
 	REGCMD(PreciseRotateClientCommand);
 	REGCMD(ShowConsoleCommand);
 	REGCMD(ShowSystemClientCommand);
+	REGCMD(ShowGalaxyClientCommand);
 
 	//Register inputs here (TODO: startup commands i.e. autoexec.cfg)
 	BINDCMD(sf::Keyboard::W, "forwards");
@@ -48,6 +50,7 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::E, "rotateright");
 	BINDCMD(sf::Keyboard::F1, "showconsole");
 	BINDCMD(sf::Keyboard::M, "systemmap");
+	BINDCMD(sf::Keyboard::Tab, "togglegalaxy");
 
 	//Register entities here
 	REGENT(Ship);
@@ -62,15 +65,16 @@ Client::~Client() {
 void Client::init() {
 	//Set up console
 	console.loadFont("assets/cour.ttf");
-	console.resize(1280, 720);
+
+	scene.client = this;
+	scene.init();
+
+	//Fake a resize event
 	sf::Event e;
 	e.type = sf::Event::Resized;
 	e.size.width = 1280;
 	e.size.height = 720;
-	scene.resizeEvent(e);
-
-	scene.client = this;
-	scene.init();
+	resizeEvent(e);
 }
 
 void Client::connect() {
@@ -129,6 +133,14 @@ void Client::sendCommand(ClientCommand* cmd) {
 void Client::draw() {
 	window->clear(sf::Color::Black);
 	scene.draw();
+	//Draw UI things here
+	window->setView(uiView);
+	if (galaxyMapVisible) {
+		sf::RectangleShape backing(sf::Vector2f(sWidth, sHeight));
+		backing.setFillColor(sf::Color::Black);
+		window->draw(backing);
+		window->draw(galaxy);
+	}
 	if (consoleVisible) {
 		window->draw(console);
 	}
@@ -164,6 +176,10 @@ void Client::showConsole() {
 
 void Client::setSystemMapVisibility(bool visible) {
 	scene.setMapVisibility(visible);
+}
+
+void Client::toggleGalaxyMapVisible() {
+	galaxyMapVisible = !galaxyMapVisible;
 }
 
 shared_ptr<Ship> Client::getShip() {
@@ -207,8 +223,12 @@ void Client::textEvent(sf::Event e) {
 }
 
 void Client::resizeEvent(sf::Event e) {
+	sWidth = static_cast<float>(e.size.width);
+	sHeight = static_cast<float>(e.size.height);
 	console.resize(e.size.width, e.size.height);
 	scene.resizeEvent(e);
+	//UI stuff
+	resizeGalaxyMap();
 }
 
 void Client::threadedTCPReceive() {
@@ -298,6 +318,7 @@ void Client::handlePacket(sf::Packet& packet) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) : {
 		packet >> galaxy;
 		galaxy.createVertexArray();
+		resizeGalaxyMap();
 		console.log("Received galaxy data", GraphicalConsole::LogLevel::INFO);
 		break;
 	}
@@ -372,4 +393,22 @@ void Client::handlePacket(sf::Packet& packet) {
 		break;
 	}
 	}
+}
+
+void Client::resizeGalaxyMap() {
+	uiView = sf::View(sf::FloatRect(0.0f, 0.0f, sWidth, sHeight));
+	float drawX = 0.0f;
+	float drawY = 0.0f;
+	float drawWidth = sWidth;
+	float drawHeight = sHeight;
+	float w = galaxy.maxX - galaxy.minX;
+	float h = galaxy.maxY - galaxy.minY;
+	float scaleX = drawWidth / w;
+	float scaleY = drawHeight / h;
+	float scaleBy = scaleX < scaleY ? scaleX : scaleY;
+	//Give a slight border to the map to ensure nothing gets cut off or is at the very edge
+	scaleBy *= 0.95f;
+	galaxy.setOrigin(w / 2, h / 2);
+	galaxy.setScale(scaleBy, scaleBy);
+	galaxy.setPosition(drawX + drawWidth / 2, drawY + drawHeight / 2);
 }

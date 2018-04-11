@@ -11,6 +11,10 @@ ClientGalaxy::~ClientGalaxy() {
 }
 
 void ClientGalaxy::createVertexArray() {
+	minX = INFINITY;
+	minY = INFINITY;
+	maxX = -INFINITY;
+	maxY = -INFINITY;
 	vertexArray.setPrimitiveType(sf::Quads);
 	vertexArray.resize(stars.size() * 4);
 	int i = 0;
@@ -33,6 +37,19 @@ void ClientGalaxy::createVertexArray() {
 		quad[2].texCoords = sf::Vector2f(1.0f, 1.0f);
 		quad[3].texCoords = sf::Vector2f(1.0f, -1.0f);
 		i++;
+		//Update bounding box
+		if (minX > s->position.x) {
+			minX = s->position.x;
+		}
+		if (minY > s->position.y) {
+			minY = s->position.y;
+		}
+		if (maxX < s->position.x) {
+			maxX = s->position.x;
+		}
+		if (maxY < s->position.y) {
+			maxY = s->position.y;
+		}
 	}
 	//Load shaders
 	if (!starShader.loadFromFile("shaders/star.frag", sf::Shader::Fragment)) {
@@ -41,6 +58,7 @@ void ClientGalaxy::createVertexArray() {
 }
 
 void ClientGalaxy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= getTransform();
 	states.shader = &starShader;
 	target.draw(vertexArray, states);
 }

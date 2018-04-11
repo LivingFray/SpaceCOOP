@@ -128,6 +128,7 @@
   <ItemGroup>
     <ClCompile Include="src\client\Background.cpp" />
     <ClCompile Include="src\client\ClientSolarSystem.cpp" />
+    <ClCompile Include="src\client\commands\ShowGalaxyClientCommand.cpp" />
     <ClCompile Include="src\client\commands\ShowSystemClientCommand.cpp" />
     <ClCompile Include="src\client\Scene.cpp" />
     <ClCompile Include="src\server\ServerSolarSystem.cpp" />
@@ -183,6 +184,7 @@
   <ItemGroup>
     <ClInclude Include="src\client\Background.h" />
     <ClInclude Include="src\client\ClientSolarSystem.h" />
+    <ClInclude Include="src\client\commands\ShowGalaxyClientCommand.h" />
     <ClInclude Include="src\client\commands\ShowSystemClientCommand.h" />
     <ClInclude Include="src\client\Scene.h" />
     <ClInclude Include="src\server\ServerSolarSystem.h" />

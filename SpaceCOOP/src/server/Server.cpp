@@ -82,16 +82,6 @@ void Server::stop() {
 float TEMP = 0.0f;
 
 void Server::update(double dt) {
-	//Very much a tempory measure to test moving players to new systems
-	TEMP += dt;
-	if (TEMP > 10.0f && TEMP < 20.0f) {
-		galaxy.movePlayer(players[0], 1);
-		TEMP = 30.0f;
-	}
-	if (TEMP > 50.0f && TEMP < 60.0f) {
-		galaxy.movePlayer(players[1], 1);
-		TEMP = 70.0f;
-	}
 	//Handle disconnects
 	if (checkConnected) {
 		auto it = players.begin();

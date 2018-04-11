@@ -159,6 +159,9 @@
     <ClCompile Include="src\client\commands\ShowSystemClientCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\client\commands\ShowGalaxyClientCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\server\Server.h">
@@ -303,6 +306,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\client\commands\ShowSystemClientCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\commands\ShowGalaxyClientCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
