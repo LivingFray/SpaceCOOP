@@ -16,6 +16,7 @@ public:
 	virtual void keyEvent(sf::Event e) = 0;
 	virtual void textEvent(sf::Event e) = 0;
 	virtual void resizeEvent(sf::Event e) = 0;
+	virtual void mouseEvent(sf::Event e) = 0;
 	sf::RenderWindow* window;
 
 	//Sets the state to be used next

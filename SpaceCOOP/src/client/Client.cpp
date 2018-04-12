@@ -9,8 +9,9 @@
 #include "commands/StrafeRightClientCommand.h"
 #include "commands/RotateLeftClientCommand.h"
 #include "commands/RotateRightClientCommand.h"
-#include "commands/ShowConsoleCommand.h"
 #include "commands/PreciseRotateClientCommand.h"
+#include "commands/WarpClientCommand.h"
+#include "commands/ShowConsoleCommand.h"
 #include "commands/ShowSystemClientCommand.h"
 #include "commands/ShowGalaxyClientCommand.h"
 #include "../shared/Command.h"
@@ -37,6 +38,7 @@ Client::Client() {
 	REGCMD(RotateLeftClientCommand);
 	REGCMD(RotateRightClientCommand);
 	REGCMD(PreciseRotateClientCommand);
+	REGCMD(WarpClientCommand);
 	REGCMD(ShowConsoleCommand);
 	REGCMD(ShowSystemClientCommand);
 	REGCMD(ShowGalaxyClientCommand);
@@ -150,6 +152,12 @@ void Client::draw() {
 void Client::update(double dt) {
 	consoleJustVisible = false;
 	scene.update(dt);
+	if (galaxyMapVisible) {
+		sf::Vector2i pos = sf::Mouse::getPosition(*window);
+		sf::Vector2f mapPos = window->mapPixelToCoords(pos, uiView);
+		mapPos = galaxy.getInverseTransform().transformPoint(mapPos);
+		galaxy.selectStar(mapPos.x, mapPos.y);
+	}
 }
 
 void Client::addEntity(shared_ptr<EntityCore> entity) {
@@ -200,7 +208,7 @@ void Client::keyEvent(sf::Event e) {
 		} else {
 			cmdString = console.command.toAnsiString();
 		}
-		auto cmd = commandHandler.getCommand(cmdString);
+		auto cmd = commandHandler.getCommand(cmdString.substr(0, cmdString.find_first_of(' ')));
 		if (cmd) {
 			auto clCommand = std::dynamic_pointer_cast<ClientCommand>(cmd);
 			clCommand->client = this;
@@ -229,6 +237,15 @@ void Client::resizeEvent(sf::Event e) {
 	scene.resizeEvent(e);
 	//UI stuff
 	resizeGalaxyMap();
+}
+
+void Client::mouseEvent(sf::Event e) {
+	if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Left && galaxyMapVisible) {
+		shared_ptr<WarpClientCommand> warp = std::make_shared<WarpClientCommand>();
+		warp->client = this;
+		warp->destination = galaxy.selected;
+		warp->execute();
+	}
 }
 
 void Client::threadedTCPReceive() {

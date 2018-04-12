@@ -95,6 +95,10 @@ void Player::removeAll() {
 	toSendTCP.push(packet);
 }
 
+void Player::warp(int destination) {
+	server->warp(getptr(), destination);
+}
+
 void Player::threadedTCPReceive() {
 	while (running) {
 		sf::Packet packet;
@@ -161,7 +165,7 @@ void Player::handlePacket(sf::Packet& packet) {
 				p->execute();
 			}
 		} catch (std::exception e) {
-			Console::logToConsole("Player sent invalid command (" + std::to_string(commandId) + ")", Console::LogLevel::WARNING);
+			Console::logToConsole("Player sent invalid/malformatted command (" + std::to_string(commandId) + ")", Console::LogLevel::WARNING);
 		}
 		break;
 	}

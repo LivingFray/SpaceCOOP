@@ -12,6 +12,7 @@
 #include "commands/RotateLeftServerCommand.h"
 #include "commands/RotateRightServerCommand.h"
 #include "commands/PreciseRotateServerCommand.h"
+#include "commands/WarpServerCommand.h"
 //TODO: Server side ship with movement and such
 #include "../shared/entities/Ship.h"
 #include "../shared/Helper.h"
@@ -25,6 +26,7 @@ Server::Server() {
 	REGCMD(RotateLeftServerCommand);
 	REGCMD(RotateRightServerCommand);
 	REGCMD(PreciseRotateServerCommand);
+	REGCMD(WarpServerCommand);
 }
 
 
@@ -52,10 +54,6 @@ void Server::start() {
 	Console::logToConsole("Generating galaxy", Console::LogLevel::INFO);
 	galaxy.generateGalaxy();
 	Console::logToConsole("Galaxy generated", Console::LogLevel::INFO);
-	Console::logToConsole("Generating system", Console::LogLevel::INFO);
-	galaxy.generateSystem();
-	galaxy.generateSystem();
-	Console::logToConsole("System generated", Console::LogLevel::INFO);
 	incomingThread = std::thread(&Server::handleConnections, this);
 	Console::logToConsole("SV_Incoming: started", Console::LogLevel::INFO);
 }
@@ -78,8 +76,6 @@ void Server::stop() {
 	players.clear();
 	Console::logToConsole("All players kicked", Console::LogLevel::INFO);
 }
-
-float TEMP = 0.0f;
 
 void Server::update(double dt) {
 	//Handle disconnects
@@ -121,6 +117,11 @@ void Server::onPlayerConnected(shared_ptr<Player> player) {
 
 void Server::onPlayerDisconnected(shared_ptr<Player> player) {
 	galaxy.removePlayer(player);
+}
+
+void Server::warp(shared_ptr<Player> player, int destination) {
+	Console::logToConsole("Warping to system " + std::to_string(destination), Console::LogLevel::INFO);
+	galaxy.movePlayer(player, destination);
 }
 
 void Server::handleConnections() {

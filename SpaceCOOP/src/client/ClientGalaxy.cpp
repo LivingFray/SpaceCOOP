@@ -55,10 +55,31 @@ void ClientGalaxy::createVertexArray() {
 	if (!starShader.loadFromFile("shaders/star.frag", sf::Shader::Fragment)) {
 		Console::logToConsole("Could not load star shader", Console::LogLevel::ERROR);
 	}
+	//Set up outline
+	outline.setFillColor(sf::Color::Transparent);
+	outline.setOutlineColor(sf::Color::White);
+	outline.setOutlineThickness(2.0f);
+	outline.setRadius(6.0f);
+	outline.setPosition(stars[0]->position);
+	outline.setOrigin(outline.getRadius(), outline.getRadius());
 }
 
 void ClientGalaxy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	states.transform *= getTransform();
+	target.draw(outline, states);
 	states.shader = &starShader;
 	target.draw(vertexArray, states);
+}
+
+void ClientGalaxy::selectStar(float x, float y) {
+	int i = 0;
+	for (auto star : stars) {
+		float dx = star->position.x - x;
+		float dy = star->position.y - y;
+		if (dx * dx + dy * dy < outline.getRadius() * outline.getRadius()) {
+			selected = i;
+		}
+		i++;
+	}
+	outline.setPosition(stars[selected]->position);
 }

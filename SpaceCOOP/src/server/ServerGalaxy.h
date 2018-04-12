@@ -19,7 +19,7 @@ public:
 
 	//TODO: Save/Load
 	void generateGalaxy();
-	void generateSystem();
+	void generateSystem(int id);
 
 	void updateSystems(double dt);
 	void sendUpdates();
@@ -31,7 +31,7 @@ public:
 	Server* server;
 
 private:
-	vector<shared_ptr<ServerSolarSystem>> systems;
+	unordered_map<int, shared_ptr<ServerSolarSystem>> systems;
 
 	mutex systemLock;
 };

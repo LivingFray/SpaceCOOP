@@ -53,6 +53,12 @@ int main() {
 				//client.resizeEvent(e);
 				state->resizeEvent(e);
 			}
+			if (e.type == sf::Event::MouseButtonPressed) {
+				state->mouseEvent(e);
+			}
+			if (e.type == sf::Event::MouseButtonReleased) {
+				state->mouseEvent(e);
+			}
 		}
 		sf::Time t = clock.restart();
 		//Update server

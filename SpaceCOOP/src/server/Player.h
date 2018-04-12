@@ -12,7 +12,8 @@ using std::thread;
 
 class Server;
 
-class Player {
+class Player :
+	public std::enable_shared_from_this<Player> {
 public:
 	Player();
 	~Player();
@@ -23,6 +24,8 @@ public:
 	void updateEntity(sf::Packet p);
 	void removeEntity(shared_ptr<EntityCore> entity);
 	void removeAll();
+
+	void warp(int destination);
 	shared_ptr<Ship> ship;
 
 	sf::IpAddress ip;
@@ -30,6 +33,11 @@ public:
 
 	TSQueue<sf::Packet> toSendTCP;
 	TSQueue<sf::Packet> toSendUDP;
+
+	std::shared_ptr<Player> getptr() {
+		return shared_from_this();
+	}
+
 private:
 	shared_ptr<sf::TcpSocket> tcpSocket;
 	sf::UdpSocket* udpSocket;

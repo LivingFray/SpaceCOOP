@@ -15,6 +15,7 @@ public:
 	void keyEvent(sf::Event e);
 	void textEvent(sf::Event e);
 	void resizeEvent(sf::Event e);
+	void mouseEvent(sf::Event e);
 
 	void startServer(unsigned short port);
 	void connect();

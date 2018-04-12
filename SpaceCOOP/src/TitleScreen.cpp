@@ -47,3 +47,6 @@ void TitleScreen::textEvent(sf::Event e) {
 
 void TitleScreen::resizeEvent(sf::Event e) {
 }
+
+void TitleScreen::mouseEvent(sf::Event e) {
+}

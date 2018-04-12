@@ -25,19 +25,24 @@ void ServerGalaxy::generateGalaxy() {
 		s->colour.b = static_cast<sf::Uint8>(b * 255.0f);
 		stars.push_back(s);
 	}
+	generateSystem(0);
 }
 
-void ServerGalaxy::generateSystem() {
+void ServerGalaxy::generateSystem(int id) {
 	//TODO: Threading
-	shared_ptr<ServerSolarSystem> sys = std::make_shared<ServerSolarSystem>();
-	sys->generateSystem(server);
-	systems.push_back(sys);
+	systemLock.lock();
+	if (!systems[id]) {
+		shared_ptr<ServerSolarSystem> sys = std::make_shared<ServerSolarSystem>();
+		sys->generateSystem(server);
+		systems[id] = sys;
+	}
+	systemLock.unlock();
 }
 
 void ServerGalaxy::updateSystems(double dt) {
 	systemLock.lock();
 	for (auto system : systems) {
-		system->update(dt);
+		system.second->update(dt);
 	}
 	systemLock.unlock();
 }
@@ -45,7 +50,7 @@ void ServerGalaxy::updateSystems(double dt) {
 void ServerGalaxy::sendUpdates() {
 	systemLock.lock();
 	for (auto system : systems) {
-		system->sendUpdates();
+		system.second->sendUpdates();
 	}
 	systemLock.unlock();
 }
@@ -59,13 +64,18 @@ void ServerGalaxy::addPlayer(shared_ptr<Player> player) {
 
 void ServerGalaxy::movePlayer(shared_ptr<Player> player, int systemNum) {
 	//TODO: Pointers in player to get current system faster?
-	if (systemNum < 0 || systemNum >= systems.size()) {
+	if (systemNum < 0 || systemNum >= stars.size()) {
 		return;
 	}
 	systemLock.lock();
 	//Remove player from current system
 	for (auto system : systems) {
-		system->removePlayer(player);
+		system.second->removePlayer(player);
+	}
+	if (!systems[systemNum]) {
+		systemLock.unlock();
+		generateSystem(systemNum);
+		systemLock.lock();
 	}
 	//Add player to new system
 	systems[systemNum]->addPlayer(player);
@@ -75,7 +85,7 @@ void ServerGalaxy::movePlayer(shared_ptr<Player> player, int systemNum) {
 void ServerGalaxy::removePlayer(shared_ptr<Player> player) {
 	systemLock.lock();
 	for (auto system : systems) {
-		system->removePlayer(player);
+		system.second->removePlayer(player);
 	}
 	systemLock.unlock();
 }

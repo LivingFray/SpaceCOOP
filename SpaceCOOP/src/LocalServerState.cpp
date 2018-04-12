@@ -38,6 +38,10 @@ void LocalServerState::resizeEvent(sf::Event e) {
 	client.resizeEvent(e);
 }
 
+void LocalServerState::mouseEvent(sf::Event e) {
+	client.mouseEvent(e);
+}
+
 void LocalServerState::startServer(unsigned short port) {
 	server.port = port;
 	server.start();

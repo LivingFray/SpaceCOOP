@@ -34,6 +34,10 @@ void ClientState::resizeEvent(sf::Event e) {
 	client.resizeEvent(e);
 }
 
+void ClientState::mouseEvent(sf::Event e) {
+	client.mouseEvent(e);
+}
+
 void ClientState::connect(std::string ip, unsigned short port) {
 	client.ip = ip;
 	client.port = port;

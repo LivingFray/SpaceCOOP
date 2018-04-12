@@ -41,8 +41,7 @@ public:
 	void onPlayerConnected(shared_ptr<Player> player);
 	void onPlayerDisconnected(shared_ptr<Player> player);
 
-	//void addEntity(shared_ptr<EntityCore> entity);
-	//void removeEntity(shared_ptr<EntityCore> entity);
+	void warp(shared_ptr<Player> player, int destination);
 private:
 	thread incomingThread;
 	thread udpThread;

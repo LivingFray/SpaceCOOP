@@ -12,6 +12,7 @@ public:
 	void keyEvent(sf::Event e);
 	void textEvent(sf::Event e);
 	void resizeEvent(sf::Event e);
+	void mouseEvent(sf::Event e);
 
 	bool switched = false;
 private:
