@@ -25,5 +25,7 @@ private:
 	sf::RenderWindow* window;
 	unsigned int sWidth, sHeight;
 	void adjustView();
+	//TEMP: Star should be entity
+	//sf::Shader starShader;
 };
 

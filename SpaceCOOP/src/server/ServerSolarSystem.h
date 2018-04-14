@@ -38,5 +38,7 @@ public:
 	vector<shared_ptr<Player>> players;
 	mutex entityLock;
 	mutex playerLock;
+
+	sf::Color starColour;
 };
 

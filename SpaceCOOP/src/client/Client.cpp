@@ -19,6 +19,7 @@
 #include "../shared/entities/EntityCore.h"
 #include "../shared/entities/Ship.h"
 #include "../shared/entities/Planet.h"
+#include "../shared/entities/EntityStar.h"
 #include "../shared/Helper.h"
 
 
@@ -57,6 +58,7 @@ Client::Client() {
 	//Register entities here
 	REGENT(Ship);
 	REGENT(Planet);
+	REGENT(EntityStar);
 }
 
 

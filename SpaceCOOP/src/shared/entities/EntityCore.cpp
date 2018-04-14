@@ -172,10 +172,13 @@ void EntityCore::resizeSprite() {
 	float sX = width / bounds.width;
 	float sY = height / bounds.height;
 	setScale(sX, sY);
-	setOrigin(bounds.width * 0.5, bounds.height * 0.5);
+	setOrigin(bounds.width * 0.5f, bounds.height * 0.5f);
 }
 
 void EntityCore::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	if (useShader) {
+		states.shader = &shader;
+	}
 	states.transform *= getTransform();
 	target.draw(sprite, states);
 }

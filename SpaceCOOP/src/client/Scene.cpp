@@ -69,6 +69,9 @@ void Scene::addEntity(shared_ptr<EntityCore> entity) {
 	if (std::dynamic_pointer_cast<Planet>(entity)) {
 		solarSystem.addPlanet(std::dynamic_pointer_cast<Planet>(entity));
 	}
+	if (std::dynamic_pointer_cast<EntityStar>(entity)) {
+		solarSystem.addStar(std::dynamic_pointer_cast<EntityStar>(entity));
+	}
 }
 
 shared_ptr<EntityCore> Scene::getEntity(UUID id) {

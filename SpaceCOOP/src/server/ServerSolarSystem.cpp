@@ -3,6 +3,7 @@
 #include "../shared/Helper.h"
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
+#include "../shared/entities/EntityStar.h"
 
 std::default_random_engine ServerSolarSystem::generator;
 
@@ -39,6 +40,11 @@ void ServerSolarSystem::generateSystem(Server* server) {
 		//server->addEntity(planet);
 		addEntity(planet);
 	}
+	//TODO: Binary systems
+	star = std::make_shared<EntityStar>(radiusDist(generator) * 5.0f);
+	star->setPosition(sf::Vector2f(0.0f, 0.0f));
+	star->setColour(starColour);
+	addEntity(star);
 }
 
 

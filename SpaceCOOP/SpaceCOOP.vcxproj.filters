@@ -168,6 +168,9 @@
     <ClCompile Include="src\server\commands\WarpServerCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\shared\entities\EntityStar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\server\Server.h">
@@ -321,6 +324,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\server\commands\WarpServerCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared\entities\EntityStar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

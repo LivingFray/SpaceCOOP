@@ -1,10 +1,12 @@
 #include "ServerGalaxy.h"
 #include "../shared/Helper.h"
 #include "Server.h"
+#include <chrono>
 
 using std::shared_ptr;
 
 ServerGalaxy::ServerGalaxy() {
+	ServerSolarSystem::generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 
@@ -33,6 +35,7 @@ void ServerGalaxy::generateSystem(int id) {
 	systemLock.lock();
 	if (!systems[id]) {
 		shared_ptr<ServerSolarSystem> sys = std::make_shared<ServerSolarSystem>();
+		sys->starColour = stars[id]->colour;
 		sys->generateSystem(server);
 		systems[id] = sys;
 	}

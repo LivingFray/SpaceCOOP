@@ -3,7 +3,7 @@
 
 
 ClientSolarSystem::ClientSolarSystem() {
-	view.setCenter(0.0f, 0.0f);
+	//starShader.loadFromFile("shaders/bigstar.frag", sf::Shader::Fragment);
 }
 
 
@@ -32,6 +32,12 @@ void ClientSolarSystem::draw() const {
 			planet->setScale(scale * 4.0f);
 			window->draw(*planet);
 			planet->setScale(scale);
+		}
+		if(star) {
+			sf::Vector2f scale = star->getScale();
+			star->setScale(scale * 4.0f);
+			window->draw(*star);
+			star->setScale(scale);
 		}
 		auto ship = client->getShip();
 		if (ship) {
