@@ -127,15 +127,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\client\Background.cpp" />
-    <ClCompile Include="src\client\ClientSolarSystem.cpp" />
     <ClCompile Include="src\client\commands\ShowGalaxyClientCommand.cpp" />
     <ClCompile Include="src\client\commands\ShowSystemClientCommand.cpp" />
     <ClCompile Include="src\client\commands\WarpClientCommand.cpp" />
-    <ClCompile Include="src\client\Scene.cpp" />
+    <ClCompile Include="src\client\ClientSolarSystem.cpp" />
     <ClCompile Include="src\server\commands\WarpServerCommand.cpp" />
     <ClCompile Include="src\server\ServerSolarSystem.cpp" />
     <ClCompile Include="src\shared\entities\EntityStar.cpp" />
     <ClCompile Include="src\shared\entities\Planet.cpp" />
+    <ClCompile Include="src\shared\Projectile.cpp" />
     <ClCompile Include="src\shared\SolarSystem.cpp" />
     <ClCompile Include="src\ClientState.cpp" />
     <ClCompile Include="src\client\commands\BackwardsClientCommand.cpp" />
@@ -186,15 +186,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\client\Background.h" />
-    <ClInclude Include="src\client\ClientSolarSystem.h" />
     <ClInclude Include="src\client\commands\ShowGalaxyClientCommand.h" />
     <ClInclude Include="src\client\commands\ShowSystemClientCommand.h" />
     <ClInclude Include="src\client\commands\WarpClientCommand.h" />
-    <ClInclude Include="src\client\Scene.h" />
+    <ClInclude Include="src\client\ClientSolarSystem.h" />
     <ClInclude Include="src\server\commands\WarpServerCommand.h" />
     <ClInclude Include="src\server\ServerSolarSystem.h" />
     <ClInclude Include="src\shared\entities\EntityStar.h" />
     <ClInclude Include="src\shared\entities\Planet.h" />
+    <ClInclude Include="src\shared\Projectile.h" />
     <ClInclude Include="src\shared\SolarSystem.h" />
     <ClInclude Include="src\ClientState.h" />
     <ClInclude Include="src\client\commands\BackwardsClientCommand.h" />

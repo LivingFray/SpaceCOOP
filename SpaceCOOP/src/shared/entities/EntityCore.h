@@ -21,8 +21,8 @@ public:
 	void setPosition(const sf::Vector2f& p);
 	void setRotation(float angle);
 	void setVelocity(sf::Vector2f v);
-	friend sf::Packet& operator<<(sf::Packet& packet, const EntityCore& command);
-	friend sf::Packet& operator>>(sf::Packet& packet, EntityCore& command);
+	friend sf::Packet& operator<<(sf::Packet& packet, const EntityCore& entity);
+	friend sf::Packet& operator>>(sf::Packet& packet, EntityCore& entity);
 	virtual void modify(sf::Packet& p);
 	virtual void generateModifyPacket(sf::Packet& p); //Pass by reference should be faster
 	virtual void update(double dt);

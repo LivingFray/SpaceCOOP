@@ -183,12 +183,12 @@ void EntityCore::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(sprite, states);
 }
 
-sf::Packet& operator<<(sf::Packet& packet, const EntityCore& command) {
-	command.packetOut(packet);
+sf::Packet& operator<<(sf::Packet& packet, const EntityCore& entity) {
+	entity.packetOut(packet);
 	return packet;
 }
 
-sf::Packet & operator >> (sf::Packet& packet, EntityCore& command) {
-	command.packetIn(packet);
+sf::Packet & operator >> (sf::Packet& packet, EntityCore& entity) {
+	entity.packetIn(packet);
 	return packet;
 }

@@ -1,6 +1,13 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "Background.h"
+#include <memory>
+#include <unordered_map>
+#include "../shared/entities/EntityCore.h"
+#include "../shared/entities/Ship.h"
 #include "../shared/SolarSystem.h"
+
+using std::shared_ptr;
+using std::unordered_map;
 
 class Client;
 
@@ -10,22 +17,34 @@ public:
 	ClientSolarSystem();
 	~ClientSolarSystem();
 	void init();
-	void addPlanet(shared_ptr<Planet> planet);
+	void update(double dt);
+	void draw();
 
-	void draw() const;
-	void resize(unsigned int width, unsigned int height);
-	bool mapVisible = false;
-
-	void reset();
+	void keyEvent(sf::Event e);
+	void textEvent(sf::Event e);
+	void resizeEvent(sf::Event e);
 
 	Client* client;
+	shared_ptr<Ship> ship;
+
+	void addEntity(shared_ptr<EntityCore> entity);
+	shared_ptr<EntityCore> getEntity(UUID id);
+	void removeEntity(UUID id);
+	void removeAll();
+	void addPlanet(shared_ptr<Planet> planet);
+
+	void setMapVisibility(bool visible);
 private:
-	sf::View view;
-	float maxSize;
+	unordered_map<UUID, shared_ptr<EntityCore>> entities;
+	sf::View shipView;
+	Background background;
 	sf::RenderWindow* window;
+	bool orientToMouse = true;
+	sf::View systemMapView;
+	float maxSize;
 	unsigned int sWidth, sHeight;
-	void adjustView();
-	//TEMP: Star should be entity
-	//sf::Shader starShader;
+	void adjustMapView();
+	bool mapVisible = false;
+	void resizeMap(unsigned int width, unsigned int height);
 };
 

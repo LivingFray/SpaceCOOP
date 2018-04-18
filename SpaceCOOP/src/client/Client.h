@@ -10,7 +10,7 @@
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/Ship.h"
 #include "GraphicalConsole.h"
-#include "Scene.h"
+#include "ClientSolarSystem.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -73,7 +73,7 @@ private:
 
 	bool consoleJustVisible = false;
 
-	Scene scene;
+	ClientSolarSystem scene;
 
 	sf::View uiView;
 

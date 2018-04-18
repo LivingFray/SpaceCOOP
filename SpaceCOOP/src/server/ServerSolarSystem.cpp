@@ -13,9 +13,10 @@ ServerSolarSystem::ServerSolarSystem() {
 
 ServerSolarSystem::~ServerSolarSystem() {
 }
-
+//TODO: Reduce uses of mutex by putting new players in a queue and only manipulating player list in main thread
 
 void ServerSolarSystem::generateSystem(Server* server) {
+	this->server = server;
 	//Random number of planets from 1 to 12
 	std::uniform_int_distribution<int> intDist(1, 12);
 	//Random position of planets in orbit
@@ -163,4 +164,15 @@ void ServerSolarSystem::sendUpdates() {
 		}
 	}
 	entityLock.unlock();
+}
+
+void ServerSolarSystem::fireProjectile(Projectile proj) {
+	sf::Packet p;
+	p << static_cast<sf::Uint8>(PacketHandler::Type::PROJECTILE);
+	p << proj;
+	playerLock.lock();
+	for (auto player : players) {
+		player->toSendUDP.push(p);
+	}
+	playerLock.unlock();
 }

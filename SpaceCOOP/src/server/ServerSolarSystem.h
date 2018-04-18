@@ -6,6 +6,7 @@
 #include <vector>
 #include <mutex>
 #include "Player.h"
+#include "../shared/Projectile.h"
 
 using std::unordered_map;
 using std::shared_ptr;
@@ -32,6 +33,8 @@ public:
 	void update(double dt);
 	void sendUpdates();
 
+	void fireProjectile(Projectile proj);
+
 	static std::default_random_engine generator;
 
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;
@@ -40,5 +43,7 @@ public:
 	mutex playerLock;
 
 	sf::Color starColour;
+private:
+	Server* server;
 };
 
