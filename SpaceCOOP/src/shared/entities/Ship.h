@@ -17,6 +17,8 @@ public:
 	float getTurnRate() const { return maxTurnRate; }
 
 	void setDesiredAngle(float angle);
+
+	void fire();
 protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet);

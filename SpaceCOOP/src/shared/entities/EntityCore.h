@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+class SolarSystem;
+
 //Set to the highest id a command may have, default is based on size of CommandID
 #define MAX_ENTITIES 1<<(8*sizeof(EntityType))
 
@@ -15,6 +17,9 @@ class EntityCore:
 public:
 	EntityCore();
 	virtual ~EntityCore();
+
+	SolarSystem* system;
+
 	UUID id;
 	EntityType type;
 	sf::Vector2f getVelocity() const { return vel; }

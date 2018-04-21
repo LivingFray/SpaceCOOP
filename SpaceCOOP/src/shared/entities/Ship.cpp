@@ -1,6 +1,10 @@
 #include "Ship.h"
 #include "../AssetHandler.h"
+#include "../LaserBeam.h"
 #include <algorithm>
+#include <memory>
+#include "../SolarSystem.h"
+using std::shared_ptr;
 
 Ship::Ship() {
 	width = 100;
@@ -66,6 +70,14 @@ void Ship::update(double dt) {
 void Ship::setDesiredAngle(float angle) {
 	desiredAngle = angle;
 	rotateToDesired = true;
+}
+
+void Ship::fire() {
+	//TODO: Weapon selection and such
+	shared_ptr<LaserBeam> beam = std::make_shared<LaserBeam>();
+	beam->origin = id;
+	beam->direction = getFront();
+	system->addProjectile(beam);
 }
 
 void Ship::packetIn(sf::Packet& packet) {

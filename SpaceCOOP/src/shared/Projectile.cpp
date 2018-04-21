@@ -9,6 +9,10 @@ Projectile::Projectile() {
 Projectile::~Projectile() {
 }
 
+void Projectile::update(double dt) {
+	TTL -= dt;
+}
+
 void Projectile::packetIn(sf::Packet& packet) {
 	//Type should have already been read in at this point
 	packet >> origin;

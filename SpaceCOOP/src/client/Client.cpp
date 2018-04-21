@@ -14,6 +14,7 @@
 #include "commands/ShowConsoleCommand.h"
 #include "commands/ShowSystemClientCommand.h"
 #include "commands/ShowGalaxyClientCommand.h"
+#include "commands/FireClientCommand.h"
 #include "../shared/Command.h"
 #include "../shared/EntityHandler.h"
 #include "../shared/entities/EntityCore.h"
@@ -21,7 +22,7 @@
 #include "../shared/entities/Planet.h"
 #include "../shared/entities/EntityStar.h"
 #include "../shared/Helper.h"
-
+#include "../shared/LaserBeam.h"
 
 #define BINDCMD(k, c) { \
 shared_ptr<ClientCommand> _cmd = std::dynamic_pointer_cast<ClientCommand>(commandHandler.getCommand(c)); \
@@ -39,6 +40,7 @@ Client::Client() {
 	REGCMD(RotateLeftClientCommand);
 	REGCMD(RotateRightClientCommand);
 	REGCMD(PreciseRotateClientCommand);
+	REGCMD(FireClientCommand);
 	REGCMD(WarpClientCommand);
 	REGCMD(ShowConsoleCommand);
 	REGCMD(ShowSystemClientCommand);
@@ -54,11 +56,14 @@ Client::Client() {
 	BINDCMD(sf::Keyboard::F1, "showconsole");
 	BINDCMD(sf::Keyboard::M, "systemmap");
 	BINDCMD(sf::Keyboard::Tab, "togglegalaxy");
+	BINDCMD(sf::Keyboard::Space, "fire");
 
 	//Register entities here
 	REGENT(Ship);
 	REGENT(Planet);
 	REGENT(EntityStar);
+
+	REGPROJ(LaserBeam);
 }
 
 
@@ -70,8 +75,8 @@ void Client::init() {
 	//Set up console
 	console.loadFont("assets/cour.ttf");
 
-	scene.client = this;
-	scene.init();
+	solarSystem.client = this;
+	solarSystem.init();
 
 	//Fake a resize event
 	sf::Event e;
@@ -136,7 +141,7 @@ void Client::sendCommand(ClientCommand* cmd) {
 
 void Client::draw() {
 	window->clear(sf::Color::Black);
-	scene.draw();
+	solarSystem.draw();
 	//Draw UI things here
 	window->setView(uiView);
 	if (galaxyMapVisible) {
@@ -153,7 +158,7 @@ void Client::draw() {
 
 void Client::update(double dt) {
 	consoleJustVisible = false;
-	scene.update(dt);
+	solarSystem.update(dt);
 	if (galaxyMapVisible) {
 		sf::Vector2i pos = sf::Mouse::getPosition(*window);
 		sf::Vector2f mapPos = window->mapPixelToCoords(pos, uiView);
@@ -163,19 +168,19 @@ void Client::update(double dt) {
 }
 
 void Client::addEntity(shared_ptr<EntityCore> entity) {
-	scene.addEntity(entity);
+	solarSystem.addEntity(entity);
 }
 
 shared_ptr<EntityCore> Client::getEntity(UUID id) {
-	return scene.getEntity(id);
+	return solarSystem.getEntity(id);
 }
 
 void Client::removeEntity(UUID id) {
-	scene.removeEntity(id);
+	solarSystem.removeEntity(id);
 }
 
 void Client::removeAll() {
-	scene.removeAll();
+	solarSystem.removeAll();
 }
 
 void Client::showConsole() {
@@ -185,7 +190,7 @@ void Client::showConsole() {
 }
 
 void Client::setSystemMapVisibility(bool visible) {
-	scene.setMapVisibility(visible);
+	solarSystem.setMapVisibility(visible);
 }
 
 void Client::toggleGalaxyMapVisible() {
@@ -193,7 +198,7 @@ void Client::toggleGalaxyMapVisible() {
 }
 
 shared_ptr<Ship> Client::getShip() {
-	return scene.ship;
+	return solarSystem.ship;
 }
 
 void Client::keyEvent(sf::Event e) {
@@ -236,7 +241,7 @@ void Client::resizeEvent(sf::Event e) {
 	sWidth = static_cast<float>(e.size.width);
 	sHeight = static_cast<float>(e.size.height);
 	console.resize(e.size.width, e.size.height);
-	scene.resizeEvent(e);
+	solarSystem.resizeEvent(e);
 	//UI stuff
 	resizeGalaxyMap();
 }
@@ -405,9 +410,24 @@ void Client::handlePacket(sf::Packet& packet) {
 		if (!ent) {
 			console.log("Received ship ID from server that does not exist " + std::to_string(id), GraphicalConsole::LogLevel::ERROR);
 		}
-		scene.ship = std::dynamic_pointer_cast<Ship>(getEntity(id));
-		if (!scene.ship) {
+		solarSystem.ship = std::dynamic_pointer_cast<Ship>(getEntity(id));
+		if (!solarSystem.ship) {
 			console.log("Received ship ID from server for non ship entity " + std::to_string(id), GraphicalConsole::LogLevel::ERROR);
+		}
+		break;
+	}
+	case static_cast<sf::Uint8>(PacketHandler::Type::PROJECTILE) : {
+		sf::Uint8 type;
+		packet >> type;
+		auto proj = projectileHandler.getProjectile(type);
+		if (!proj) {
+			break;
+		}
+		packet >> *proj;
+		auto ent = getEntity(proj->origin);
+		//Don't add projectiles client fired, these were already predicted
+		if (ent && ent->id != proj->origin) {
+			solarSystem.addProjectile(proj);
 		}
 		break;
 	}

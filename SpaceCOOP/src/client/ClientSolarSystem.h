@@ -5,6 +5,7 @@
 #include "../shared/entities/EntityCore.h"
 #include "../shared/entities/Ship.h"
 #include "../shared/SolarSystem.h"
+#include "../shared/Projectile.h"
 
 using std::shared_ptr;
 using std::unordered_map;
@@ -28,14 +29,12 @@ public:
 	shared_ptr<Ship> ship;
 
 	void addEntity(shared_ptr<EntityCore> entity);
-	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
 	void removeAll();
 	void addPlanet(shared_ptr<Planet> planet);
 
 	void setMapVisibility(bool visible);
 private:
-	unordered_map<UUID, shared_ptr<EntityCore>> entities;
 	sf::View shipView;
 	Background background;
 	sf::RenderWindow* window;

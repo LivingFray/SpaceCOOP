@@ -16,3 +16,23 @@ void SolarSystem::addPlanet(shared_ptr<Planet> planet) {
 void SolarSystem::addStar(shared_ptr<EntityStar> star) {
 	this->star = star;
 }
+
+void SolarSystem::removeAll() {
+	entities.clear();
+	projectiles.clear();
+	planets.clear();
+	star = NULL;
+}
+
+void SolarSystem::addProjectile(shared_ptr<Projectile> proj) {
+	proj->system = this;
+	projectiles.push_back(proj);
+}
+
+shared_ptr<EntityCore> SolarSystem::getEntity(UUID id) {
+	if (entities.find(id) != entities.end()) {
+		return entities[id];
+	} else {
+		return NULL;
+	}
+}

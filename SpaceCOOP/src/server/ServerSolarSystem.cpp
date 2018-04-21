@@ -53,6 +53,7 @@ void ServerSolarSystem::addEntity(shared_ptr<EntityCore> entity) {
 	entityLock.lock();
 	entities.insert_or_assign(entity->id, entity);
 	entityLock.unlock();
+	entity->system = this;
 	playerLock.lock();
 	for (auto player : players) {
 		player->sendEntity(entity);
@@ -144,6 +145,16 @@ void ServerSolarSystem::update(double dt) {
 		ent.second->update(dt);
 	}
 	entityLock.unlock();
+	//Update projectiles
+	for (auto proj = projectiles.begin(); proj != projectiles.end();) {
+		(*proj)->update(dt);
+		//Kill any old projectiles
+		if ((*proj)->TTL < 0.0f) {
+			proj = projectiles.erase(proj);
+		} else {
+			proj++;
+		}
+	}
 }
 
 void ServerSolarSystem::sendUpdates() {
@@ -166,10 +177,11 @@ void ServerSolarSystem::sendUpdates() {
 	entityLock.unlock();
 }
 
-void ServerSolarSystem::fireProjectile(Projectile proj) {
+void ServerSolarSystem::addProjectile(shared_ptr<Projectile> proj) {
+	SolarSystem::addProjectile(proj);
 	sf::Packet p;
 	p << static_cast<sf::Uint8>(PacketHandler::Type::PROJECTILE);
-	p << proj;
+	p << *proj;
 	playerLock.lock();
 	for (auto player : players) {
 		player->toSendUDP.push(p);

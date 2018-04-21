@@ -20,7 +20,6 @@ class ServerSolarSystem :
 public:
 	ServerSolarSystem();
 	~ServerSolarSystem();
-	//Pass in info about star?
 	void generateSystem(Server* server);
 
 	void addEntity(shared_ptr<EntityCore> entity);
@@ -33,17 +32,16 @@ public:
 	void update(double dt);
 	void sendUpdates();
 
-	void fireProjectile(Projectile proj);
+	void addProjectile(shared_ptr<Projectile> proj);
 
 	static std::default_random_engine generator;
 
-	unordered_map<UUID, shared_ptr<EntityCore>> entities;
-	vector<shared_ptr<Player>> players;
 	mutex entityLock;
 	mutex playerLock;
 
 	sf::Color starColour;
 private:
 	Server* server;
+	vector<shared_ptr<Player>> players;
 };
 

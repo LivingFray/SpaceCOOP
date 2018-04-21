@@ -34,8 +34,19 @@ void ClientSolarSystem::update(double dt) {
 		cmd.angle = desiredAngle;
 		cmd.execute();
 	}
+	//Update entities
 	for (auto ent : entities) {
 		ent.second->update(dt);
+	}
+	//Update projectiles
+	for (auto proj = projectiles.begin(); proj != projectiles.end();) {
+		(*proj)->update(dt);
+		//Kill any old projectiles
+		if ((*proj)->TTL < 0.0f) {
+			proj = projectiles.erase(proj);
+		} else {
+			proj++;
+		}
 	}
 }
 
@@ -50,6 +61,10 @@ void ClientSolarSystem::draw() {
 	window->setView(shipView);
 	for (auto ent : entities) {
 		window->draw(*ent.second);
+	}
+	//Draw projectiles
+	for (auto proj : projectiles) {
+		window->draw(*proj);
 	}
 	//Draw map of the solar system
 	if (mapVisible) {
@@ -94,16 +109,13 @@ void ClientSolarSystem::resizeEvent(sf::Event e) {
 
 void ClientSolarSystem::addEntity(shared_ptr<EntityCore> entity) {
 	entities.insert_or_assign(entity->id, entity);
+	entity->system = this;
 	if (std::dynamic_pointer_cast<Planet>(entity)) {
 		addPlanet(std::dynamic_pointer_cast<Planet>(entity));
 	}
 	if (std::dynamic_pointer_cast<EntityStar>(entity)) {
 		addStar(std::dynamic_pointer_cast<EntityStar>(entity));
 	}
-}
-
-shared_ptr<EntityCore> ClientSolarSystem::getEntity(UUID id) {
-	return entities[id];
 }
 
 void ClientSolarSystem::removeEntity(UUID id) {

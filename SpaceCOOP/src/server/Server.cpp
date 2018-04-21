@@ -13,6 +13,7 @@
 #include "commands/RotateRightServerCommand.h"
 #include "commands/PreciseRotateServerCommand.h"
 #include "commands/WarpServerCommand.h"
+#include "commands/FireServerCommand.h"
 //TODO: Server side ship with movement and such
 #include "../shared/entities/Ship.h"
 #include "../shared/Helper.h"
@@ -27,6 +28,7 @@ Server::Server() {
 	REGCMD(RotateRightServerCommand);
 	REGCMD(PreciseRotateServerCommand);
 	REGCMD(WarpServerCommand);
+	REGCMD(FireServerCommand);
 }
 
 

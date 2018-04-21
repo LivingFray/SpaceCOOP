@@ -11,6 +11,7 @@
 #include "../shared/entities/Ship.h"
 #include "GraphicalConsole.h"
 #include "ClientSolarSystem.h"
+#include "../shared/ProjectileHandler.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -49,6 +50,7 @@ public:
 	CommandHandler commandHandler;
 	InputHandler inputHandler;
 	EntityHandler entityHandler;
+	ProjectileHandler projectileHandler;
 	bool consoleVisible = false;
 	GraphicalConsole console;
 private:
@@ -73,7 +75,7 @@ private:
 
 	bool consoleJustVisible = false;
 
-	ClientSolarSystem scene;
+	ClientSolarSystem solarSystem;
 
 	sf::View uiView;
 

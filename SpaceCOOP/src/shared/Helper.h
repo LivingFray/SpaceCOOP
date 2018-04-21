@@ -17,3 +17,8 @@ commandHandler.registerCommand(fun); \
 std::function<shared_ptr<EntityCore>()> fun = []() { return std::make_shared<e>();}; \
 entityHandler.registerEntity(fun); \
 }
+
+#define REGPROJ(p) { \
+std::function<shared_ptr<Projectile>()> fun = []() { return std::make_shared<p>();}; \
+projectileHandler.registerProjectile(fun); \
+}
