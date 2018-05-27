@@ -33,12 +33,13 @@ public:
 	virtual void update(double dt);
 	virtual sf::Vector2f getFront();
 	virtual sf::Vector2f getRight();
+
+	virtual int getNumMods() const { return static_cast<int>(MODS::NUM_MODS); }
 protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet) const;
 	//If the ID can be used by this instantation of Entity, use it to
-	virtual bool applyModification(sf::Uint8, sf::Packet& p);
-	const static int NUM_MODIFY_PROTOCOLS = 4;
+	virtual bool applyModification(sf::Uint8 modId, sf::Packet& p);
 	bool posChanged = false;
 	sf::Vector2f vel;
 	bool velChanged = false;
@@ -52,12 +53,9 @@ protected:
 	void resizeSprite();
 	bool useShader = false;
 	sf::Shader shader;
+
+	enum class MODS { POS, VEL, ANG, ANG_MOM, NUM_MODS };
 private:
-	//Could (probably should) use enum for this but for reasons I've forgotten I chose not to
-	static const sf::Uint8 POS_MODID = 0;
-	static const sf::Uint8 VEL_MODID = 1;
-	static const sf::Uint8 ANG_MODID = 2;
-	static const sf::Uint8 ANGMOM_MODID = 3;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 

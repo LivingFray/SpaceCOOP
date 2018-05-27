@@ -47,23 +47,23 @@ void EntityCore::generateModifyPacket(sf::Packet& p) {
 	//Reset relevant changed flags as states are now synced
 	//TODO: Only sync if it is likely the client has desynced, to save bandwidth
 	if (posChanged) {
-		p << POS_MODID;
+		p << static_cast<sf::Uint8>(MODS::POS);
 		sf::Vector2f pos = Transformable::getPosition();
 		p << pos.x << pos.y;
 		posChanged = false;
 	}
 	if (velChanged) {
-		p << VEL_MODID;
+		p << static_cast<sf::Uint8>(MODS::VEL);
 		p << vel.x << vel.y;
 		velChanged = false;
 	}
 	if (angleChanged) {
-		p << ANG_MODID;
+		p << static_cast<sf::Uint8>(MODS::ANG);
 		p << getRotation();
 		angleChanged = false;
 	}
 	if (angMomentumChanged) {
-		p << ANGMOM_MODID;
+		p << static_cast<sf::Uint8>(MODS::ANG_MOM);
 		p << angMomentum;
 		angMomentumChanged = false;
 	}
@@ -123,11 +123,11 @@ void EntityCore::packetOut(sf::Packet& packet) const {
 }
 
 bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
-	if (modId >= NUM_MODIFY_PROTOCOLS) {
+	if (modId >= static_cast<sf::Uint8>(MODS::NUM_MODS)) {
 		return false;
 	}
 	switch (modId) {
-		case POS_MODID:
+		case static_cast<sf::Uint8>(MODS::POS) :
 		{
 			//Position change
 			sf::Vector2f pos;
@@ -136,14 +136,14 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 			Transformable::setPosition(pos);
 			return true;
 		}
-		case VEL_MODID:
+		case static_cast<sf::Uint8>(MODS::VEL) :
 		{
 			//Velocity change
 			p >> vel.x;
 			p >> vel.y;
 			return true;
 		}
-		case ANG_MODID:
+		case static_cast<sf::Uint8>(MODS::ANG) :
 		{
 			//Angle change
 			float ang;
@@ -151,7 +151,7 @@ bool EntityCore::applyModification(sf::Uint8 modId, sf::Packet& p) {
 			Transformable::setRotation(ang);
 			return true;
 		}
-		case ANGMOM_MODID:
+		case static_cast<sf::Uint8>(MODS::ANG_MOM) :
 		{
 			//Angular Momentum change
 			p >> angMomentum;

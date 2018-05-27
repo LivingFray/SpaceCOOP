@@ -19,9 +19,18 @@ public:
 	void setDesiredAngle(float angle);
 
 	void fire();
+
+	void setHealth(float health);
+	float getHealth();
+
+	void setMaxHealth(float maxHealth);
+	float getMaxHealth();
+
 protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet);
+	virtual bool applyModification(sf::Uint8, sf::Packet& p);
+	virtual void generateModifyPacket(sf::Packet& p);
 	//The thrust being applied by the engines
 	float forwardThrust = 0.0f;
 	float sidewaysThrust = 0.0f;
@@ -34,5 +43,12 @@ protected:
 	//The angle the ship is trying to rotate to
 	float desiredAngle;
 	bool rotateToDesired = false;
+
+	float maxHealth;
+	float health;
+	bool healthChanged = false;
+	bool maxHealthChanged = false;
+
+	enum class MODS { HEALTH, MAX_HEALTH, NUM_MODS };
 };
 

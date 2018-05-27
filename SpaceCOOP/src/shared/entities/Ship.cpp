@@ -9,6 +9,8 @@ using std::shared_ptr;
 Ship::Ship() {
 	width = 100;
 	height = 50;
+	maxHealth = 100.0f;
+	health = 100.0f;
 	loadSpriteAndResize("assets/ship.png");
 	type = 0;
 	setRotation(30.0f);
@@ -79,13 +81,76 @@ void Ship::fire() {
 	beam->direction = getFront();
 	system->addProjectile(beam);
 }
+#include <iostream>
+void Ship::setHealth(float h) {
+	healthChanged = h != health;
+	health = h;
+	//TODO: Death if <0
+	if (health < 0) {
+		std::cout << "You dead (TEMP)" << std::endl;
+	}
+}
+
+float Ship::getHealth() {
+	return health;
+}
+
+void Ship::setMaxHealth(float mh) {
+	maxHealthChanged = maxHealth != mh;
+	maxHealth = mh;
+}
+
+float Ship::getMaxHealth() {
+	return maxHealth;
+}
 
 void Ship::packetIn(sf::Packet& packet) {
 	EntityCore::packetIn(packet);
 	//Ship specific stuff here
+	packet >> health;
+	packet >> maxHealth;
 }
 
 void Ship::packetOut(sf::Packet& packet) {
 	EntityCore::packetOut(packet);
 	//Ship specific stuff here
+	packet << health;
+	packet << maxHealth;
+}
+
+bool Ship::applyModification(sf::Uint8 modId, sf::Packet& p) {
+	if (EntityCore::applyModification(modId, p)) {
+		return true; //Parent class handled it for us
+	}
+	modId -= static_cast<sf::Uint8>(EntityCore::MODS::NUM_MODS);
+	if (modId >= static_cast<sf::Uint8>(MODS::NUM_MODS)) {
+		return false;
+	}
+	switch (modId) {
+		case static_cast<sf::Uint8>(MODS::HEALTH): {
+			p >> health;
+			return true;
+		}
+		case static_cast<sf::Uint8>(MODS::MAX_HEALTH) : {
+			p >> maxHealth;
+			return true;
+		}
+	}
+	return false;
+}
+
+//Called every time the server wants to update client states
+void Ship::generateModifyPacket(sf::Packet& p) {
+	EntityCore::generateModifyPacket(p);
+	int offset = EntityCore::getNumMods();
+	if (healthChanged) {
+		p << offset + static_cast<sf::Uint8>(MODS::HEALTH);
+		p << health;
+		healthChanged = false;
+	}
+	if (maxHealthChanged) {
+		p << offset + static_cast<sf::Uint8>(MODS::MAX_HEALTH);
+		p << maxHealth;
+		maxHealthChanged = false;
+	}
 }
