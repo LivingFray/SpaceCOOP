@@ -3,6 +3,8 @@
 #include <memory>
 #include "SolarSystem.h"
 
+#define WIDTH 10.0f
+
 LaserBeam::LaserBeam() {
 	type = 0;
 }
@@ -19,8 +21,10 @@ void LaserBeam::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::Vector2f delta = end - ori->getPosition();
 	float length = sqrtf(delta.x * delta.x + delta.y * delta.y);
 	float ang = toDegrees(atan2f(delta.y, delta.x));
-	sf::RectangleShape line(sf::Vector2f(length, 20));
+	sf::RectangleShape line(sf::Vector2f(length, WIDTH));
 	line.rotate(ang);
+	line.setPosition(ori->getPosition());
+	line.setOrigin(sf::Vector2f(0.0f, WIDTH / 2.0f));
 	line.setFillColor(sf::Color(255, 0, 0, TTL * 255));
 	states.transform *= getTransform();
 	target.draw(line, states);

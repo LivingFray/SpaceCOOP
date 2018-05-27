@@ -22,7 +22,7 @@ public:
 	void sendText(std::string msg);
 	void sendEntity(shared_ptr<EntityCore> entity);
 	void updateEntity(sf::Packet p);
-	void removeEntity(shared_ptr<EntityCore> entity);
+	void removeEntity(UUID id);
 	void removeAll();
 
 	void warp(int destination);

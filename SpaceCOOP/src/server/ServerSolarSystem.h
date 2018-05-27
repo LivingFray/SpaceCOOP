@@ -23,7 +23,6 @@ public:
 	void generateSystem(Server* server);
 
 	void addEntity(shared_ptr<EntityCore> entity);
-	shared_ptr<EntityCore> getEntity(UUID id);
 	void removeEntity(UUID id);
 
 	void addPlayer(shared_ptr<Player> player);
@@ -36,7 +35,6 @@ public:
 
 	static std::default_random_engine generator;
 
-	mutex entityLock;
 	mutex playerLock;
 
 	sf::Color starColour;

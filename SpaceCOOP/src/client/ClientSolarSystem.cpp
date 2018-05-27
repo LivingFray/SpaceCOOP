@@ -22,6 +22,7 @@ void ClientSolarSystem::init() {
 }
 
 void ClientSolarSystem::update(double dt) {
+	SolarSystem::update(dt);
 	//Maintain correct view for any coordinate changes
 	window->setView(shipView);
 	//Update player angles
@@ -75,10 +76,10 @@ void ClientSolarSystem::draw() {
 		backing.setFillColor(sf::Color(0, 0, 53, 127));
 		window->draw(backing);
 		for (auto planet : planets) {
-			sf::Vector2f scale = planet->getScale();
-			planet->setScale(scale * 4.0f);
-			window->draw(*planet);
-			planet->setScale(scale);
+			sf::Vector2f scale = planet.second->getScale();
+			planet.second->setScale(scale * 4.0f);
+			window->draw(*planet.second);
+			planet.second->setScale(scale);
 		}
 		if (star) {
 			sf::Vector2f scale = star->getScale();
@@ -147,7 +148,7 @@ void ClientSolarSystem::adjustMapView() {
 	maxSize = 1;
 	//Calculate smallest square that covers entire system
 	for (auto planet : planets) {
-		sf::Vector2f pos = planet->getPosition();
+		sf::Vector2f pos = planet.second->getPosition();
 		if (abs(pos.x) > maxSize) {
 			maxSize = abs(pos.x);
 		}

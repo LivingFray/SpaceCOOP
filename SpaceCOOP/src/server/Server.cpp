@@ -2,7 +2,6 @@
 #include "../shared/Console.h"
 #include "Player.h"
 #include <algorithm>
-#include <mutex>
 #include "../shared/CommandHandler.h"
 #include "../shared/PacketHandler.h"
 #include "commands/ForwardsServerCommand.h"

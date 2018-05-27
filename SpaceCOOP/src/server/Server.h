@@ -57,7 +57,5 @@ private:
 
 	double const packetRate = 1.0/15.0;
 	double lastSentPackets = 0;
-
-	mutable std::mutex entityLock;
 };
 
