@@ -422,16 +422,21 @@ void Client::handlePacket(sf::Packet& packet) {
 		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::PROJECTILE) : {
-		sf::Uint8 type;
-		packet >> type;
-		auto proj = projectileHandler.getProjectile(type);
+		console.log("projectile received (" + std::to_string(type) + ")", GraphicalConsole::LogLevel::INFO);
+		sf::Uint8 projType;
+		packet >> projType;
+		auto proj = projectileHandler.getProjectile(projType);
 		if (!proj) {
+			console.log("Unknown projectile type received (" + std::to_string(projType) + ")", GraphicalConsole::LogLevel::ERROR);
 			break;
 		}
 		packet >> *proj;
 		auto ent = getEntity(proj->origin);
+		if (!ent) {
+			console.log("Projectile Origin not known " + std::to_string(ent->id), GraphicalConsole::LogLevel::WARNING);
+		}
 		//Don't add projectiles client fired, these were already predicted
-		if (ent && ent->id != proj->origin) {
+		if (ent && ent->id != getShip()->id) {
 			solarSystem.addProjectile(proj);
 		}
 		break;
