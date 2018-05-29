@@ -7,6 +7,8 @@ extern inline float toRadians(float deg);
 extern inline float toDegrees(float rad);
 extern void bv2rgb(float &r, float &g, float &b, float bv);
 extern float randF(float min, float max);
+extern bool onLeft(sf::Vector2f origin, sf::Vector2f direction, sf::Vector2f point);
+extern sf::Vector2f normalise(sf::Vector2f);
 
 #define REGCMD(c) { \
 std::function<shared_ptr<Command>()> fun = []() { return std::make_shared<c>();}; \

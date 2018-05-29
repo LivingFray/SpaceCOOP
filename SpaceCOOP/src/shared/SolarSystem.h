@@ -23,6 +23,8 @@ public:
 	virtual void addStar(shared_ptr<EntityStar> star);
 	virtual void addEntity(shared_ptr<EntityCore> entity);
 	virtual shared_ptr<EntityCore> getEntity(UUID id);
+
+	virtual unordered_map<UUID, shared_ptr<EntityCore>> getEntities();
 	//TODO: Add other getters as needed
 	///CHange remove to be id, inc vectors
 	virtual void removeEntity(UUID id);

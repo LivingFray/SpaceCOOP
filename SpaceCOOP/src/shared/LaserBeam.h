@@ -5,6 +5,8 @@ class LaserBeam :
 public:
 	LaserBeam();
 	~LaserBeam();
+
+	virtual void onCreation();
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

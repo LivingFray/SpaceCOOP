@@ -10,6 +10,10 @@ Projectile::~Projectile() {
 }
 
 void Projectile::update(double dt) {
+	if (!hasFired) {
+		hasFired = true;
+		onCreation();
+	}
 	TTL -= dt;
 }
 

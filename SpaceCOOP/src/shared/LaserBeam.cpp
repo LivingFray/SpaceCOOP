@@ -2,15 +2,28 @@
 #include "Helper.h"
 #include <memory>
 #include "SolarSystem.h"
-
 #define WIDTH 10.0f
 
 LaserBeam::LaserBeam() {
 	type = 0;
+	damage = 50.0f;
 }
 
 
 LaserBeam::~LaserBeam() {
+}
+
+void LaserBeam::onCreation() {
+	auto oriEnt = system->getEntity(origin);
+	if (!oriEnt) {
+		return;
+	}
+	sf::Vector2f originPos = oriEnt->getPosition();
+	for (auto ent : system->getEntities()) {
+		if (ent.first != origin && ent.second->collidesWithLine(originPos, this->direction)) {
+			ent.second->damage(damage);
+		}
+	}
 }
 
 void LaserBeam::draw(sf::RenderTarget& target, sf::RenderStates states) const {

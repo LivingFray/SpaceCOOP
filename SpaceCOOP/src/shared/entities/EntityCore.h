@@ -33,6 +33,8 @@ public:
 	virtual void update(double dt);
 	virtual sf::Vector2f getFront();
 	virtual sf::Vector2f getRight();
+	virtual bool collidesWithLine(sf::Vector2f origin, sf::Vector2f direction);
+	virtual void damage(float damage) {}
 
 	virtual int getNumMods() const { return static_cast<int>(MODS::NUM_MODS); }
 protected:

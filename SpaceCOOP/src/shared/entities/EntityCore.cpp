@@ -94,6 +94,34 @@ sf::Vector2f EntityCore::getRight() {
 	return dir;
 }
 
+bool EntityCore::collidesWithLine(sf::Vector2f origin, sf::Vector2f direction) {
+	//Transform line into local space
+	origin = getInverseTransform().transformPoint(origin);
+	direction = normalise(getInverseTransform().transformPoint(origin));
+	//Lifted from the internet (used previously in my ray tracer)
+	float top = sprite.getLocalBounds().top;
+	float left = sprite.getLocalBounds().left;
+	float bottom = top + sprite.getLocalBounds().height;
+	float right = left + sprite.getLocalBounds().width;
+
+	sf::Vector2f inv_d = normalise(sf::Vector2f(1.0f / direction.x, 1.0f / direction.y));
+
+	float tx1 = (left - origin.x)*inv_d.x;
+	float tx2 = (right - origin.x)*inv_d.x;
+
+	float tmin = std::min(tx1, tx2);
+	float tmax = std::max(tx1, tx2);
+
+	float ty1 = (top - origin.y)*inv_d.y;
+	float ty2 = (bottom - origin.y)*inv_d.y;
+
+	tmin = std::max(tmin, std::min(ty1, ty2));
+	tmax = std::min(tmax, std::max(ty1, ty2));
+
+	return tmax >= tmin && tmax > 0.0f;
+}
+
+
 void EntityCore::packetIn(sf::Packet& packet) {
 	//DO NOT READ IN UUID, this is already read in to determine which entity to call packetIn from
 	//SAME FOR ENTITY TYPE

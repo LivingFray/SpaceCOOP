@@ -122,3 +122,7 @@ shared_ptr<EntityCore> SolarSystem::getEntity(UUID id) {
 		return NULL;
 	}
 }
+
+unordered_map<UUID, shared_ptr<EntityCore>> SolarSystem::getEntities() {
+	return entities;
+}

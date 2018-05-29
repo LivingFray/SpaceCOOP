@@ -81,10 +81,11 @@ void Ship::fire() {
 	beam->direction = getFront();
 	system->addProjectile(beam);
 }
-#include <iostream>
+
 void Ship::setHealth(float h) {
 	healthChanged = h != health;
 	health = h;
+	std::cout << h << std::endl;
 	//TODO: Death if <0
 	if (health < 0) {
 		std::cout << "You dead (TEMP)" << std::endl;
@@ -102,6 +103,10 @@ void Ship::setMaxHealth(float mh) {
 
 float Ship::getMaxHealth() {
 	return maxHealth;
+}
+
+void Ship::damage(float damage) {
+	setHealth(getHealth() - damage);
 }
 
 void Ship::packetIn(sf::Packet& packet) {

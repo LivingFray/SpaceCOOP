@@ -30,3 +30,15 @@ float randF(float min, float max) {
 	float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 	return r * (max - min) + min;
 }
+
+bool onLeft(sf::Vector2f origin, sf::Vector2f direction, sf::Vector2f point) {
+	sf::Vector2f pointDir = point - origin;
+
+	return (direction.x * pointDir.y - pointDir.x * direction.y) > 0;
+}
+
+sf::Vector2f normalise(sf::Vector2f vec) {
+	float mag = vec.x * vec.x + vec.y * vec.y;
+	mag = sqrtf(mag);
+	return vec / mag;
+}

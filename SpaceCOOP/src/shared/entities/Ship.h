@@ -26,6 +26,8 @@ public:
 	void setMaxHealth(float maxHealth);
 	float getMaxHealth();
 
+	virtual void damage(float damage);
+
 protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet);
