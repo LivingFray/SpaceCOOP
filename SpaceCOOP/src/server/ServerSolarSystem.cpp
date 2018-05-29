@@ -39,11 +39,15 @@ void ServerSolarSystem::generateSystem(Server* server) {
 		addPlanet(planet);
 		addEntity(planet);
 	}
+	Console::logToConsole("Generated " + std::to_string(toAddPlanets.size()) + " planets", Console::LogLevel::INFO);
 	//TODO: Binary systems
 	star = std::make_shared<EntityStar>(radiusDist(generator) * 5.0f);
 	star->setPosition(sf::Vector2f(0.0f, 0.0f));
 	star->setColour(starColour);
 	addEntity(star);
+
+	//Update solar system
+	updateToAdds();
 }
 
 
