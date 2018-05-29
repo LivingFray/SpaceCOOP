@@ -26,6 +26,7 @@ void ClientSolarSystem::update(double dt) {
 	//Maintain correct view for any coordinate changes
 	window->setView(shipView);
 	//Update player angles
+	PreciseRotateClientCommand::time += dt;
 	if (ship && orientToMouse) {
 		sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 		sf::Vector2f rel = mousePos - ship->getPosition();
@@ -34,6 +35,7 @@ void ClientSolarSystem::update(double dt) {
 		cmd.client = client;
 		cmd.angle = desiredAngle;
 		cmd.execute();
+		//TODO: Could send these less often by only sending if movement
 	}
 	//Update entities
 	for (auto ent : entities) {

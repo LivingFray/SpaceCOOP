@@ -1,6 +1,7 @@
 #include "PreciseRotateClientCommand.h"
 
-
+double PreciseRotateClientCommand::lastRotateCommand = 0.0;
+double PreciseRotateClientCommand::time = 0.0;
 
 PreciseRotateClientCommand::PreciseRotateClientCommand() {
 	name = "preciserotate";
@@ -18,7 +19,10 @@ void PreciseRotateClientCommand::execute() {
 	//TODO: Limit frequency command is sent
 	client->getShip()->setDesiredAngle(angle);
 	//Tell server to run command
-	ClientCommand::executeRemote();
+	if (time - lastRotateCommand > sendRate) {
+		ClientCommand::executeRemote();
+		lastRotateCommand = time;
+	}
 }
 
 sf::Packet& PreciseRotateClientCommand::packetIn(sf::Packet& packet) {

@@ -163,6 +163,7 @@ void Player::handlePacket(sf::Packet& packet) {
 				packet >> *p;
 				p->player = this;
 				p->execute();
+				//Console::logToConsole(p->name, Console::LogLevel::INFO);
 			}
 		} catch (std::exception e) {
 			Console::logToConsole("Player sent invalid/malformatted command (" + std::to_string(commandId) + ")", Console::LogLevel::WARNING);
