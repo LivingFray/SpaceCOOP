@@ -85,11 +85,6 @@ void Ship::fire() {
 void Ship::setHealth(float h) {
 	healthChanged = h != health;
 	health = h;
-	std::cout << h << std::endl;
-	//TODO: Death if <0
-	if (health < 0) {
-		std::cout << "You dead (TEMP)" << std::endl;
-	}
 }
 
 float Ship::getHealth() {

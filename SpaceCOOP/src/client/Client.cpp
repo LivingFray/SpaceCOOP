@@ -75,6 +75,8 @@ void Client::init() {
 	//Set up console
 	console.loadFont("assets/cour.ttf");
 
+	hud.client = this;
+
 	solarSystem.client = this;
 	solarSystem.init();
 
@@ -150,6 +152,7 @@ void Client::draw() {
 		window->draw(backing);
 		window->draw(galaxy);
 	}
+	window->draw(hud);
 	if (consoleVisible) {
 		window->draw(console);
 	}
@@ -165,6 +168,7 @@ void Client::update(double dt) {
 		mapPos = galaxy.getInverseTransform().transformPoint(mapPos);
 		galaxy.selectStar(mapPos.x, mapPos.y);
 	}
+	hud.update();
 }
 
 void Client::addEntity(shared_ptr<EntityCore> entity) {
@@ -244,6 +248,7 @@ void Client::resizeEvent(sf::Event e) {
 	solarSystem.resizeEvent(e);
 	//UI stuff
 	resizeGalaxyMap();
+	hud.resize(e.size.width, e.size.height);
 }
 
 void Client::mouseEvent(sf::Event e) {

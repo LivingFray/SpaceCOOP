@@ -12,6 +12,7 @@
 #include "GraphicalConsole.h"
 #include "ClientSolarSystem.h"
 #include "../shared/ProjectileHandler.h"
+#include "HUD.h"
 
 using std::thread;
 using std::shared_ptr;
@@ -53,6 +54,7 @@ public:
 	ProjectileHandler projectileHandler;
 	bool consoleVisible = false;
 	GraphicalConsole console;
+	HUD hud;
 private:
 	sf::TcpSocket tcpSocket;
 	sf::UdpSocket udpSocket;

@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\client\HUD.cpp" />
     <ClCompile Include="src\client\Background.cpp" />
     <ClCompile Include="src\client\commands\FireClientCommand.cpp" />
     <ClCompile Include="src\client\commands\ShowGalaxyClientCommand.cpp" />
@@ -189,6 +190,7 @@
     <ClCompile Include="src\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\client\HUD.h" />
     <ClInclude Include="src\client\Background.h" />
     <ClInclude Include="src\client\commands\FireClientCommand.h" />
     <ClInclude Include="src\client\commands\ShowGalaxyClientCommand.h" />
