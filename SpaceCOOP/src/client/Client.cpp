@@ -306,6 +306,7 @@ void Client::threadedUDPReceive() {
 	sf::IpAddress remote;
 	unsigned short packetPort;
 	while (connected) {
+		console.log("Listening", GraphicalConsole::LogLevel::INFO);
 		sf::UdpSocket::Status st = udpSocket.receive(packet, remote, packetPort);
 		if (remote != addr || port != packetPort) {
 			console.log("Received packet from unknown address " + remote.toString() + ":" + std::to_string(packetPort), GraphicalConsole::LogLevel::WARNING);
@@ -314,12 +315,15 @@ void Client::threadedUDPReceive() {
 		}
 		switch (st) {
 			case sf::UdpSocket::Done:
+				console.log("Handling new packet", GraphicalConsole::LogLevel::INFO);
 				handlePacket(packet);
+				console.log("Handled", GraphicalConsole::LogLevel::INFO);
 				break;
 			default:
 				console.log("Error receiving packet", GraphicalConsole::LogLevel::ERROR);
 		}
 	}
+	console.log("UDP channel disconnected", GraphicalConsole::LogLevel::ERROR);
 }
 
 void Client::threadedUDPSend() {
@@ -337,6 +341,7 @@ void Client::handlePacket(sf::Packet& packet) {
 	if (!(packet >> type)) {
 		console.log("Could not decode packet", GraphicalConsole::LogLevel::ERROR);
 	}
+	console.log(std::to_string(type), GraphicalConsole::LogLevel::INFO);
 	switch (type) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) : {
 		std::string msg;
@@ -438,9 +443,12 @@ void Client::handlePacket(sf::Packet& packet) {
 		//Don't add projectiles client fired, these were already predicted
 		if (ent && ent->id != getShip()->id) {
 			solarSystem.addProjectile(proj);
+			console.log("Successfully added projectile", GraphicalConsole::LogLevel::INFO);
 		}
 		break;
 	}
+	default:
+		console.log("Unknown packet type received (" + std::to_string(type) + ")", GraphicalConsole::LogLevel::ERROR);
 	}
 }
 

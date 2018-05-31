@@ -122,7 +122,7 @@ bool Ship::applyModification(sf::Uint8 modId, sf::Packet& p) {
 	if (EntityCore::applyModification(modId, p)) {
 		return true; //Parent class handled it for us
 	}
-	modId -= static_cast<sf::Uint8>(EntityCore::MODS::NUM_MODS);
+	modId -= EntityCore::getNumMods();
 	if (modId >= static_cast<sf::Uint8>(MODS::NUM_MODS)) {
 		return false;
 	}
@@ -142,14 +142,14 @@ bool Ship::applyModification(sf::Uint8 modId, sf::Packet& p) {
 //Called every time the server wants to update client states
 void Ship::generateModifyPacket(sf::Packet& p) {
 	EntityCore::generateModifyPacket(p);
-	int offset = EntityCore::getNumMods();
+	sf::Uint8 offset = EntityCore::getNumMods();
 	if (healthChanged) {
-		p << offset + static_cast<sf::Uint8>(MODS::HEALTH);
+		p << static_cast<sf::Uint8>(offset + static_cast<sf::Uint8>(MODS::HEALTH));
 		p << health;
 		healthChanged = false;
 	}
 	if (maxHealthChanged) {
-		p << offset + static_cast<sf::Uint8>(MODS::MAX_HEALTH);
+		p << static_cast<sf::Uint8>(offset + static_cast<sf::Uint8>(MODS::MAX_HEALTH));
 		p << maxHealth;
 		maxHealthChanged = false;
 	}

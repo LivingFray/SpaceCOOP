@@ -31,12 +31,17 @@ void EntityCore::setVelocity(sf::Vector2f v) {
 }
 
 void EntityCore::modify(sf::Packet& p) {
+	sf::Uint8 packets[8];
+	int i = 0;
 	while (!p.endOfPacket()) {
 		sf::Uint8 modId;
 		p >> modId;
+		packets[i] = modId;
+		i++;
 		applyModification(modId, p);
 		if (!p) {
 			//Throw a hissy fit here
+			break;
 		}
 	}
 }
