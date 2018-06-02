@@ -17,6 +17,7 @@ ServerSolarSystem::~ServerSolarSystem() {
 
 void ServerSolarSystem::generateSystem(Server* server) {
 	this->server = server;
+	console = server->getConsole();
 	//Random number of planets from 1 to 12
 	std::uniform_int_distribution<int> intDist(1, 12);
 	//Random position of planets in orbit
@@ -39,7 +40,7 @@ void ServerSolarSystem::generateSystem(Server* server) {
 		addPlanet(planet);
 		addEntity(planet);
 	}
-	Console::logToConsole("Generated " + std::to_string(toAddPlanets.size()) + " planets", Console::LogLevel::INFO);
+	console->log("Generated " + std::to_string(toAddPlanets.size()) + " planets", Console::LogLevel::INFO);
 	//TODO: Binary systems
 	star = std::make_shared<EntityStar>(radiusDist(generator) * 5.0f);
 	star->setPosition(sf::Vector2f(0.0f, 0.0f));
@@ -86,7 +87,7 @@ void ServerSolarSystem::addPlayer(shared_ptr<Player> player) {
 	p << playerShip->id;
 	player->toSendTCP.push(p);
 	//Send entities to new player
-	Console::logToConsole(std::to_string(entities.size()), Console::LogLevel::INFO);
+	console->log(std::to_string(entities.size()), Console::LogLevel::INFO);
 	for (auto ent : entities) {
 		if (ent.first != playerShip->id) {
 			player->sendEntity(ent.second);

@@ -16,8 +16,10 @@
 //TODO: Server side ship with movement and such
 #include "../shared/entities/Ship.h"
 #include "../shared/Helper.h"
+#include "CommandLineConsole.h"
 
 Server::Server() {
+	console = std::make_shared<CommandLineConsole>();
 	//Register all commands here
 	REGCMD(ForwardsServerCommand);
 	REGCMD(BackwardsServerCommand);
@@ -35,47 +37,48 @@ Server::~Server() {
 	running = false;
 	if (incomingThread.joinable()) {
 		incomingThread.join();
-		Console::logToConsole("SV_Incoming: joined", Console::LogLevel::INFO);
+		console->log("SV_Incoming: joined", Console::LogLevel::INFO);
 	}
 	if (udpThread.joinable()) {
 		udpThread.join();
-		Console::logToConsole("SV_UDP: joined", Console::LogLevel::INFO);
+		console->log("SV_UDP: joined", Console::LogLevel::INFO);
 	}
 }
 
 
 void Server::start() {
 	if (running) {
-		Console::logToConsole("Attempted to start server that was already running", Console::LogLevel::ERROR);
+		console->log("Attempted to start server that was already running", Console::LogLevel::ERROR);
 	}
 	running = true;
 	lastSentPackets = 0;
 	udpThread = std::thread(&Server::receiveUDP, this);
-	Console::logToConsole("SV_UDP: started", Console::LogLevel::INFO);
-	Console::logToConsole("Generating galaxy", Console::LogLevel::INFO);
+	console->log("SV_UDP: started", Console::LogLevel::INFO);
+	console->log("Generating galaxy", Console::LogLevel::INFO);
+	galaxy.server = this;
 	galaxy.generateGalaxy();
-	Console::logToConsole("Galaxy generated", Console::LogLevel::INFO);
+	console->log("Galaxy generated", Console::LogLevel::INFO);
 	incomingThread = std::thread(&Server::handleConnections, this);
-	Console::logToConsole("SV_Incoming: started", Console::LogLevel::INFO);
+	console->log("SV_Incoming: started", Console::LogLevel::INFO);
 }
 
 
 void Server::stop() {
-	Console::logToConsole(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
+	console->log(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
 	running = false;
 	listen.close();
-	Console::logToConsole("SV_Listen: closed", Console::LogLevel::INFO);
+	console->log("SV_Listen: closed", Console::LogLevel::INFO);
 	incomingThread.join();
-	Console::logToConsole("SV_Incoming: joined", Console::LogLevel::INFO);
+	console->log("SV_Incoming: joined", Console::LogLevel::INFO);
 	udp.unbind();
 	udpThread.join();
-	Console::logToConsole("SV_UDP: joined", Console::LogLevel::INFO);
-	Console::logToConsole("No longer listening for new connections", Console::LogLevel::INFO);
+	console->log("SV_UDP: joined", Console::LogLevel::INFO);
+	console->log("No longer listening for new connections", Console::LogLevel::INFO);
 	for (shared_ptr<Player> t : players) {
 		t->disconnect();
 	}
 	players.clear();
-	Console::logToConsole("All players kicked", Console::LogLevel::INFO);
+	console->log("All players kicked", Console::LogLevel::INFO);
 }
 
 void Server::update(double dt) {
@@ -92,7 +95,7 @@ void Server::update(double dt) {
 			}
 		}
 		checkConnected = false;
-		Console::logToConsole(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
+		console->log(std::to_string(numPlayers) + " clients connected", Console::LogLevel::INFO);
 	}
 	galaxy.updateSystems(dt);
 	//Send packets if it is that time again
@@ -121,46 +124,46 @@ void Server::onPlayerDisconnected(shared_ptr<Player> player) {
 }
 
 void Server::warp(shared_ptr<Player> player, int destination) {
-	Console::logToConsole("Warping to system " + std::to_string(destination), Console::LogLevel::INFO);
+	console->log("Warping to system " + std::to_string(destination), Console::LogLevel::INFO);
 	galaxy.movePlayer(player, destination);
 }
 
 void Server::handleConnections() {
 	listen.listen(port);
-	Console::logToConsole("SV_Listen: opened", Console::LogLevel::INFO);
-	Console::logToConsole("Started server", Console::LogLevel::INFO);
+	console->log("SV_Listen: opened", Console::LogLevel::INFO);
+	console->log("Started server", Console::LogLevel::INFO);
 	while (running) {
 		auto client = std::make_shared<sf::TcpSocket>();
 		if (listen.accept(*client) == sf::TcpListener::Done) {
 			//Handle max server capacity/nice logins and such here
 
 			//Add client
-			Console::logToConsole("New client connected", Console::LogLevel::INFO);
+			console->log("New client connected", Console::LogLevel::INFO);
 			auto player = std::make_shared<Player>();
 			//Pass socket to player
 			player->tcpSocket = client;
 			player->ip = client->getRemoteAddress();
 			player->port = client->getRemotePort();
 			player->udpSocket = &udp;
-			Console::logToConsole("PL_Socket: opened", Console::LogLevel::INFO);
+			console->log("PL_Socket: opened", Console::LogLevel::INFO);
 			player->server = this;
 			//Start listening
 			player->start();
 			//Track player in server
 			players.push_back(player);
 			numPlayers++;
-			Console::logToConsole(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
+			console->log(std::to_string(numPlayers) + " players connected", Console::LogLevel::INFO);
 			onPlayerConnected(player);
 		}
 	}
 	listen.close();
-	Console::logToConsole("SV_Listen: closed", Console::LogLevel::INFO);
+	console->log("SV_Listen: closed", Console::LogLevel::INFO);
 }
 
 void Server::receiveUDP() {
 	auto status = udp.bind(port);
 	if (status != sf::UdpSocket::Status::Done) {
-		Console::logToConsole("Error binding UDP socket to port " + std::to_string(port), Console::LogLevel::ERROR);
+		console->log("Error binding UDP socket to port " + std::to_string(port), Console::LogLevel::ERROR);
 	}
 	sf::Packet packet;
 	sf::IpAddress fromAddr;

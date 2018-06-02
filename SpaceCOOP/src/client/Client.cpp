@@ -306,7 +306,7 @@ void Client::threadedUDPReceive() {
 	sf::IpAddress remote;
 	unsigned short packetPort;
 	while (connected) {
-		console.log("Listening", GraphicalConsole::LogLevel::INFO);
+		//console.log("Listening", GraphicalConsole::LogLevel::INFO);
 		sf::UdpSocket::Status st = udpSocket.receive(packet, remote, packetPort);
 		if (remote != addr || port != packetPort) {
 			console.log("Received packet from unknown address " + remote.toString() + ":" + std::to_string(packetPort), GraphicalConsole::LogLevel::WARNING);
@@ -315,9 +315,9 @@ void Client::threadedUDPReceive() {
 		}
 		switch (st) {
 			case sf::UdpSocket::Done:
-				console.log("Handling new packet", GraphicalConsole::LogLevel::INFO);
+				//console.log("Handling new packet", GraphicalConsole::LogLevel::INFO);
 				handlePacket(packet);
-				console.log("Handled", GraphicalConsole::LogLevel::INFO);
+				//console.log("Handled", GraphicalConsole::LogLevel::INFO);
 				break;
 			default:
 				console.log("Error receiving packet", GraphicalConsole::LogLevel::ERROR);
@@ -341,7 +341,7 @@ void Client::handlePacket(sf::Packet& packet) {
 	if (!(packet >> type)) {
 		console.log("Could not decode packet", GraphicalConsole::LogLevel::ERROR);
 	}
-	console.log(std::to_string(type), GraphicalConsole::LogLevel::INFO);
+	//console.log(std::to_string(type), GraphicalConsole::LogLevel::INFO);
 	switch (type) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) : {
 		std::string msg;
@@ -427,7 +427,7 @@ void Client::handlePacket(sf::Packet& packet) {
 		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::PROJECTILE) : {
-		console.log("projectile received (" + std::to_string(type) + ")", GraphicalConsole::LogLevel::INFO);
+		//console.log("projectile received (" + std::to_string(type) + ")", GraphicalConsole::LogLevel::INFO);
 		sf::Uint8 projType;
 		packet >> projType;
 		auto proj = projectileHandler.getProjectile(projType);
@@ -443,7 +443,7 @@ void Client::handlePacket(sf::Packet& packet) {
 		//Don't add projectiles client fired, these were already predicted
 		if (ent && ent->id != getShip()->id) {
 			solarSystem.addProjectile(proj);
-			console.log("Successfully added projectile", GraphicalConsole::LogLevel::INFO);
+			//console.log("Successfully added projectile", GraphicalConsole::LogLevel::INFO);
 		}
 		break;
 	}

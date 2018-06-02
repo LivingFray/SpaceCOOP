@@ -17,19 +17,20 @@ Player::~Player() {
 
 
 void Player::start() {
+	console = server->getConsole();
 	if (running) {
-		Console::logToConsole("Player is already connected", Console::LogLevel::ERROR);
+		console->log("Player is already connected", Console::LogLevel::ERROR);
 		return;
 	}
 	running = true;
 	//Start threads
 	receiveTCPThread = std::thread(&Player::threadedTCPReceive, this);
-	Console::logToConsole("PL_Receive: started", Console::LogLevel::INFO);
+	console->log("PL_Receive: started", Console::LogLevel::INFO);
 	sendTCPThread = std::thread(&Player::threadedTCPSend, this);
-	Console::logToConsole("PL_Send_TCP: started", Console::LogLevel::INFO);
+	console->log("PL_Send_TCP: started", Console::LogLevel::INFO);
 	sendUDPThread = std::thread(&Player::threadedUDPSend, this);
-	Console::logToConsole("PL_Send_UDP: started", Console::LogLevel::INFO);
-	Console::logToConsole("Sending player current galaxy", Console::LogLevel::INFO);
+	console->log("PL_Send_UDP: started", Console::LogLevel::INFO);
+	console->log("Sending player current galaxy", Console::LogLevel::INFO);
 	sf::Packet p;
 	p << static_cast<sf::Uint8>(PacketHandler::Type::GALAXY) << server->getGalaxy();
 	toSendTCP.push(p);
@@ -37,23 +38,23 @@ void Player::start() {
 
 
 void Player::disconnect() {
-	Console::logToConsole("Shutting down connection", Console::LogLevel::INFO);
+	console->log("Shutting down connection", Console::LogLevel::INFO);
 	running = false;
 	tcpSocket->disconnect();
-	Console::logToConsole("PL_Socket: closed", Console::LogLevel::INFO);
+	console->log("PL_Socket: closed", Console::LogLevel::INFO);
 	if (receiveTCPThread.joinable()) {
 		receiveTCPThread.join();
-		Console::logToConsole("PL_Receive: joined", Console::LogLevel::INFO);
+		console->log("PL_Receive: joined", Console::LogLevel::INFO);
 	}
 	if (sendTCPThread.joinable()) {
 		toSendTCP.push(sf::Packet());
 		sendTCPThread.join();
-		Console::logToConsole("PL_Send_TCP: joined", Console::LogLevel::INFO);
+		console->log("PL_Send_TCP: joined", Console::LogLevel::INFO);
 	}
 	if (sendUDPThread.joinable()) {
 		toSendUDP.push(sf::Packet());
 		sendUDPThread.join();
-		Console::logToConsole("PL_Send_UDP: joined", Console::LogLevel::INFO);
+		console->log("PL_Send_UDP: joined", Console::LogLevel::INFO);
 	}
 }
 
@@ -105,20 +106,20 @@ void Player::threadedTCPReceive() {
 		auto status = tcpSocket->receive(packet);
 		switch (status) {
 		case sf::TcpSocket::Disconnected:
-			Console::logToConsole("Client disconnected", Console::LogLevel::INFO);
+			console->log("Client disconnected", Console::LogLevel::INFO);
 			running = false;
 			break;
 		case sf::TcpSocket::Done:
 			handlePacket(packet);
 			break;
 		default:
-			Console::logToConsole("Error receiving packet", Console::LogLevel::ERROR);
+			console->log("Error receiving packet", Console::LogLevel::ERROR);
 			break;
 		}
 	}
-	Console::logToConsole("Client successfully disconnected", Console::LogLevel::INFO);
+	console->log("Client successfully disconnected", Console::LogLevel::INFO);
 	tcpSocket->disconnect();
-	Console::logToConsole("PL_Socket: closed", Console::LogLevel::INFO);
+	console->log("PL_Socket: closed", Console::LogLevel::INFO);
 	server->updateConnectedList();
 }
 
@@ -144,14 +145,14 @@ void Player::threadedUDPSend() {
 void Player::handlePacket(sf::Packet& packet) {
 	sf::Uint8 type;
 	if (!(packet >> type)) {
-		Console::logToConsole("Could not decode packet", Console::LogLevel::ERROR);
+		console->log("Could not decode packet", Console::LogLevel::ERROR);
 	}
 	switch (type) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::TEXT) :
 	{
 		std::string msg;
 		packet >> msg;
-		Console::logToConsole(msg, Console::LogLevel::INFO);
+		console->log(msg, Console::LogLevel::INFO);
 		break;
 	}
 	case static_cast<sf::Uint8>(PacketHandler::Type::COMMAND) :
@@ -163,10 +164,10 @@ void Player::handlePacket(sf::Packet& packet) {
 				packet >> *p;
 				p->player = this;
 				p->execute();
-				//Console::logToConsole(p->name, Console::LogLevel::INFO);
+				//console->logToConsole(p->name, Console::LogLevel::INFO);
 			}
 		} catch (std::exception e) {
-			Console::logToConsole("Player sent invalid/malformatted command (" + std::to_string(commandId) + ")", Console::LogLevel::WARNING);
+			console->log("Player sent invalid/malformatted command (" + std::to_string(commandId) + ")", Console::LogLevel::WARNING);
 		}
 		break;
 	}

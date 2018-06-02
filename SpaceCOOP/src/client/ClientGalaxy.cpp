@@ -53,7 +53,7 @@ void ClientGalaxy::createVertexArray() {
 	}
 	//Load shaders
 	if (!starShader.loadFromFile("shaders/star.frag", sf::Shader::Fragment)) {
-		Console::logToConsole("Could not load star shader", Console::LogLevel::ERROR);
+		//console->log("Could not load star shader", Console::LogLevel::ERROR);
 	}
 	//Set up outline
 	outline.setFillColor(sf::Color::Transparent);

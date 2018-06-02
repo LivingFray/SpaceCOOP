@@ -2,12 +2,13 @@
 #include <SFML/Graphics.hpp>
 #include <mutex>
 #include <string>
+#include "../shared/Console.h"
 class GraphicalConsole :
-	public sf::Drawable {
+	public sf::Drawable,
+	public Console{
 public:
 	GraphicalConsole();
 	~GraphicalConsole();
-	enum class LogLevel { INFO, WARNING, ERROR };
 
 	void log(std::string msg, LogLevel level);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;

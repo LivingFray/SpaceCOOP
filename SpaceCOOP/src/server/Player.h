@@ -6,6 +6,7 @@
 #include "../shared/TSQueue.h"
 #include "../shared/entities/EntityCore.h"
 #include "../shared/entities/Ship.h"
+#include "../shared/Console.h"
 
 using std::shared_ptr;
 using std::thread;
@@ -51,5 +52,6 @@ private:
 	void handlePacket(sf::Packet& packet);
 	Server* server;
 	friend class Server;
+	shared_ptr<Console> console;
 };
 

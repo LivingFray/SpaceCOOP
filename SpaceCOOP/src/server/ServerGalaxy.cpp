@@ -6,7 +6,7 @@
 using std::shared_ptr;
 
 ServerGalaxy::ServerGalaxy() {
-	ServerSolarSystem::generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+	ServerSolarSystem::generator.seed(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
 }
 
 

@@ -7,6 +7,7 @@
 #include <mutex>
 #include "Player.h"
 #include "../shared/Projectile.h"
+#include "../shared/Console.h"
 
 using std::unordered_map;
 using std::shared_ptr;
@@ -40,6 +41,7 @@ public:
 	sf::Color starColour;
 private:
 	Server* server;
+	shared_ptr<Console> console;
 	vector<shared_ptr<Player>> players;
 };
 

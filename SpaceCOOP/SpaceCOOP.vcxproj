@@ -135,6 +135,7 @@
     <ClCompile Include="src\client\ClientSolarSystem.cpp" />
     <ClCompile Include="src\server\commands\FireServerCommand.cpp" />
     <ClCompile Include="src\server\commands\WarpServerCommand.cpp" />
+    <ClCompile Include="src\server\CommandLineConsole.cpp" />
     <ClCompile Include="src\server\ServerSolarSystem.cpp" />
     <ClCompile Include="src\shared\entities\EntityStar.cpp" />
     <ClCompile Include="src\shared\entities\Planet.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="src\client\ClientSolarSystem.h" />
     <ClInclude Include="src\server\commands\FireServerCommand.h" />
     <ClInclude Include="src\server\commands\WarpServerCommand.h" />
+    <ClInclude Include="src\server\CommandLineConsole.h" />
     <ClInclude Include="src\server\ServerSolarSystem.h" />
     <ClInclude Include="src\shared\entities\EntityStar.h" />
     <ClInclude Include="src\shared\entities\Planet.h" />

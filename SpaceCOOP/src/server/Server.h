@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include "../shared/entities/EntityCore.h"
 #include "ServerSolarSystem.h"
+#include "../shared/Console.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -42,6 +43,8 @@ public:
 	void onPlayerDisconnected(shared_ptr<Player> player);
 
 	void warp(shared_ptr<Player> player, int destination);
+
+	shared_ptr<Console> getConsole() const { return console; }
 private:
 	thread incomingThread;
 	thread udpThread;
@@ -57,5 +60,7 @@ private:
 
 	double const packetRate = 1.0/15.0;
 	double lastSentPackets = 0;
+
+	shared_ptr<Console> console;
 };
 
