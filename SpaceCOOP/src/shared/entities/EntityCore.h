@@ -18,7 +18,7 @@ public:
 	EntityCore();
 	virtual ~EntityCore();
 
-	SolarSystem* system;
+	void setSolarSystem(SolarSystem* sys);
 
 	UUID id;
 	EntityType type;
@@ -55,6 +55,9 @@ protected:
 	void resizeSprite();
 	bool useShader = false;
 	sf::Shader shader;
+
+	SolarSystem* system;
+	bool isServerSide;
 
 	enum class MODS { POS, VEL, ANG, ANG_MOM, NUM_MODS };
 private:

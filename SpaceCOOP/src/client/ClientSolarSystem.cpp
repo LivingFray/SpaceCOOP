@@ -112,7 +112,7 @@ void ClientSolarSystem::resizeEvent(sf::Event e) {
 
 void ClientSolarSystem::addEntity(shared_ptr<EntityCore> entity) {
 	entities.insert_or_assign(entity->id, entity);
-	entity->system = this;
+	entity->setSolarSystem(this);
 	if (std::dynamic_pointer_cast<Planet>(entity)) {
 		addPlanet(std::dynamic_pointer_cast<Planet>(entity));
 	}

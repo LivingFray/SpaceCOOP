@@ -2,6 +2,7 @@
 #include "../AssetHandler.h"
 #include <chrono>
 #include "../Helper.h"
+#include "../../server/ServerSolarSystem.h"
 
 
 EntityCore::EntityCore() {
@@ -10,6 +11,11 @@ EntityCore::EntityCore() {
 }
 
 EntityCore::~EntityCore() {
+}
+
+void EntityCore::setSolarSystem(SolarSystem* sys) {
+	system = sys;
+	isServerSide = dynamic_cast<ServerSolarSystem*>(sys) != NULL;
 }
 
 void EntityCore::setPosition(const sf::Vector2f& p) {

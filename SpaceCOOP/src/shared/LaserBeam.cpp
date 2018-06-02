@@ -14,6 +14,9 @@ LaserBeam::~LaserBeam() {
 }
 
 void LaserBeam::onCreation() {
+	if (!isServerSide) {
+		return;
+	}
 	auto oriEnt = system->getEntity(origin);
 	if (!oriEnt) {
 		return;

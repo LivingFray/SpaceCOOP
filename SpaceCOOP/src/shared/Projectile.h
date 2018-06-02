@@ -14,10 +14,11 @@ public:
 
 	virtual void onCreation() {};
 
+	void setSolarSystem(SolarSystem* sys);
+
 	friend sf::Packet& operator<<(sf::Packet& packet, const Projectile& command);
 	friend sf::Packet& operator >> (sf::Packet& packet, Projectile& command);
 
-	SolarSystem* system;
 
 	UUID origin;
 	sf::Vector2f direction;
@@ -30,5 +31,7 @@ protected:
 	virtual void packetIn(sf::Packet& packet);
 	virtual void packetOut(sf::Packet& packet) const;
 	bool hasFired = false;
+	SolarSystem* system;
+	bool isServerSide;
 };
 

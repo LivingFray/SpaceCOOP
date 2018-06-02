@@ -34,7 +34,7 @@ void SolarSystem::removeAll() {
 }
 
 void SolarSystem::addProjectile(shared_ptr<Projectile> proj) {
-	proj->system = this;
+	proj->setSolarSystem(this);
 	toAddProjectiles.push_back(proj);
 }
 

@@ -1,5 +1,5 @@
 #include "Projectile.h"
-
+#include "../server/ServerSolarSystem.h"
 
 
 Projectile::Projectile() {
@@ -15,6 +15,11 @@ void Projectile::update(double dt) {
 		onCreation();
 	}
 	TTL -= dt;
+}
+
+void Projectile::setSolarSystem(SolarSystem* sys) {
+	system = sys;
+	isServerSide = dynamic_cast<ServerSolarSystem*>(sys) != NULL;
 }
 
 void Projectile::packetIn(sf::Packet& packet) {

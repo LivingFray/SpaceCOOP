@@ -53,7 +53,7 @@ void ServerSolarSystem::generateSystem(Server* server) {
 
 void ServerSolarSystem::addEntity(shared_ptr<EntityCore> entity) {
 	SolarSystem::addEntity(entity);
-	entity->system = this;
+	entity->setSolarSystem(this);
 	playerLock.lock();
 	for (auto player : players) {
 		player->sendEntity(entity);
