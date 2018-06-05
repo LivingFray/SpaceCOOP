@@ -10,9 +10,9 @@ EntityStar::EntityStar(float radius) : EntityCore() {
 	width = radius * 2;
 	height = radius * 2;
 	useShader = true;
-	shader.loadFromFile("shaders/colourBurn.frag", sf::Shader::Fragment);
+	shader.loadFromFile("shaders/starcol2.frag", sf::Shader::Fragment);
 	shader.setUniform("tex", sf::Shader::CurrentTexture);
-	loadSpriteAndResize("assets/star.png");
+	loadSpriteAndResize("assets/star2.png");
 	type = 2;
 }
 
