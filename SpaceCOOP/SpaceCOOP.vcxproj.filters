@@ -189,6 +189,12 @@
     <ClCompile Include="src\server\CommandLineConsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\server\AI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server\SampleAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\server\Server.h">
@@ -363,6 +369,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\server\CommandLineConsole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\server\AI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\server\SampleAI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

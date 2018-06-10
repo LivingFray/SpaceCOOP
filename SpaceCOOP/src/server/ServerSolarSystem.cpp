@@ -4,6 +4,7 @@
 #include "../shared/Console.h"
 #include "../shared/PacketHandler.h"
 #include "../shared/entities/EntityStar.h"
+#include "SampleAI.h"
 
 std::default_random_engine ServerSolarSystem::generator;
 
@@ -126,6 +127,16 @@ void ServerSolarSystem::update(double dt) {
 	//Why update a system thats not occupied?
 	if (numPlayers == 0) {
 		return;
+	}
+	//TEMP
+	if (ais.size() == 0) {
+		shared_ptr<Ship> aiShip = std::make_shared<Ship>();
+		addEntity(aiShip);
+		ais.push_back(std::make_shared<SampleAI>(this, aiShip));
+	}
+	//Update AIs
+	for (auto ai : ais) {
+		ai->update(dt);
 	}
 	//Update entities
 	for (auto ent : entities) {

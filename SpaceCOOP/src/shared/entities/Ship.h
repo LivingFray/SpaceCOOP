@@ -17,6 +17,7 @@ public:
 	float getTurnRate() const { return maxTurnRate; }
 
 	void setDesiredAngle(float angle);
+	bool atDesiredAngle();
 
 	void fire();
 

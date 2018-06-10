@@ -42,3 +42,8 @@ sf::Vector2f normalise(sf::Vector2f vec) {
 	mag = sqrtf(mag);
 	return vec / mag;
 }
+
+float magnitude(sf::Vector2f vec) {
+	float mag = vec.x * vec.x + vec.y * vec.y;
+	return sqrtf(mag);
+}

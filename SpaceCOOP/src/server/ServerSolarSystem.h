@@ -6,6 +6,7 @@
 #include <vector>
 #include <mutex>
 #include "Player.h"
+#include "AI.h"
 #include "../shared/Projectile.h"
 #include "../shared/Console.h"
 
@@ -34,6 +35,10 @@ public:
 
 	void addProjectile(shared_ptr<Projectile> proj);
 
+	vector<shared_ptr<Player>> getPlayers() { return players; };
+
+	shared_ptr<Console> getConsole() { return console; }
+
 	static std::default_random_engine generator;
 
 	mutex playerLock;
@@ -43,5 +48,6 @@ private:
 	Server* server;
 	shared_ptr<Console> console;
 	vector<shared_ptr<Player>> players;
+	vector<shared_ptr<AI>> ais;
 };
 

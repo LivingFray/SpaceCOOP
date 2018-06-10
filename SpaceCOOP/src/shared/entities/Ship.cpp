@@ -74,6 +74,10 @@ void Ship::setDesiredAngle(float angle) {
 	rotateToDesired = true;
 }
 
+bool Ship::atDesiredAngle() {
+	return !rotateToDesired;
+}
+
 void Ship::fire() {
 	//TODO: Weapon selection and such
 	shared_ptr<LaserBeam> beam = std::make_shared<LaserBeam>();
