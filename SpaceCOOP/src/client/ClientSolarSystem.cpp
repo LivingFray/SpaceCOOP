@@ -64,8 +64,15 @@ void ClientSolarSystem::draw() {
 	if (ship) {
 		shipView.setCenter(ship->getPosition());
 	}
-	//Draw the entities in this system
 	window->setView(shipView);
+	//Draw astrological bodies
+	if (star) {
+		window->draw(*star);
+	}
+	for (auto planet : planets) {
+		window->draw(*planet.second);
+	}
+	//Draw the entities in this system
 	for (auto ent : entities) {
 		window->draw(*ent.second);
 	}
@@ -115,13 +122,13 @@ void ClientSolarSystem::resizeEvent(sf::Event e) {
 }
 
 void ClientSolarSystem::addEntity(shared_ptr<EntityCore> entity) {
-	entities.insert_or_assign(entity->id, entity);
 	entity->setSolarSystem(this);
 	if (std::dynamic_pointer_cast<Planet>(entity)) {
 		addPlanet(std::dynamic_pointer_cast<Planet>(entity));
-	}
-	if (std::dynamic_pointer_cast<EntityStar>(entity)) {
+	} else if (std::dynamic_pointer_cast<EntityStar>(entity)) {
 		addStar(std::dynamic_pointer_cast<EntityStar>(entity));
+	} else {
+		SolarSystem::addEntity(entity);
 	}
 }
 

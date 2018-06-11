@@ -441,7 +441,7 @@ void Client::handlePacket(sf::Packet& packet) {
 			console.log("Projectile Origin not known " + std::to_string(ent->id), GraphicalConsole::LogLevel::WARNING);
 		}
 		//Don't add projectiles client fired, these were already predicted
-		if (ent && ent->id != getShip()->id) {
+		if (ent && getShip() && ent->id != getShip()->id) {
 			solarSystem.addProjectile(proj);
 			//console.log("Successfully added projectile", GraphicalConsole::LogLevel::INFO);
 		}
