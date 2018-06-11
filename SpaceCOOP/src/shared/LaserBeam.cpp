@@ -25,7 +25,7 @@ void LaserBeam::onCreation() {
 	sf::Vector2f originPos = oriEnt->getPosition();
 	for (auto ent : system->getEntities()) {
 		if (ent.first != origin && ent.second->collidesWithLine(originPos, this->direction)) {
-			((ServerSolarSystem*)system)->getConsole()->log("Collision found", Console::LogLevel::INFO);
+			((ServerSolarSystem*)system)->getConsole()->log("Collision found: " + std::to_string(ent.second->type), Console::LogLevel::INFO);
 			ent.second->damage(damage);
 		}
 	}

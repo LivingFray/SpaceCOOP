@@ -106,14 +106,21 @@ sf::Vector2f EntityCore::getRight() {
 }
 
 bool EntityCore::collidesWithLine(sf::Vector2f origin, sf::Vector2f direction) {
+	//Translate to origin
+	origin -= getPosition();
+	//Rotate back
+	sf::Transform rot;
+	rot = rot.rotate(-getRotation());
+	origin = rot.transformPoint(origin);
+	direction = rot.transformPoint(direction);
 	//Transform line into local space
-	origin = getInverseTransform().transformPoint(origin);
-	direction = normalise(getInverseTransform().transformPoint(origin));
+	//origin = getInverseTransform().transformPoint(origin);
+	//direction = normalise(getInverseTransform().transformPoint(origin));
 	//Lifted from the internet (used previously in my ray tracer)
-	float top = sprite.getLocalBounds().top;
-	float left = sprite.getLocalBounds().left;
-	float bottom = top + sprite.getLocalBounds().height;
-	float right = left + sprite.getLocalBounds().width;
+	float top = height/2;
+	float left = -width/2;
+	float bottom = -top;
+	float right = -left;
 
 	sf::Vector2f inv_d = normalise(sf::Vector2f(1.0f / direction.x, 1.0f / direction.y));
 
