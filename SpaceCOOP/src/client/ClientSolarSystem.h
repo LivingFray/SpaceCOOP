@@ -45,5 +45,6 @@ private:
 	void adjustMapView();
 	bool mapVisible = false;
 	void resizeMap(unsigned int width, unsigned int height);
+	bool mapNeedsUpdate = false;
 };
 

@@ -23,6 +23,10 @@ void ClientSolarSystem::init() {
 
 void ClientSolarSystem::update(double dt) {
 	SolarSystem::update(dt);
+	if (mapNeedsUpdate) {
+		adjustMapView();
+		mapNeedsUpdate = false;
+	}
 	//Maintain correct view for any coordinate changes
 	window->setView(shipView);
 	//Update player angles
@@ -139,7 +143,7 @@ void ClientSolarSystem::removeAll() {
 
 void ClientSolarSystem::addPlanet(shared_ptr<Planet> planet) {
 	SolarSystem::addPlanet(planet);
-	adjustMapView();
+	mapNeedsUpdate = true;
 }
 
 void ClientSolarSystem::setMapVisibility(bool visible) {
