@@ -416,11 +416,15 @@ void Client::handlePacket(sf::Packet& packet) {
 	case static_cast<sf::Uint8>(PacketHandler::Type::ASSIGN_SHIP) : {
 		UUID id;
 		packet >> id;
-		auto ent = getEntity(id);
+		shared_ptr<EntityCore> ent = getEntity(id);
+		if (!ent) {
+			ent = solarSystem.getNewEntity(id);
+		}
 		if (!ent) {
 			console.log("Received ship ID from server that does not exist " + std::to_string(id), GraphicalConsole::LogLevel::ERROR);
+			break;
 		}
-		solarSystem.ship = std::dynamic_pointer_cast<Ship>(getEntity(id));
+		solarSystem.ship = std::dynamic_pointer_cast<Ship>(ent);
 		if (!solarSystem.ship) {
 			console.log("Received ship ID from server for non ship entity " + std::to_string(id), GraphicalConsole::LogLevel::ERROR);
 		}

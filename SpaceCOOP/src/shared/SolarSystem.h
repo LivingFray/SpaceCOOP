@@ -33,6 +33,8 @@ public:
 	virtual void addProjectile(shared_ptr<Projectile> proj);
 
 	virtual void update(double dt);
+
+	virtual shared_ptr<EntityCore> getNewEntity(UUID id);
 protected:
 	unordered_map<UUID, shared_ptr<Planet>> planets;
 	unordered_map<UUID, shared_ptr<EntityCore>> entities;

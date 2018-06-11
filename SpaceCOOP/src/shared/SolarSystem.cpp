@@ -44,6 +44,19 @@ void SolarSystem::update(double dt) {
 	updateToRemoves();
 }
 
+shared_ptr<EntityCore> SolarSystem::getNewEntity(UUID id) {
+	entityMutex.lock();
+	shared_ptr<EntityCore> newEnt;
+	for (auto ent : toAddEntities) {
+		if (ent->id == id) {
+			newEnt = ent;
+			break;
+		}
+	}
+	entityMutex.unlock();
+	return newEnt;
+}
+
 void SolarSystem::updateToAdds() {
 	//Add entities
 	entityMutex.lock();
